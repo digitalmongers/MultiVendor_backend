@@ -35,7 +35,35 @@ const updatePasswordSchema = z.object({
   }),
 });
 
+// Forgot Password Schemas
+const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+  }),
+});
+
+const verifyOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    otp: z.string().length(6, 'OTP must be 6 digits'),
+  }),
+});
+
+const resetPasswordSchema = z.object({
+  body: z.object({
+    resetToken: z.string().min(1, 'Reset token is required'),
+    newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Confirmation is required'),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  }),
+});
+
 router.post('/login', validate(loginSchema), AdminController.login);
+router.post('/forgot-password', validate(forgotPasswordSchema), AdminController.forgotPassword);
+router.post('/verify-otp', validate(verifyOtpSchema), AdminController.verifyOtp);
+router.post('/reset-password', validate(resetPasswordSchema), AdminController.resetPassword);
 
 // Protected routes
 router.use(adminProtect);

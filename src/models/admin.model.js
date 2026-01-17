@@ -33,6 +33,13 @@ const adminSchema = new mongoose.Schema(
         default: null,
       },
     },
+    resetPasswordOtp: String,
+    resetPasswordExpires: Date,
+    resetPasswordOtpAttempts: {
+      type: Number,
+      default: 0,
+    },
+    resetPasswordLockout: Date,
   },
   {
     timestamps: true,

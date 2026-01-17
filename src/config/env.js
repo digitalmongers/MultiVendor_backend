@@ -35,6 +35,11 @@ const envSchema = z.object({
   // Allowed Origins for CORS
   ALLOWED_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173'),
 
+  // SendGrid
+  SENDGRID_API_KEY: z.string().min(1, 'SENDGRID_API_KEY is required for emails'),
+  EMAIL_FROM: z.string().email('EMAIL_FROM must be a valid email'),
+  EMAIL_FROM_NAME: z.string().default('Admin Support'),
+
   // Optional but recommended
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
   REDIS_URL: z.string().url().optional(),
