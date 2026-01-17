@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as Sentry from '@sentry/node';
 import { sanitize } from './safeLogger.js';
+import RequestContext from './context.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,19 +70,33 @@ const logger = winston.createLogger({
 });
 
 class Logger {
-  static info(message, meta = {}) { logger.info(message, sanitize(meta)); }
+  static info(message, meta = {}) { 
+    logger.info(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  }
+  
   static error(message, meta = {}) { 
-    logger.error(message, sanitize(meta)); 
+    const contextMeta = { ...RequestContext.getAll(), ...meta };
+    logger.error(message, sanitize(contextMeta)); 
+    
     // Enterprise: Report to Sentry
     if (meta.error instanceof Error) {
-      Sentry.captureException(meta.error, { extra: sanitize(meta) });
+      Sentry.captureException(meta.error, { extra: sanitize(contextMeta) });
     } else {
-      Sentry.captureMessage(message, { level: 'error', extra: sanitize(meta) });
+      Sentry.captureMessage(message, { level: 'error', extra: sanitize(contextMeta) });
     }
   }
-  static warn(message, meta = {}) { logger.warn(message, sanitize(meta)); }
-  static debug(message, meta = {}) { logger.debug(message, sanitize(meta)); }
-  static http(message, meta = {}) { logger.http(message, sanitize(meta)); }
+
+  static warn(message, meta = {}) { 
+    logger.warn(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  }
+
+  static debug(message, meta = {}) { 
+    logger.debug(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  }
+
+  static http(message, meta = {}) { 
+    logger.http(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  }
 
   static logRequest(req) {
     logger.http('HTTP Request', {
@@ -95,14 +110,16 @@ class Logger {
     });
   }
 
-  static logResponse(req, res, responseTime) {
-    logger[res.statusCode >= 400 ? 'warn' : 'http']('HTTP Response', {
+  static logResponse(req, res, responseTime, responseBody = null) {
+    logger[res.statusCode >= 400 ? 'warn' : 'http']('HTTP Response', sanitize({
+      ...RequestContext.getAll(),
       requestId: req.requestId || req.id,
       method: req.method,
       url: req.url,
       statusCode: res.statusCode,
       responseTime: `${responseTime}ms`,
-    });
+      responseBody: responseBody,
+    }));
   }
 
   static logError(error, req = null) {
