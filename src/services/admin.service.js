@@ -2,9 +2,12 @@ import AdminRepository from '../repositories/admin.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS, ERROR_MESSAGES } from '../constants.js';
 import { generateToken, generateRefreshToken } from '../utils/jwt.js';
+import jwt from 'jsonwebtoken';
 import AuditLogger from '../utils/audit.js';
 import env from '../config/env.js';
 import Logger from '../utils/logger.js';
+import EmailService from './email.service.js';
+import crypto from 'crypto';
 
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 
@@ -141,6 +144,160 @@ class AdminService {
     await admin.save(); // Model pre-save hook will hash it
 
     AuditLogger.log('ADMIN_PASSWORD_CHANGED', 'ADMIN', { adminId });
+    return true;
+  }
+
+  /**
+   * Generate and Send OTP for Forgot Password
+   */
+  async forgotPassword(email) {
+    const admin = await AdminRepository.findByEmail(email);
+    if (!admin) {
+      // Don't leak exists status, just pretend success or throw generic (Enterprise often says "If account exists...")
+      // But for this internal Admin tool, we can be more explicit or just throw generic.
+      // Let's throw explicit for this internal tool as requested by user ("admin email daale").
+      throw new AppError('Admin with this email not found', HTTP_STATUS.NOT_FOUND, 'ADMIN_NOT_FOUND');
+    }
+
+    // Check if account is locked
+    if (admin.resetPasswordLockout && admin.resetPasswordLockout > Date.now()) {
+      throw new AppError('Account is temporarily locked. Please try again later.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+    }
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Hash OTP before saving (Security Best Practice)
+    const resetPasswordOtp = crypto
+      .createHash('sha256')
+      .update(otp)
+      .digest('hex');
+
+    // Set expiration (1 minute as requested)
+    const resetPasswordExpires = Date.now() + 1 * 60 * 1000;
+
+    await AdminRepository.updateById(admin._id, {
+      resetPasswordOtp,
+      resetPasswordExpires,
+      resetPasswordOtpAttempts: 0, // Reset attempts on new OTP
+      resetPasswordLockout: undefined,
+    });
+
+    try {
+      await EmailService.sendOtpEmail(admin.email, otp);
+      AuditLogger.log('OTP_SENT', 'ADMIN', { adminId: admin._id });
+    } catch (err) {
+      // Rollback changes if email fails
+      await AdminRepository.updateById(admin._id, {
+        resetPasswordOtp: undefined,
+        resetPasswordExpires: undefined,
+      });
+      throw err;
+    }
+
+    return true;
+  }
+
+  /**
+   * Verify OTP
+   * Returns a temporary reset token or just validation success
+   */
+  async verifyOtp(email, otp) {
+    const hashedOtp = crypto
+      .createHash('sha256')
+      .update(otp)
+      .digest('hex');
+
+    const admin = await AdminRepository.findByEmail(email); // We need to find by email to verify
+    
+    if (!admin) {
+      throw new AppError('Invalid request', HTTP_STATUS.BAD_REQUEST, 'INVALID_REQUEST');
+    }
+
+    // Check Lockout
+    if (admin.resetPasswordLockout && admin.resetPasswordLockout > Date.now()) {
+       throw new AppError('Account is temporarily locked. Please try again later.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+    }
+
+    // Check Expiration
+    if (!admin.resetPasswordOtp || !admin.resetPasswordExpires || Date.now() > admin.resetPasswordExpires) {
+       throw new AppError('OTP has expired or is invalid', HTTP_STATUS.BAD_REQUEST, 'OTP_EXPIRED');
+    }
+
+    // Verify Hash
+    if (hashedOtp !== admin.resetPasswordOtp) {
+      // Increment attempts
+      const attempts = (admin.resetPasswordOtpAttempts || 0) + 1;
+      
+      const updateData = { resetPasswordOtpAttempts: attempts };
+      
+      // Lock if 3 attempts reached
+      if (attempts >= 3) {
+        updateData.resetPasswordLockout = Date.now() + 10 * 60 * 1000; // 10 minutes
+        // Clear OTP to force resend after lockout (optional, but good practice)
+        updateData.resetPasswordOtp = undefined;
+        updateData.resetPasswordExpires = undefined;
+        
+        await AdminRepository.updateById(admin._id, updateData);
+        throw new AppError('Too many invalid attempts. Account locked for 10 minutes.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+      }
+
+      await AdminRepository.updateById(admin._id, updateData);
+      throw new AppError(`Invalid OTP. You have ${3 - attempts} attempts remaining.`, HTTP_STATUS.BAD_REQUEST, 'INVALID_OTP');
+    }
+
+    // OTP is valid
+    // For a stateless verified flow, we can return a short-lived "reset token" 
+    // OR we can just return success and expect client to send OTP again with password 
+    // (User said: "fir otp verify krne ke baad new password daale")
+    // Let's return a temporary token to authorize the reset password call.
+    
+    // Clear OTP fields immediately to prevent reuse (though token is now key)
+    await AdminRepository.updateById(admin._id, {
+      resetPasswordOtpAttempts: 0,
+      resetPasswordLockout: undefined,
+      resetPasswordOtp: undefined, 
+      resetPasswordExpires: undefined
+    });
+    
+    // Using a JWT signed with a special secret or just short expiration
+    const resetToken = generateToken(admin._id, '15m'); // 15 min expiration
+    
+    AuditLogger.log('OTP_VERIFIED', 'ADMIN', { adminId: admin._id });
+    return { resetToken };
+  }
+
+  /**
+   * Reset Password using Token
+   */
+  async resetPassword(resetToken, newPassword) {
+    // Verify the reset token
+    // In a real flow, verifyOtp returns a token, and resetPassword uses it.
+    // We can reuse the same token verification logic or just verify here.
+    
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, env.JWT_SECRET);
+    } catch (err) {
+      throw new AppError('Invalid or expired reset token', HTTP_STATUS.BAD_REQUEST, 'INVALID_TOKEN');
+    }
+
+    const admin = await AdminRepository.findById(decoded.id);
+    if (!admin) {
+      throw new AppError('Admin not found', HTTP_STATUS.NOT_FOUND, 'ADMIN_NOT_FOUND');
+    }
+
+    // Ensure we clear the OTP fields to prevent replay
+    admin.password = newPassword;
+    // OTP fields already cleared in verifyOtp, but ensuring clean state doesn't hurt
+    admin.resetPasswordOtp = undefined;
+    admin.resetPasswordExpires = undefined;
+    admin.resetPasswordOtpAttempts = 0;
+    admin.resetPasswordLockout = undefined;
+    
+    await admin.save();
+    
+    AuditLogger.log('PASSWORD_RESET_SUCCESS', 'ADMIN', { adminId: admin._id });
     return true;
   }
 

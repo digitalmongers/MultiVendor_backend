@@ -100,6 +100,39 @@ class AdminController {
     await AdminService.updatePassword(req.admin._id, newPassword);
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, 'Password updated successfully'));
   };
+
+  /**
+   * @desc    Forgot Password - Request OTP
+   * @route   POST /api/v1/admin/auth/forgot-password
+   * @access  Public
+   */
+  forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    await AdminService.forgotPassword(email);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, 'OTP sent to your email'));
+  };
+
+  /**
+   * @desc    Verify OTP
+   * @route   POST /api/v1/admin/auth/verify-otp
+   * @access  Public
+   */
+  verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+    const result = await AdminService.verifyOtp(email, otp);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'OTP verified successfully'));
+  };
+
+  /**
+   * @desc    Reset Password
+   * @route   POST /api/v1/admin/auth/reset-password
+   * @access  Public
+   */
+  resetPassword = async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+    await AdminService.resetPassword(resetToken, newPassword);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, 'Password reset successfully. You can now login.'));
+  };
 }
 
 export default new AdminController();
