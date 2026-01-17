@@ -13,8 +13,8 @@ export const adminProtect = async (req, res, next) => {
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies?.adminToken) {
-    token = req.cookies.adminToken;
+  } else if (req.cookies?.adminAccessToken) {
+    token = req.cookies.adminAccessToken;
   }
 
   if (!token) {

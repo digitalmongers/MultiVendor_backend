@@ -2,6 +2,7 @@ import express from 'express';
 import AdminController from '../controllers/admin.controller.js';
 import { adminProtect } from '../middleware/adminAuth.middleware.js';
 import validate from '../middleware/validate.middleware.js';
+import { HTTP_STATUS } from '../constants.js';
 import { z } from 'zod';
 
 import uploadMiddleware from '../middleware/upload.middleware.js';
@@ -60,10 +61,26 @@ const resetPasswordSchema = z.object({
   }),
 });
 
-router.post('/login', validate(loginSchema), AdminController.login);
-router.post('/forgot-password', validate(forgotPasswordSchema), AdminController.forgotPassword);
-router.post('/verify-otp', validate(verifyOtpSchema), AdminController.verifyOtp);
-router.post('/reset-password', validate(resetPasswordSchema), AdminController.resetPassword);
+import rateLimit from 'express-rate-limit';
+
+// Strict Rate Limiter for Auth Routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: HTTP_STATUS.TOO_MANY_REQUESTS,
+    message: 'Too many authentication attempts from this IP, please try again after 15 minutes',
+    code: 'AUTH_RATE_LIMIT'
+  }
+});
+
+router.post('/login', authLimiter, validate(loginSchema), AdminController.login);
+router.post('/refresh-token', AdminController.refreshToken); // New Route
+router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), AdminController.forgotPassword);
+router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), AdminController.verifyOtp);
+router.post('/reset-password', authLimiter, validate(resetPasswordSchema), AdminController.resetPassword);
 
 // Protected routes
 router.use(adminProtect);

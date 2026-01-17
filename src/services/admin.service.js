@@ -22,10 +22,35 @@ class AdminService {
       throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED, 'INVALID_ADMIN_AUTH');
     }
 
+    // Check availability (Lockout)
+    if (admin.lockoutUntil && admin.lockoutUntil > Date.now()) {
+      throw new AppError('Account is temporarily locked due to too many failed login attempts. Please try again later.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+    }
+
     const isMatch = await admin.matchPassword(password);
     if (!isMatch) {
-      AuditLogger.security('ADMIN_LOGIN_FAILED', { email });
+      // Increment login attempts
+      const attempts = (admin.loginAttempts || 0) + 1;
+      const updateData = { loginAttempts: attempts };
+
+      // Lock if 5 attempts reached
+      if (attempts >= 5) {
+        updateData.lockoutUntil = Date.now() + 15 * 60 * 1000; // 15 minutes
+        updateData.loginAttempts = 0; // Optional: Reset or keep to show history. Let's reset after lockout ends, but for now just set timeout.
+        
+        await AdminRepository.updateById(admin._id, updateData);
+        AuditLogger.security('ADMIN_ACCOUNT_LOCKED', { email });
+        throw new AppError('Too many failed attempts. Account locked for 15 minutes.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+      }
+
+      await AdminRepository.updateById(admin._id, updateData);
+      AuditLogger.security('ADMIN_LOGIN_FAILED', { email, attempts });
       throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED, 'INVALID_ADMIN_AUTH');
+    }
+
+    // Reset attempts on success
+    if (admin.loginAttempts > 0 || admin.lockoutUntil) {
+      await AdminRepository.updateById(admin._id, { loginAttempts: 0, lockoutUntil: undefined });
     }
 
     // Determine refresh token expiration
@@ -50,6 +75,45 @@ class AdminService {
         refreshToken,
       },
     };
+  }
+
+  /**
+   * Refresh Token
+   */
+  async refreshToken(token) {
+    if (!token) {
+      throw new AppError('Refresh token is required', HTTP_STATUS.UNAUTHORIZED, 'TOKEN_REQUIRED');
+    }
+
+    try {
+      const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
+      
+      const admin = await AdminRepository.findById(decoded.id);
+      if (!admin) {
+        throw new AppError('Admin not found', HTTP_STATUS.UNAUTHORIZED, 'INVALID_REFRESH_TOKEN');
+      }
+
+      // Check for lockout (optional but good security)
+      if (admin.lockoutUntil && admin.lockoutUntil > Date.now()) {
+        throw new AppError('Account is locked', HTTP_STATUS.FORBIDDEN, 'ACCOUNT_LOCKED');
+      }
+
+      // Generate new tokens
+      // If original token was 30d (Remember Me), we generally respect that or roll it.
+      // For simplicity/security, we can issue a fresh pair with original preference or just standard.
+      // Let's issue a standard new pair. Identifying "Remember Me" from just the token requires decoding exp.
+      // Let's just issue a regular pair or keep existing refresh (Rotation vs Reuse).
+      // Given simple implementation: Issue new Access Token, keep same Refresh Token OR Rotate.
+      // Best practice: Reuse Refresh Token until exp, Issue new Access Token. 
+      // But user wants "real website", which often rotates.
+      // Let's just generate a new Access Token.
+      
+      const accessToken = generateToken(admin._id);
+      
+      return { accessToken };
+    } catch (error) {
+      throw new AppError('Invalid or expired refresh token', HTTP_STATUS.UNAUTHORIZED, 'INVALID_REFRESH_TOKEN');
+    }
   }
 
   /**
@@ -261,7 +325,8 @@ class AdminService {
     });
     
     // Using a JWT signed with a special secret or just short expiration
-    const resetToken = generateToken(admin._id, '15m'); // 15 min expiration
+    // Using a JWT signed with a special secret or just short expiration
+    const resetToken = jwt.sign({ id: admin._id }, env.JWT_SECRET, { expiresIn: '15m' });
     
     AuditLogger.log('OTP_VERIFIED', 'ADMIN', { adminId: admin._id });
     return { resetToken };

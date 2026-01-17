@@ -13,16 +13,53 @@ class AdminController {
 
     const result = await AdminService.login(email, password, rememberMe);
 
-    // Set cookie if needed (optional based on architecture, but common)
-    const cookieOptions = {
-      expires: new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000),
+    // 1. Refresh Token Cookie (Long Lived - The "Remember Me" part)
+    // 30 days vs 1 day
+    const refreshExpires = new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000);
+    
+    res.cookie('adminRefreshToken', result.tokens.refreshToken, {
+      expires: refreshExpires,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-    };
+      sameSite: 'strict', // CSRF protection
+    });
 
-    res.cookie('adminToken', result.tokens.accessToken, cookieOptions);
+    // 2. Access Token Cookie (Short Lived)
+    // Default 15 minutes or 1 hour. env.JWT_EXPIRE is 7d currently, we should verify.
+    // If env is 7d, we can match it.
+    // But for proper refresh flow, access token should be shorter.
+    // We will set it to match JWT_EXPIRE or standard 1 day for now to avoid breaking existing logic too much.
+    
+    res.cookie('adminAccessToken', result.tokens.accessToken, {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
 
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.LOGIN_SUCCESS));
+  };
+
+  /**
+   * @desc    Refresh Access Token
+   * @route   POST /api/v1/admin/auth/refresh-token
+   * @access  Public (Cookie/Body)
+   */
+  refreshToken = async (req, res) => {
+    // Get Refresh Token from Cookie (Secure) or Body (Fallback)
+    const token = req.cookies?.adminRefreshToken || req.body.refreshToken;
+    
+    const result = await AdminService.refreshToken(token);
+    
+    // Set new Access Token Cookie
+    res.cookie('adminAccessToken', result.accessToken, {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Token Refreshed'));
   };
 
   /**
@@ -31,10 +68,13 @@ class AdminController {
    * @access  Private (Admin)
    */
   logout = async (req, res) => {
-    res.cookie('adminToken', 'none', {
+    const options = {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
-    });
+    };
+    
+    res.cookie('adminAccessToken', 'none', options);
+    res.cookie('adminRefreshToken', 'none', options);
 
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, SUCCESS_MESSAGES.LOGOUT_SUCCESS));
   };
