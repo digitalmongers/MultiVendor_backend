@@ -40,6 +40,11 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().email('EMAIL_FROM must be a valid email'),
   EMAIL_FROM_NAME: z.string().default('Admin Support'),
 
+  // Mailchimp
+  MAILCHIMP_API_KEY: z.string().optional(),
+  MAILCHIMP_SERVER_PREFIX: z.string().optional(),
+  MAILCHIMP_AUDIENCE_ID: z.string().optional(),
+
   // Optional but recommended
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
   REDIS_URL: z.string().url().optional(),
