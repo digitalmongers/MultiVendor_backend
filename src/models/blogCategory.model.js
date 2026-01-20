@@ -17,8 +17,6 @@ const blogCategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index for performance on name search
-blogCategorySchema.index({ name: 1 });
 // Index for filtering by status
 blogCategorySchema.index({ status: 1 });
 

@@ -11,6 +11,12 @@ import newsletterRoutes from './newsletter.routes.js';
 import blogCategoryRoutes from './blogCategory.routes.js';
 import blogRoutes from './blog.routes.js';
 import publicBlogRoutes from './publicBlog.routes.js';
+import bannerRoutes from './banner.routes.js';
+import sliderRoutes from './slider.routes.js';
+import topbarRoutes from './topbar.routes.js';
+import reliabilityRoutes from './reliability.routes.js';
+import trustedByRoutes from './trustedBy.routes.js';
+import socialMediaRoutes from './socialMedia.routes.js';
 
 const router = express.Router();
 
@@ -29,6 +35,12 @@ router.use('/blog-categories', blogCategoryRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/public/blogs', publicBlogRoutes);
 router.use('/newsletter', newsletterRoutes);
+router.use('/banners', bannerRoutes);
+router.use('/sliders', sliderRoutes);
+router.use('/topbar', topbarRoutes);
+router.use('/company-reliability', reliabilityRoutes);
+router.use('/trusted-by', trustedByRoutes);
+router.use('/social-media', socialMediaRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);

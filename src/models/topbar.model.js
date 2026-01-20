@@ -1,0 +1,33 @@
+import mongoose from 'mongoose';
+
+const topbarSchema = new mongoose.Schema(
+  {
+    bgColor: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    textColor: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active',
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Topbar = mongoose.model('Topbar', topbarSchema);
+
+export default Topbar;

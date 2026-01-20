@@ -103,3 +103,15 @@ export const TASK_STATUS = {
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
 };
+
+// Banner Settings
+export const BANNER_TYPES = {
+  MAIN_SECTION: 'Main Section Banner',
+  FOOTER: 'Footer Banner',
+};
+
+export const RESOURCE_TYPES = {
+  PRODUCT: 'Product',
+  SHOP: 'Shop',
+  EXTERNAL: 'External',
+};
