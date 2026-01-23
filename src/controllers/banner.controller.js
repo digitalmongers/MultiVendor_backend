@@ -7,12 +7,12 @@ class BannerController {
     const banner = await BannerService.createBanner(req.body);
     return ApiResponse.success(res, HTTP_STATUS.CREATED, SUCCESS_MESSAGES.CREATED, banner);
   };
- 
+  
   getAllBanners = async (req, res) => {
     const banners = await BannerService.getAllBanners();
     return ApiResponse.success(res, HTTP_STATUS.OK, SUCCESS_MESSAGES.FETCHED, banners);
   };
-
+ 
   getBannerById = async (req, res) => {
     const banner = await BannerService.getBannerById(req.params.id);
     return ApiResponse.success(res, HTTP_STATUS.OK, SUCCESS_MESSAGES.FETCHED, banner);
