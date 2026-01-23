@@ -3,7 +3,7 @@ import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
 
-const FAQ_CACHE_KEY = 'single_vendor:faqs';
+const FAQ_CACHE_KEY = 'multi_vendor:faqs';
 
 class FAQService {
   async createFAQ(data) {

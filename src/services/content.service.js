@@ -3,7 +3,7 @@ import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
 
-const CONTENT_CACHE_KEY = 'single_vendor:content';
+const CONTENT_CACHE_KEY = 'multi_vendor:content';
 
 class ContentService {
   /**

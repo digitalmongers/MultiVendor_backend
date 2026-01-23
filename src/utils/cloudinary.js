@@ -5,7 +5,7 @@ import Logger from './logger.js';
 /**
  * Utility: Upload Buffer to Cloudinary using Streams
  */
-export const uploadToCloudinary = (file, folder = 'single-vendor', options = {}) => {
+export const uploadToCloudinary = (file, folder = 'multi-vendor', options = {}) => {
   return new Promise((resolve, reject) => {
     const buffer = file.buffer;
     if (!buffer) return reject(new Error('No file buffer provided'));

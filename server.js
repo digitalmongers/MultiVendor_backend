@@ -80,7 +80,7 @@ app.use('/api/v1', v1Routes);
 // Root Endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'Single Vendor Backend API',
+    message: 'Multi Vendor Backend API',
     status: 'ONLINE',
     version: '1.0.0',
     docs: '/api-docs'
