@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/public', cacheMiddleware(3600), SliderController.getPublicSliders);
 
 // Protected routes
-router.use(adminProtect);
+router.use(adminProtect); 
 
 router.route('/')
   .post(validate(createSliderSchema), SliderController.createSlider)

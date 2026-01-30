@@ -52,15 +52,26 @@ class Cache {
   }
 
   /**
-   * Delete keys by pattern
+   * Delete keys by pattern (SCAN implementation for production safety)
    * @param {string} pattern
    */
   async delByPattern(pattern) {
     try {
-      const keys = await redisClient.keys(pattern);
-      if (keys.length > 0) {
-        await redisClient.del(...keys);
-        Logger.info(`Cache Pattern Invalidated: ${pattern} (${keys.length} keys)`);
+      let cursor = '0';
+      let keysDeleted = 0;
+
+      do {
+        const [nextCursor, keys] = await redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        cursor = nextCursor;
+
+        if (keys.length > 0) {
+          await redisClient.del(...keys);
+          keysDeleted += keys.length;
+        }
+      } while (cursor !== '0');
+
+      if (keysDeleted > 0) {
+        Logger.info(`Cache Pattern Invalidated: ${pattern} (${keysDeleted} keys deleted)`);
       }
     } catch (error) {
       Logger.error(`Cache Pattern Delete Error: ${pattern}`, { error: error.message });

@@ -1,5 +1,4 @@
 import express from 'express';
-import authRoutes from './auth.routes.js';
 import healthRoutes from './health.routes.js';
 import uploadRoutes from './upload.routes.js';
 import adminRoutes from './admin.routes.js';
@@ -17,6 +16,11 @@ import topbarRoutes from './topbar.routes.js';
 import reliabilityRoutes from './reliability.routes.js';
 import trustedByRoutes from './trustedBy.routes.js';
 import socialMediaRoutes from './socialMedia.routes.js';
+import customerRoutes from './customer.routes.js';
+import vendorRoutes from './vendor.routes.js';
+import supplierEmailTemplateRoutes from './supplierEmailTemplate.routes.js';
+import customerEmailTemplateRoutes from './customerEmailTemplate.routes.js';
+import adminEmailTemplateRoutes from './adminEmailTemplate.routes.js';
 
 const router = express.Router();
 
@@ -24,7 +28,6 @@ const router = express.Router();
  * V1 Route Entry Point
  * Centralizes all version 1 endpoints.
  */
-router.use('/auth', authRoutes);
 router.use('/admin/auth', adminRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/content', contentRoutes);
@@ -41,6 +44,11 @@ router.use('/topbar', topbarRoutes);
 router.use('/company-reliability', reliabilityRoutes);
 router.use('/trusted-by', trustedByRoutes);
 router.use('/social-media', socialMediaRoutes);
+router.use('/customers', customerRoutes);
+router.use('/vendors', vendorRoutes);
+router.use('/admin/supplier-template', supplierEmailTemplateRoutes);
+router.use('/admin/customer-template', customerEmailTemplateRoutes);
+router.use('/admin/admin-template', adminEmailTemplateRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);

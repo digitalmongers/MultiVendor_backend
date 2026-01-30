@@ -3,16 +3,18 @@ import env from '../config/env.js';
 import Logger from '../utils/logger.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
+import SupplierEmailTemplateRepository from '../repositories/supplierEmailTemplate.repository.js';
+import CustomerEmailTemplateRepository from '../repositories/customerEmailTemplate.repository.js';
+import AdminEmailTemplateRepository from '../repositories/adminEmailTemplate.repository.js';
+import SocialMediaRepository from '../repositories/socialMedia.repository.js';
+import SiteContentRepository from '../repositories/siteContent.repository.js';
 
 // Initialize SendGrid
 sgMail.setApiKey(env.SENDGRID_API_KEY);
 
 class EmailService {
   /**
-   * Send Email using SendGrid
-   * @param {string} to - Recipient email
-   * @param {string} subject - Email subject
-   * @param {string} html - HTML content
+   * Core Email Sending Method
    */
   async sendEmail(to, subject, html) {
     const msg = {
@@ -30,59 +32,195 @@ class EmailService {
       Logger.info(`📧 Email sent to ${to}`);
     } catch (error) {
       Logger.error('❌ SendGrid Error:', error);
-      throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR, 'EMAIL_SEND_FAILED');
+      // We don't throw here to prevent breaking the caller flow (like signup)
+      // but we log it heavily.
     }
   }
 
   /**
-   * Send OTP Email
+   * Compile Dynamic Template
+   * role: 'supplier' | 'customer' | 'admin'
    */
-  async sendOtpEmail(to, otp) {
-    const subject = 'Reset Your Password';
-    const html = `
+  async compileTemplate(event, placeholders = {}, role = 'supplier') {
+    let template;
+    
+    if (role === 'customer') {
+      template = await CustomerEmailTemplateRepository.findByEvent(event);
+    } else if (role === 'admin') {
+      template = await AdminEmailTemplateRepository.findByEvent(event);
+    } else {
+      template = await SupplierEmailTemplateRepository.findByEvent(event);
+    }
+    
+    // Check if template exists and is enabled
+    if (!template || !template.isEnabled) {
+      Logger.debug(`Email skipped: ${role} Template ${event} is disabled or missing.`);
+      return null;
+    }
+
+    let html = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Password Reset OTP</title>
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f6f9fc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-          .container { max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); margin-top: 40px; margin-bottom: 40px; }
-          .header { background-color: #1a1a1a; padding: 30px 40px; text-align: center; }
-          .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; }
+          body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f9; margin: 0; padding: 20px; }
+          .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+          .header { padding: 30px; text-align: center; background: #ffffff; }
+          .logo { max-height: 50px; }
           .content { padding: 40px; color: #333333; line-height: 1.6; }
-          .otp-box { background-color: #f0f7ff; border: 1px dashed #0070f3; border-radius: 6px; padding: 20px; text-align: center; margin: 30px 0; }
-          .otp-code { font-family: 'Monaco', 'Consolas', monospace; font-size: 32px; font-weight: 700; color: #0070f3; letter-spacing: 8px; }
-          .footer { background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #888888; border-top: 1px solid #eeeeee; }
-          .warning { font-size: 13px; color: #666666; margin-top: 20px; text-align: center; }
+          .main-icon { display: block; margin: 0 auto 20px; max-height: 80px; }
+          .footer { padding: 30px; background: #f9fafb; text-align: center; border-top: 1px solid #edf2f7; }
+          .links { margin: 20px 0; font-size: 13px; }
+          .links a { color: #4a5568; text-decoration: none; margin: 0 10px; }
+          .social-icons { margin: 20px 0; }
+          .social-icons img { width: 24px; margin: 0 8px; vertical-align: middle; }
+          .copyright { font-size: 11px; color: #a0aec0; margin-top: 20px; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>Password Reset Request</h1>
+            ${template.logo?.url ? `<img src="${template.logo.url}" class="logo" alt="Logo">` : ''}
           </div>
           <div class="content">
-            <p>Hello,</p>
-            <p>We received a request to reset the password for your admin account. To proceed, please use the One-Time Password (OTP) below.</p>
-            
-            <div class="otp-box">
-              <span class="otp-code">${otp}</span>
-            </div>
-
-            <p style="text-align: center;">This OTP is valid for <strong>1 minute</strong>.</p>
-            
-            <p class="warning">If you did not request a password reset, you can safely ignore this email. Your account remains secure.</p>
+            ${template.mainIcon?.url ? `<img src="${template.mainIcon.url}" class="main-icon" alt="Icon">` : ''}
+            <h1 style="font-size: 22px; color: #1a202c; margin-bottom: 20px;">${template.templateTitle}</h1>
+            ${this.replacePlaceholders(template.emailContent, placeholders)}
           </div>
           <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} ${env.EMAIL_FROM_NAME}. All rights reserved.</p>
+            <div style="font-size: 14px; color: #4a5568;">
+              ${template.footerDescription || ''}
+            </div>
+            
+            <div class="links">
+              ${await this.getPolicyLinks(template.includedLinks)}
+            </div>
+
+            <div class="social-icons">
+              ${await this.getSocialIcons(template.socialMediaLinks)}
+            </div>
+
+            <div class="copyright">
+              ${template.copyrightNotice || `&copy; ${new Date().getFullYear()} All rights reserved.`}
+            </div>
           </div>
         </div>
       </body>
       </html>
     `;
-    await this.sendEmail(to, subject, html);
+
+    return { subject: template.templateTitle, html };
+  }
+
+  /**
+   * Replace placeholders in text
+   */
+  replacePlaceholders(text, placeholders) {
+    let result = text;
+    Object.keys(placeholders).forEach(key => {
+      const regex = new RegExp(`{${key}}`, 'g');
+      result = result.replace(regex, placeholders[key]);
+    });
+    return result;
+  }
+
+  /**
+   * Generate Policy Links HTML based on SiteContent model
+   */
+  async getPolicyLinks(includedLinks) {
+    if (!includedLinks) return '';
+    const frontendUrl = env.FRONTEND_URL || 'https://dobbymall.com';
+    let linksHtml = '';
+
+    if (includedLinks.privacyPolicy) linksHtml += `<a href="${frontendUrl}/privacy-policy">Privacy Policy</a>`;
+    if (includedLinks.refundPolicy) linksHtml += `<a href="${frontendUrl}/refund-policy">Refund Policy</a>`;
+    if (includedLinks.cancellationPolicy) linksHtml += `<a href="${frontendUrl}/cancellation-policy">Cancellation Policy</a>`;
+    if (includedLinks.contactUs) linksHtml += `<a href="${frontendUrl}/contact-us">Contact Us</a>`;
+
+    return linksHtml;
+  }
+
+  /**
+   * Generate Social Media Icons HTML based on SocialMedia model
+   */
+  async getSocialIcons(enabledPlatforms) {
+    if (!enabledPlatforms) return '';
+    const activeLinks = await SocialMediaRepository.findAll({ status: true });
+    let iconsHtml = '';
+
+    const iconMap = {
+      facebook: 'https://res.cloudinary.com/dwy76u9sc/image/upload/v1711200000/icons/facebook.png',
+      instagram: 'https://res.cloudinary.com/dwy76u9sc/image/upload/v1711200000/icons/instagram.png',
+      twitter: 'https://res.cloudinary.com/dwy76u9sc/image/upload/v1711200000/icons/twitter.png',
+      linkedin: 'https://res.cloudinary.com/dwy76u9sc/image/upload/v1711200000/icons/linkedin.png',
+      youtube: 'https://res.cloudinary.com/dwy76u9sc/image/upload/v1711200000/icons/youtube.png',
+    };
+
+    for (const item of activeLinks) {
+      const platformKey = item.platform.toLowerCase() === 'x' ? 'twitter' : item.platform.toLowerCase();
+      if (enabledPlatforms[platformKey]) {
+        iconsHtml += `<a href="${item.link}"><img src="${iconMap[platformKey]}" alt="${item.platform}"></a>`;
+      }
+    }
+
+    return iconsHtml;
+  }
+
+  /**
+   * REFACTORED METHODS - Using Dynamic Templates
+   */
+
+  async sendOtpEmail(to, otp, role = 'supplier') {
+    const event = role === 'customer' ? 'Verify Email' : 'Registration';
+    const result = await this.compileTemplate(event, { otp }, role);
+    if (result) await this.sendEmail(to, result.subject, result.html);
+  }
+
+  async sendVerificationEmail(to, otp, role = 'supplier') {
+    const event = role === 'customer' ? 'Verify Email' : 'Registration';
+    const result = await this.compileTemplate(event, { otp }, role);
+    if (result) await this.sendEmail(to, result.subject, result.html);
+  }
+
+  async sendPasswordResetOtpEmail(to, otp, role = 'supplier') {
+    const event = role === 'customer' ? 'Verify Email' : 'Registration';
+    const result = await this.compileTemplate(event, { otp }, role);
+    if (result) await this.sendEmail(to, result.subject, result.html);
+  }
+
+  async sendVendorWelcomeEmail(to, vendorName) {
+    const result = await this.compileTemplate('Account Activation', { username: vendorName });
+    if (result) await this.sendEmail(to, result.subject, result.html);
+  }
+
+  async sendAdminVendorRequestEmail(vendorData) {
+    // Admin notifications usually don't use the customer-facing templates
+    // But we can keep it as is or create an "Admin Notification" template
+    const subject = 'New Vendor Registration Request';
+    const html = `
+      <div style="font-family: sans-serif; padding: 20px;">
+        <h2>New Vendor Signup</h2>
+        <p>A new vendor has registered and is awaiting approval.</p>
+        <ul>
+          <li><strong>Business Name:</strong> ${vendorData.businessName}</li>
+          <li><strong>Vendor Name:</strong> ${vendorData.firstName} ${vendorData.lastName}</li>
+          <li><strong>Email:</strong> ${vendorData.email}</li>
+          <li><strong>Phone:</strong> ${vendorData.phoneNumber}</li>
+        </ul>
+      </div>
+    `;
+    await this.sendEmail(env.EMAIL_FROM, subject, html);
+  }
+
+  /**
+   * Send Generic Email Template
+   */
+  async sendEmailTemplate(to, event, placeholders = {}, role = 'supplier') {
+    const result = await this.compileTemplate(event, placeholders, role);
+    if (result) {
+      await this.sendEmail(to, result.subject, result.html);
+    }
   }
 }
 

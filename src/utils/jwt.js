@@ -1,14 +1,14 @@
 import jwt from 'jsonwebtoken';
 import env from '../config/env.js';
 
-export const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, env.JWT_SECRET, {
+export const generateToken = (userId, extras = {}) => {
+  return jwt.sign({ id: userId, ...extras }, env.JWT_SECRET, {
     expiresIn: env.JWT_EXPIRE,
   });
 };
 
-export const generateRefreshToken = (userId, expiresIn = env.JWT_REFRESH_EXPIRE) => {
-  return jwt.sign({ id: userId }, env.JWT_REFRESH_SECRET, {
+export const generateRefreshToken = (userId, extras = {}, expiresIn = env.JWT_REFRESH_EXPIRE) => {
+  return jwt.sign({ id: userId, ...extras }, env.JWT_REFRESH_SECRET, {
     expiresIn,
   });
 };

@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import cacheMiddleware from '../middleware/cache.middleware.js';
+import VendorValidation from '../validations/vendor.validation.js';
 
 const router = express.Router();
 
@@ -92,5 +93,26 @@ router.patch('/profile', validate(updateProfileSchema), AdminController.updatePr
 router.patch('/photo', uploadMiddleware.single('photo'), AdminController.updatePhoto);
 router.delete('/photo', AdminController.deletePhoto);
 router.patch('/update-password', validate(updatePasswordSchema), AdminController.updatePassword);
+
+// Vendor Management
+router.get('/vendors/export', AdminController.exportVendors);
+router.get('/vendors', AdminController.getAllVendors);
+router.post('/vendors', validate(VendorValidation.adminCreateVendor), AdminController.createVendor);
+router.get('/vendors/:vendorId', AdminController.getVendorById);
+router.patch('/vendors/:vendorId/approve', AdminController.approveVendor);
+router.patch('/vendors/:vendorId/reject', AdminController.rejectVendor);
+router.patch('/vendors/:vendorId/suspend', AdminController.suspendVendor);
+router.patch('/vendors/:vendorId/activate', AdminController.activateVendor);
+router.delete('/vendors/:vendorId', AdminController.deleteVendor);
+
+// Vendor Document Uploads (Admin)
+router.patch('/vendors/:vendorId/documents/tin-certificate', uploadMiddleware.single('document'), AdminController.uploadVendorTinCertificate);
+router.patch('/vendors/:vendorId/documents/gst-document', uploadMiddleware.single('document'), AdminController.uploadVendorGstDocument);
+router.patch('/vendors/:vendorId/documents/pan-document', uploadMiddleware.single('document'), AdminController.uploadVendorPanDocument);
+router.patch('/vendors/:vendorId/documents/address-proof', uploadMiddleware.single('document'), AdminController.uploadVendorAddressProof);
+
+// Customer Management
+router.get('/customers', AdminController.getAllCustomers);
+router.patch('/customers/:customerId/toggle-status', AdminController.toggleCustomerStatus);
 
 export default router;

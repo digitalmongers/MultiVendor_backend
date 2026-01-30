@@ -69,8 +69,8 @@ class AdminService {
     // 30 days if rememberMe, 1 day otherwise
     const refreshTokenExpire = rememberMe ? '30d' : '1d';
 
-    const accessToken = generateToken(admin._id);
-    const refreshToken = generateRefreshToken(admin._id, refreshTokenExpire);
+    const accessToken = generateToken(admin._id, { version: admin.tokenVersion });
+    const refreshToken = generateRefreshToken(admin._id, { version: admin.tokenVersion }, refreshTokenExpire);
 
     AuditLogger.log('ADMIN_LOGIN_SUCCESS', 'ADMIN', { adminId: admin._id, rememberMe });
     
@@ -100,7 +100,7 @@ class AdminService {
     try {
       const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
       
-      const admin = await AdminRepository.findById(decoded.id);
+      const admin = await AdminRepository.findById(decoded.id, true);
       if (!admin) {
         throw new AppError('Admin not found', HTTP_STATUS.UNAUTHORIZED, 'INVALID_REFRESH_TOKEN');
       }
@@ -120,7 +120,7 @@ class AdminService {
       // But user wants "real website", which often rotates.
       // Let's just generate a new Access Token.
       
-      const accessToken = generateToken(admin._id);
+      const accessToken = generateToken(admin._id, { version: admin.tokenVersion });
       
       return { accessToken };
     } catch (error) {
@@ -222,6 +222,7 @@ class AdminService {
     }
 
     admin.password = newPassword;
+    admin.tokenVersion = (admin.tokenVersion || 0) + 1;
     await admin.save(); // Model pre-save hook will hash it
 
     AuditLogger.log('ADMIN_PASSWORD_CHANGED', 'ADMIN', { adminId });
@@ -233,7 +234,7 @@ class AdminService {
    * Generate and Send OTP for Forgot Password
    */
   async forgotPassword(email) {
-    const admin = await AdminRepository.findByEmail(email);
+    const admin = await AdminRepository.findByEmail(email, false, true);
     if (!admin) {
       // Don't leak exists status, just pretend success or throw generic (Enterprise often says "If account exists...")
       // But for this internal Admin tool, we can be more explicit or just throw generic.
@@ -290,7 +291,7 @@ class AdminService {
       .update(otp)
       .digest('hex');
 
-    const admin = await AdminRepository.findByEmail(email); // We need to find by email to verify
+    const admin = await AdminRepository.findByEmail(email, false, true); // We need to find by email to verify
     
     if (!admin) {
       throw new AppError('Invalid request', HTTP_STATUS.BAD_REQUEST, 'INVALID_REQUEST');

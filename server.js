@@ -27,6 +27,9 @@ import Logger from './src/utils/logger.js';
 import v1Routes from './src/routes/v1.routes.js';
 import healthRoutes from './src/routes/health.routes.js';
 import AdminService from './src/services/admin.service.js';
+import SupplierEmailTemplateService from './src/services/supplierEmailTemplate.service.js';
+import CustomerEmailTemplateService from './src/services/customerEmailTemplate.service.js';
+import AdminEmailTemplateService from './src/services/adminEmailTemplate.service.js';
 
 // Connect to database
 console.log('Connecting to database...');
@@ -41,8 +44,11 @@ try {
   // We don't exit(1) here if Redis is optional, but for enterprise we usually want it.
 }
 
-// Bootstrap Admin
+// Bootstrap Admin & Email Templates
 await AdminService.bootstrapAdmin();
+await SupplierEmailTemplateService.bootstrapTemplates();
+await CustomerEmailTemplateService.bootstrapTemplates();
+await AdminEmailTemplateService.bootstrapTemplates();
 
 const app = express();
 

@@ -10,15 +10,18 @@ class AdminRepository {
     return Array.isArray(adminData) ? docs : docs[0];
   }
 
-  async findByEmail(email, selectPassword = false) {
+  async findByEmail(email, selectPassword = false, lean = false) {
     const query = Admin.findOne({ email });
     if (selectPassword) {
       query.select('+password');
     }
+    if (lean) {
+      query.lean();
+    }
     return await query;
   }
 
-  async findById(id) {
+  async findById(id, lean = false) {
     const cacheKey = `${ADMIN_CACHE_PREFIX}${id}`;
     
     // 1. Try cache
@@ -26,7 +29,11 @@ class AdminRepository {
     if (cachedAdmin) return cachedAdmin;
 
     // 2. Fetch from DB
-    const admin = await Admin.findById(id);
+    const query = Admin.findById(id);
+    if (lean) {
+      query.lean();
+    }
+    const admin = await query;
     
     // 3. Store in cache (expire in 1 hour)
     if (admin) {

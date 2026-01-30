@@ -47,11 +47,18 @@ const adminSchema = new mongoose.Schema(
       default: 0,
     },
     lockoutUntil: Date,
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Index for session validation
+adminSchema.index({ _id: 1, tokenVersion: 1 });
 
 // Encrypt password using Argon2
 adminSchema.pre('save', async function (next) {

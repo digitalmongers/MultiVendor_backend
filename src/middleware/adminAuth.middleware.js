@@ -29,6 +29,11 @@ export const adminProtect = async (req, res, next) => {
       throw new AppError('Admin not found or unauthorized', HTTP_STATUS.UNAUTHORIZED, 'ADMIN_NOT_FOUND');
     }
 
+    // Token Versioning Check (Production Security Pattern)
+    if (decoded.version !== admin.tokenVersion) {
+      throw new AppError('Session expired or revoked. Please login again.', HTTP_STATUS.UNAUTHORIZED, 'ADMIN_SESSION_REVOKED');
+    }
+
     // Attach admin info to request
     req.admin = admin;
     next();

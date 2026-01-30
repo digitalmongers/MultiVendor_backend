@@ -1,4 +1,6 @@
 import AdminService from '../services/admin.service.js';
+import VendorService from '../services/vendor.service.js';
+import CustomerService from '../services/customer.service.js';
 import { HTTP_STATUS, SUCCESS_MESSAGES } from '../constants.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 
@@ -163,15 +165,241 @@ class AdminController {
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'OTP verified successfully'));
   };
 
-  /**
-   * @desc    Reset Password
-   * @route   POST /api/v1/admin/auth/reset-password
-   * @access  Public
-   */
   resetPassword = async (req, res) => {
     const { resetToken, newPassword } = req.body;
     await AdminService.resetPassword(resetToken, newPassword);
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, 'Password reset successfully. You can now login.'));
+  };
+
+  approveVendor = async (req, res) => {
+    const { vendorId } = req.params;
+    const result = await VendorService.approveVendor(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Reject Vendor
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/reject
+   * @access  Private (Admin)
+   */
+  rejectVendor = async (req, res) => {
+    const { vendorId } = req.params;
+    const result = await VendorService.rejectVendor(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Suspend Vendor
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/suspend
+   * @access  Private (Admin)
+   */
+  suspendVendor = async (req, res) => {
+    const { vendorId } = req.params;
+    const result = await VendorService.suspendVendor(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Activate Vendor
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/activate
+   * @access  Private (Admin)
+   */
+  activateVendor = async (req, res) => {
+    const { vendorId } = req.params;
+    const result = await VendorService.activateVendor(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Delete Vendor
+   * @route   DELETE /api/v1/admin/auth/vendors/:vendorId
+   * @access  Private (Admin)
+   */
+  deleteVendor = async (req, res) => {
+    const { vendorId } = req.params;
+    const result = await VendorService.deleteVendor(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Get Vendor Details by ID
+   * @route   GET /api/v1/admin/auth/vendors/:vendorId
+   * @access  Private (Admin)
+   */
+  getVendorById = async (req, res) => {
+    const { vendorId } = req.params;
+    const vendor = await VendorService.getVendorById(vendorId);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, vendor, 'Vendor details retrieved successfully'));
+  };
+
+  /**
+   * @desc    Get All Vendors
+   * @route   GET /api/v1/admin/auth/vendors
+   * @access  Private (Admin)
+   */
+  getAllVendors = async (req, res) => {
+    const { page = 1, limit = 10, status, search } = req.query;
+    const result = await VendorService.getAllVendors(Number(page), Number(limit), status, search, false);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Vendors retrieved successfully'));
+  };
+
+  /**
+   * @desc    Create Vendor Account (Admin)
+   * @route   POST /api/v1/admin/auth/vendors
+   * @access  Private (Admin)
+   */
+  createVendor = async (req, res) => {
+    const adminId = req.user._id; // Get admin ID from authenticated request
+    const result = await VendorService.adminCreateVendor(req.body, adminId);
+    return res.status(HTTP_STATUS.CREATED).json(new ApiResponse(HTTP_STATUS.CREATED, result, result.message));
+  };
+
+  /**
+   * @desc    Export All Vendors to CSV
+   * @route   GET /api/v1/admin/auth/vendors/export
+   * @access  Private (Admin)
+   */
+  exportVendors = async (req, res) => {
+    const { status, search } = req.query;
+    const vendors = await VendorService.getAllVendors(1, 10, status, search, true);
+
+    // CSV Headers
+    const headers = [
+      'ID',
+      'Email',
+      'Phone Number',
+      'First Name',
+      'Last Name',
+      'Business Name',
+      'Business Address',
+      'Status',
+      'Registration Step',
+      'Bank Name',
+      'Account Number',
+      'IFSC Code',
+      'GST Number',
+      'PAN Number',
+      'Registered At',
+      'Last Login',
+    ];
+
+    // Convert to CSV
+    const csvRows = [headers.join(',')];
+    vendors.forEach(vendor => {
+      const row = [
+        vendor.id,
+        vendor.email,
+        vendor.phoneNumber,
+        vendor.firstName,
+        vendor.lastName,
+        vendor.businessName,
+        `"${vendor.businessAddress}"`, // Quoted for addresses with commas
+        vendor.status,
+        vendor.registrationStep,
+        vendor.bankName,
+        vendor.accountNumber,
+        vendor.ifscCode,
+        vendor.gstNumber,
+        vendor.panNumber,
+        new Date(vendor.registeredAt).toLocaleDateString(),
+        vendor.lastLogin === 'Never' ? 'Never' : new Date(vendor.lastLogin).toLocaleDateString(),
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csv = csvRows.join('\n');
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=vendors_${Date.now()}.csv`);
+    return res.status(HTTP_STATUS.OK).send(csv);
+  };
+  /**
+   * @desc    Upload TIN Certificate for a Vendor (Admin)
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/documents/tin-certificate
+   * @access  Private (Admin)
+   */
+  uploadVendorTinCertificate = async (req, res) => {
+    const { vendorId } = req.params;
+    if (!req.file) {
+      throw new AppError('Please upload a file', HTTP_STATUS.BAD_REQUEST);
+    }
+    const result = await VendorService.uploadDocument(vendorId, req.file, 'tinCertificate');
+    res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Upload GST Document for a Vendor (Admin)
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/documents/gst-document
+   * @access  Private (Admin)
+   */
+  uploadVendorGstDocument = async (req, res) => {
+    const { vendorId } = req.params;
+    if (!req.file) {
+      throw new AppError('Please upload a file', HTTP_STATUS.BAD_REQUEST);
+    }
+    const result = await VendorService.uploadDocument(vendorId, req.file, 'gstDocument');
+    res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Upload PAN Document for a Vendor (Admin)
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/documents/pan-document
+   * @access  Private (Admin)
+   */
+  uploadVendorPanDocument = async (req, res) => {
+    const { vendorId } = req.params;
+    if (!req.file) {
+      throw new AppError('Please upload a file', HTTP_STATUS.BAD_REQUEST);
+    }
+    const result = await VendorService.uploadDocument(vendorId, req.file, 'panDocument');
+    res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * @desc    Upload Address Proof for a Vendor (Admin)
+   * @route   PATCH /api/v1/admin/auth/vendors/:vendorId/documents/address-proof
+   * @access  Private (Admin)
+   */
+  uploadVendorAddressProof = async (req, res) => {
+    const { vendorId } = req.params;
+    if (!req.file) {
+      throw new AppError('Please upload a file', HTTP_STATUS.BAD_REQUEST);
+    }
+    const result = await VendorService.uploadDocument(vendorId, req.file, 'addressProof');
+    res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, result.message));
+  };
+
+  /**
+   * CUSTOMER MANAGEMENT
+   */
+
+  /**
+   * @desc    Get All Customers
+   * @route   GET /api/v1/admin/auth/customers
+   * @access  Private (Admin)
+   */
+  getAllCustomers = async (req, res) => {
+    const { page = 1, limit = 10, search, status } = req.query;
+    const result = await CustomerService.getAllCustomers(Number(page), Number(limit), search, status);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Customers retrieved successfully'));
+  };
+
+  /**
+   * @desc    Toggle Customer Status
+   * @route   PATCH /api/v1/admin/auth/customers/:customerId/toggle-status
+   * @access  Private (Admin)
+   */
+  toggleCustomerStatus = async (req, res) => {
+    const { customerId } = req.params;
+    const { isActive } = req.body;
+    
+    if (isActive === undefined) {
+      throw new AppError('isActive status is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const result = await CustomerService.updateStatus(customerId, isActive);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, `Customer account ${isActive ? 'activated' : 'deactivated'} successfully`));
   };
 }
 

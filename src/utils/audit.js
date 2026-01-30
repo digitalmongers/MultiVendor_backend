@@ -11,6 +11,7 @@ class AuditLogger {
       requestId: context.requestId,
       userId: context.userId,
       ip: context.ip,
+      userAgent: context.userAgent,
       timestamp: new Date().toISOString(),
     };
     Logger[level](`AUDIT: ${action}`, auditData);

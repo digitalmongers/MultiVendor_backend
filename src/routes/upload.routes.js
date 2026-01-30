@@ -1,7 +1,7 @@
 import express from 'express';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import { uploadSingle, uploadMultiple, uploadFields } from '../controllers/upload.controller.js';
-import { protect } from '../middleware/auth.middleware.js';
+import { adminProtect } from '../middleware/adminAuth.middleware.js';
 
 const router = express.Router();
 
@@ -12,8 +12,8 @@ const router = express.Router();
  *   description: File upload management
  */
 
-// All upload routes are protected in an enterprise setting
-router.use(protect);
+// All upload routes are protected in an enterprise setting (Admin Only)
+router.use(adminProtect);
 
 router.post('/single', uploadMiddleware.single('file'), uploadSingle);
 
