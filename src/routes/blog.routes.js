@@ -1,8 +1,9 @@
 import express from 'express';
-import BlogController from '../controllers/blog.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
 import validate from '../middleware/validate.middleware.js';
+import BlogController from '../controllers/blog.controller.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import { z } from 'zod';
 
 const router = express.Router();
@@ -42,8 +43,8 @@ const blogSettingSchema = z.object({
   }),
 });
 
-// Admin protected routes
-router.use(adminProtect);
+// Admin / Staff protected routes
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.BLOG_MANAGEMENT));
 
 router.get('/settings', BlogController.getSettings);
 router.patch('/settings', validate(blogSettingSchema), BlogController.updateSettings);

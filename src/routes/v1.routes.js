@@ -21,6 +21,9 @@ import vendorRoutes from './vendor.routes.js';
 import supplierEmailTemplateRoutes from './supplierEmailTemplate.routes.js';
 import customerEmailTemplateRoutes from './customerEmailTemplate.routes.js';
 import adminEmailTemplateRoutes from './adminEmailTemplate.routes.js';
+import supportTicketRoutes from './supportTicket.routes.js';
+import employeeManagementRoutes from './employeeManagement.routes.js';
+import employeeAuthRoutes from './employeeAuth.routes.js';
 
 const router = express.Router();
 
@@ -49,6 +52,9 @@ router.use('/vendors', vendorRoutes);
 router.use('/admin/supplier-template', supplierEmailTemplateRoutes);
 router.use('/admin/customer-template', customerEmailTemplateRoutes);
 router.use('/admin/admin-template', adminEmailTemplateRoutes);
+router.use('/support-tickets', supportTicketRoutes);
+router.use('/admin/staff', employeeManagementRoutes);
+router.use('/employee/auth', employeeAuthRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);

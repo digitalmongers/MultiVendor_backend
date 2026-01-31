@@ -1,6 +1,7 @@
 import express from 'express';
 import ProductSubCategoryController from '../controllers/productSubCategory.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import cacheMiddleware from '../middleware/cache.middleware.js';
 import { z } from 'zod';
@@ -22,9 +23,9 @@ router.get('/', cacheMiddleware(3600), ProductSubCategoryController.getAllSubCat
 router.get('/category/:categoryId', cacheMiddleware(3600), ProductSubCategoryController.getSubCategoriesByCategory);
 
 /**
- * Admin Protected Routes
+ * Admin / Staff Protected Routes
  */
-router.use(adminProtect);
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.CATEGORY_SETUP));
 
 router.get('/admin', ProductSubCategoryController.getAllSubCategories); // Un-cached for Admin
 

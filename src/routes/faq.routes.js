@@ -1,7 +1,9 @@
 import express from 'express';
 import FAQController from '../controllers/faq.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
+import uploadMiddleware from '../middleware/upload.middleware.js';
 import { z } from 'zod';
 import cacheMiddleware from '../middleware/cache.middleware.js';
 
@@ -28,9 +30,9 @@ const updateFaqSchema = z.object({
 router.get('/', cacheMiddleware(3600), FAQController.getAllFAQs);
 
 /**
- * Admin Protected Routes
+ * Admin / Staff Protected Routes
  */
-router.use(adminProtect);
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
 router.post('/', validate(faqSchema), FAQController.createFAQ);
 router.get('/admin', FAQController.getAllFAQs);

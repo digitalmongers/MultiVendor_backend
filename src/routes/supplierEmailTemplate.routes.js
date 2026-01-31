@@ -1,12 +1,13 @@
 import express from 'express';
 import SupplierEmailTemplateController from '../controllers/supplierEmailTemplate.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 
 const router = express.Router();
 
-// All routes are protected and for admin only
-router.use(adminProtect);
+// All routes are protected and for admin / staff based on permissions
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
 router.get('/', SupplierEmailTemplateController.getAllTemplates);
 

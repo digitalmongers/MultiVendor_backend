@@ -81,15 +81,28 @@ class CustomerEmailTemplateService {
       'Verify Email',
       'Account Blocked',
       'Account Unblocked',
+      'Support Ticket Reply',
     ];
 
     for (const event of events) {
       const exists = await CustomerEmailTemplate.findOne({ event });
       if (!exists) {
+        let emailContent = `Hello {username}, this is a notification for ${event}.`;
+        if (event === 'Support Ticket Reply') {
+          emailContent = `
+            <p>Hello {username},</p>
+            <p>Our support team has replied to your ticket <strong>{ticketId}</strong> regarding <strong>{subject}</strong>.</p>
+            <div style="background: #f4f7f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <strong>Admin Reply:</strong><br/>
+              {reply}
+            </div>
+            <p>If you have further questions, please let us know.</p>
+          `;
+        }
         await CustomerEmailTemplate.create({
           event,
-          templateTitle: `${event} Notification`,
-          emailContent: `Hello {username}, this is a notification for ${event}.`,
+          templateTitle: event === 'Support Ticket Reply' ? 'Reply to your Support Ticket' : `${event} Notification`,
+          emailContent,
           isEnabled: true,
           includedLinks: { privacyPolicy: true, contactUs: true },
           socialMediaLinks: { facebook: true, instagram: true, twitter: true },

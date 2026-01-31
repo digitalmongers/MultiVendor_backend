@@ -125,3 +125,20 @@ export const RESOURCE_TYPES = {
   SHOP: 'Shop',
   EXTERNAL: 'External',
 };
+
+// Admin Fixed Permissions
+export const SYSTEM_PERMISSIONS = {
+  VENDOR_MANAGEMENT: 'Vendor Management',
+  ORDER_MANAGEMENT: 'Order Management',
+  CATEGORY_SETUP: 'Category Setup',
+  PRODUCT_MANAGEMENT: 'Product Management',
+  OFFERS_AND_DEALS: 'Offers and Deals',
+  USER_MANAGEMENT: 'User Management',
+  SUBSCRIBES: 'Subscribes',
+  REPORTS: 'Reports',
+  BLOG_MANAGEMENT: 'Blog Management',
+  SYSTEM_SETTINGS: 'System Settings',
+  EMPLOYEE_MANAGEMENT: 'Employee Management',
+  THIRD_PARTY_SETUP: '3rd Party Setup',
+  HELP_SUPPORT: 'Help Support',
+};

@@ -1,7 +1,8 @@
 import express from 'express';
-import BlogCategoryController from '../controllers/blogCategory.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
 import validate from '../middleware/validate.middleware.js';
+import BlogCategoryController from '../controllers/blogCategory.controller.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import { z } from 'zod';
 
 const router = express.Router();
@@ -21,8 +22,8 @@ const updateCategorySchema = z.object({
   }),
 });
 
-// Admin protected routes
-router.use(adminProtect);
+// Admin / Staff protected routes
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.BLOG_MANAGEMENT));
 
 router.post('/', validate(createCategorySchema), BlogCategoryController.createCategory);
 router.get('/', BlogCategoryController.getAllCategories);

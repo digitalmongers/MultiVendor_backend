@@ -1,6 +1,7 @@
 import express from 'express';
 import ContentController from '../controllers/content.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import { z } from 'zod';
 import cacheMiddleware from '../middleware/cache.middleware.js';
@@ -29,9 +30,9 @@ router.get('/shipping-policy', cacheMiddleware(3600), ContentController.getShipp
 router.get('/cancellation-policy', cacheMiddleware(3600), ContentController.getCancellationPolicy);
 
 /**
- * Admin Protected Routes
+ * Admin / Staff Protected Routes
  */
-router.use(adminProtect);
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
 router.patch('/about-us', validate(contentSchema('aboutUs')), ContentController.updateAboutUs);
 router.patch('/terms-and-conditions', validate(contentSchema('termsAndConditions')), ContentController.updateTermsAndConditions);

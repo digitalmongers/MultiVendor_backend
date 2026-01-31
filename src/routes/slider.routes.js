@@ -1,6 +1,7 @@
 import express from 'express';
 import SliderController from '../controllers/slider.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import { createSliderSchema, updateSliderSchema } from '../validations/slider.validation.js';
 import cacheMiddleware from '../middleware/cache.middleware.js';
@@ -10,8 +11,8 @@ const router = express.Router();
 // Public routes
 router.get('/public', cacheMiddleware(3600), SliderController.getPublicSliders);
 
-// Protected routes
-router.use(adminProtect); 
+// Protected routes (Admin / Staff)
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
 router.route('/')
   .post(validate(createSliderSchema), SliderController.createSlider)

@@ -1,6 +1,7 @@
 import express from 'express';
 import ProductCategoryController from '../controllers/productCategory.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import cacheMiddleware from '../middleware/cache.middleware.js';
@@ -29,9 +30,9 @@ const updateCategorySchema = z.object({
 router.get('/', cacheMiddleware(3600), ProductCategoryController.getAllCategories);
 
 /**
- * Admin Protected Routes
+ * Admin / Staff Protected Routes
  */
-router.use(adminProtect);
+router.use(authorizeStaff(SYSTEM_PERMISSIONS.CATEGORY_SETUP));
 
 router.get('/admin', ProductCategoryController.getAllCategories); // Un-cached for Admin
 

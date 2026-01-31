@@ -13,10 +13,14 @@ const cacheMiddleware = (ttl = 3600) => {
       return next();
     }
 
-    // Enterprise Key Strategy: Add adminId prefix for protected routes to prevent data leakage
+    // Key Strategy: Add userId/adminId prefix for protected routes to prevent data leakage
     let key = `response:${req.originalUrl}`;
+    
     if (req.admin && req.admin._id) {
       key = `response:admin:${req.admin._id}:${req.originalUrl}`;
+    } else if (req.user && req.user._id) {
+      // For customers (req.user)
+      key = `response:customer:${req.user._id}:${req.originalUrl}`;
     }
 
     try {

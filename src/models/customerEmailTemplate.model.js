@@ -11,6 +11,7 @@ const customerEmailTemplateSchema = new mongoose.Schema(
         'Verify Email',
         'Account Blocked',
         'Account Unblocked',
+        'Support Ticket Reply',
       ],
     },
     isEnabled: {
