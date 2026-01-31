@@ -1,7 +1,8 @@
 import express from 'express';
 import EmployeeController from '../controllers/employee.controller.js';
 import RoleController from '../controllers/role.controller.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
 /**
  * ROLE MANAGEMENT (Admin Only)
  */
-router.use('/roles', adminProtect);
+router.use('/roles', authorizeStaff(SYSTEM_PERMISSIONS.EMPLOYEE_MANAGEMENT));
 router.route('/roles')
   .post(RoleController.createRole)
   .get(RoleController.getAllRoles);
@@ -21,7 +22,7 @@ router.route('/roles/:id')
 /**
  * EMPLOYEE MANAGEMENT (Admin Only)
  */
-router.use('/employees', adminProtect);
+router.use('/employees', authorizeStaff(SYSTEM_PERMISSIONS.EMPLOYEE_MANAGEMENT));
 
 router.get('/employees/stats', EmployeeController.getStats);
 router.get('/employees/export', EmployeeController.exportEmployees);

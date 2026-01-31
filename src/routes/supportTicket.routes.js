@@ -1,7 +1,8 @@
 import express from 'express';
 import SupportTicketController from '../controllers/supportTicket.controller.js';
 import { protectCustomer } from '../middleware/customerAuth.middleware.js';
-import { adminProtect } from '../middleware/adminAuth.middleware.js';
+import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
+import { SYSTEM_PERMISSIONS } from '../constants.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import cacheMiddleware from '../middleware/cache.middleware.js';
 
@@ -29,27 +30,27 @@ router.get(
  */
 router.get(
   '/admin/all',
-  adminProtect,
+  authorizeStaff(SYSTEM_PERMISSIONS.HELP_SUPPORT),
   cacheMiddleware(600), // Admin view cache for 10 mins
   SupportTicketController.getAllTickets
 );
 
 router.get(
   '/admin/stats',
-  adminProtect,
+  authorizeStaff(SYSTEM_PERMISSIONS.HELP_SUPPORT),
   cacheMiddleware(600),
   SupportTicketController.getStats
 );
 
 router.get(
   '/admin/export',
-  adminProtect,
+  authorizeStaff(SYSTEM_PERMISSIONS.HELP_SUPPORT),
   SupportTicketController.exportTickets // Export should NOT be cached
 );
 
 router.patch(
   '/admin/:ticketId/reply',
-  adminProtect,
+  authorizeStaff(SYSTEM_PERMISSIONS.HELP_SUPPORT),
   SupportTicketController.replyToTicket
 );
 

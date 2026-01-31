@@ -86,14 +86,21 @@ router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), Adm
 router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), AdminController.verifyOtp);
 router.post('/reset-password', authLimiter, validate(resetPasswordSchema), AdminController.resetPassword);
 
-// Protected routes
-router.use(adminProtect);
-
+// Super Admin Only Profile Routes
+router.use('/logout', adminProtect);
 router.post('/logout', AdminController.logout);
+
+router.use('/me', adminProtect);
 router.get('/me', cacheMiddleware(3600), AdminController.getMe);
+
+router.use('/profile', adminProtect);
 router.patch('/profile', validate(updateProfileSchema), AdminController.updateProfile);
+
+router.use('/photo', adminProtect);
 router.patch('/photo', uploadMiddleware.single('photo'), AdminController.updatePhoto);
 router.delete('/photo', AdminController.deletePhoto);
+
+router.use('/update-password', adminProtect);
 router.patch('/update-password', validate(updatePasswordSchema), AdminController.updatePassword);
 
 // Vendor Management

@@ -138,6 +138,7 @@ export const SYSTEM_PERMISSIONS = {
   REPORTS: 'Reports',
   BLOG_MANAGEMENT: 'Blog Management',
   SYSTEM_SETTINGS: 'System Settings',
+  EMPLOYEE_MANAGEMENT: 'Employee Management',
   THIRD_PARTY_SETUP: '3rd Party Setup',
   HELP_SUPPORT: 'Help Support',
 };
