@@ -24,6 +24,16 @@ import adminEmailTemplateRoutes from './adminEmailTemplate.routes.js';
 import supportTicketRoutes from './supportTicket.routes.js';
 import employeeManagementRoutes from './employeeManagement.routes.js';
 import employeeAuthRoutes from './employeeAuth.routes.js';
+import paymentGatewayRoutes from './paymentGateway.routes.js';
+import paymentSettingRoutes from './paymentSetting.routes.js';
+import socialLoginRoutes from './socialLogin.routes.js';
+import socialMediaChatRoutes from './socialMediaChat.routes.js';
+import smsGatewayRoutes from './smsGateway.routes.js';
+import googleMapRoutes from './googleMap.routes.js';
+import loginSettingRoutes from './loginSetting.routes.js';
+import systemSettingRoutes from './systemSetting.routes.js';
+
+import cookieConsentRoutes from './cookieConsent.routes.js';
 
 const router = express.Router();
 
@@ -55,6 +65,15 @@ router.use('/admin/admin-template', adminEmailTemplateRoutes);
 router.use('/support-tickets', supportTicketRoutes);
 router.use('/admin/staff', employeeManagementRoutes);
 router.use('/employee/auth', employeeAuthRoutes);
+router.use('/payment-gateways', paymentGatewayRoutes);
+router.use('/payment-settings', paymentSettingRoutes);
+router.use('/social-login', socialLoginRoutes);
+router.use('/social-media-chat', socialMediaChatRoutes);
+router.use('/sms-gateways', smsGatewayRoutes);
+router.use('/google-map-apis', googleMapRoutes);
+router.use('/login-settings', loginSettingRoutes);
+router.use('/system-settings', systemSettingRoutes);
+router.use('/cookie-consent', cookieConsentRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);

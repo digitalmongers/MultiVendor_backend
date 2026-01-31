@@ -1,3 +1,4 @@
+import SystemSettingRepository from '../repositories/systemSetting.repository.js';
 import AdminService from '../services/admin.service.js';
 import VendorService from '../services/vendor.service.js';
 import CustomerService from '../services/customer.service.js';
@@ -13,33 +14,58 @@ class AdminController {
   login = async (req, res) => {
     const { email, password, rememberMe } = req.body;
 
+    // 1. Authenticate Admin
     const result = await AdminService.login(email, password, rememberMe);
 
-    // 1. Refresh Token Cookie (Long Lived - The "Remember Me" part)
-    // 30 days vs 1 day
+    // 2. Fetch Dynamic System Settings (for secure cookies)
+    const settings = await SystemSettingRepository.getSettings();
+    const isProduction = settings.appMode === 'Live';
+
+    // 3. Set Refresh Token Cookie (Long Lived)
     const refreshExpires = new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000);
     
     res.cookie('adminRefreshToken', result.tokens.refreshToken, {
       expires: refreshExpires,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict', // CSRF protection
+      secure: isProduction,
+      sameSite: 'strict',
     });
 
-    // 2. Access Token Cookie (Short Lived)
-    // Default 15 minutes or 1 hour. env.JWT_EXPIRE is 7d currently, we should verify.
-    // If env is 7d, we can match it.
-    // But for proper refresh flow, access token should be shorter.
-    // We will set it to match JWT_EXPIRE or standard 1 day for now to avoid breaking existing logic too much.
-    
+    // 4. Set Access Token Cookie (Short Lived)
     res.cookie('adminAccessToken', result.tokens.accessToken, {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'strict',
     });
 
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.LOGIN_SUCCESS));
+  };
+
+  /**
+   * @desc    Refresh Access Token
+   * @route   POST /api/v1/admin/auth/refresh-token
+   * @access  Public (Cookie/Body)
+   */
+  refreshToken = async (req, res) => {
+    // Get Refresh Token from Cookie (Secure) or Body (Fallback)
+    const token = req.cookies?.adminRefreshToken || req.body.refreshToken;
+    
+    const result = await AdminService.refreshToken(token);
+    
+    // Dynamic System Settings
+    const settings = await SystemSettingRepository.getSettings();
+    const isProduction = settings.appMode === 'Live';
+
+    // Set new Access Token Cookie
+    res.cookie('adminAccessToken', result.accessToken, {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+    });
+
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Token Refreshed'));
   };
 
   /**

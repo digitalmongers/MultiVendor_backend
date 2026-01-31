@@ -1,8 +1,36 @@
+import SystemSettingRepository from '../repositories/systemSetting.repository.js';
 import CustomerService from '../services/customer.service.js';
 import ApiResponse from '../utils/apiResponse.js';
 import { HTTP_STATUS, SUCCESS_MESSAGES } from '../constants.js';
 import AuditLogger from '../utils/audit.js';
 import Logger from '../utils/logger.js';
+
+// ... (previous imports)
+
+/**
+ * @desc    Customer Login
+ * @route   POST /api/v1/customers/login
+ * @access  Public
+ */
+export const login = async (req, res) => {
+  Logger.info(`Login attempt for email: ${req.body.email}`);
+  const { email, password } = req.body;
+  const { customer, accessToken, refreshToken } = await CustomerService.login(email, password);
+
+  const settings = await SystemSettingRepository.getSettings();
+  const isProduction = settings.appMode === 'Live';
+
+  const cookieOptions = {
+    httpOnly: true,
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    secure: isProduction,
+    sameSite: 'strict'
+  };
+
+  res.status(HTTP_STATUS.OK)
+    .cookie('token', accessToken, cookieOptions)
+    .json(new ApiResponse(HTTP_STATUS.OK, { customer, token: accessToken }, SUCCESS_MESSAGES.LOGIN_SUCCESS));
+};
 
 /**
  * @desc    Customer Signup
@@ -48,27 +76,6 @@ export const resendOtp = async (req, res) => {
   );
 };
 
-/**
- * @desc    Customer Login
- * @route   POST /api/v1/customers/login
- * @access  Public
- */
-export const login = async (req, res) => {
-  Logger.info(`Login attempt for email: ${req.body.email}`);
-  const { email, password } = req.body;
-  const { customer, accessToken, refreshToken } = await CustomerService.login(email, password);
-
-  const cookieOptions = {
-    httpOnly: true,
-    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  };
-
-  res.status(HTTP_STATUS.OK)
-    .cookie('token', accessToken, cookieOptions)
-    .json(new ApiResponse(HTTP_STATUS.OK, { customer, token: accessToken }, SUCCESS_MESSAGES.LOGIN_SUCCESS));
-};
 
 /**
  * @desc    Forgot Password - Send OTP

@@ -21,52 +21,88 @@ NON-NEGOTIABLE RULES:
 - Do not optimize prematurely
 - Security > correctness > performance > convenience
 
-INPUT VALIDATION:
-- Validate all inputs at controllers/handlers
-- Reject invalid data early with clear error codes
-- Validate types, ranges, formats, length, and enums
-- Treat missing fields differently from empty or null fields
-- Never assume frontend validation exists
+EDGE CASE DISCIPLINE (STRICT):
+Always consider and handle:
+- Empty/Null Input: Never crash, return 400.
+- Duplicate Requests: Use Idempotency keys or `lockRequest`.
+- Replay Attacks: Validate timestamps/nonces in critical tokens.
+- Partial Failures: Use transactions (`startSession`) for multi-step writes.
+- Timeouts: Set aggressive timeouts for external APIs (3-5s).
+- Network Failures: Implement retries with exponential backoff for 3rd party calls.
+- Database Unavailable: Fail gracefully, don't hang.
+- Third-party API Failures: detailed error logging but safe fallback.
+- Unexpected Data Shapes: schema validation (Zod) at boundaries.
+- Out-of-order Execution: Use state machines (e.g., Order Status).
+- Concurrent Requests: Database record locking or versioning.
+- Race Conditions: Atomic operators or queues.
+
+IDEMPOTENCY & RACE CONDITIONS (STRICT):
+- MANDATORY: Use `lockRequest()` middleware for ALL state-changing routes (POST, PATCH, PUT, DELETE) that involve critical data (Auth, Payments, Settings).
+- Prevent duplicate writes using Redis locks (TTL 3-5 seconds).
+- Handle concurrent requests gracefully with `429 Too Many Requests`.
+- Use atomic database operations (`findOneAndUpdate`, `$inc`, `$set`) to prevent race conditions.
+- Never read-modify-write without a lock or transaction.
+
+CACHING STRATEGY (STRICT):
+- MANDATORY: Use `cacheMiddleware(ttl)` for public GET endpoints (Homepage, Catalog).
+- MANDATORY: Implement `Cache.delByPattern` in controllers to invalidate cache IMMEDIATELY upon updates.
+- Use pattern-based keys (e.g., `*product-list*`) for easy efficient invalidation.
+- Never communicate with the database for public read-heavy data if cache exists.
+
+SECURITY & AUTHENTICATION:
+- Treat all external input as hostile.
+- Protect against injection, replay, and abuse.
+- Never hardcode secrets.
+- Validate permissions explicitly (RBAC).
+- Use `AuditLogger` for ALL critical actions (Login, Updates, Deletes).
+- Use `bcrypt` or `argon2` for password hashing.
+- Sanitize logic to prevent `NoSQL Injection`.
+
+PERFORMANCE & SCALABILITY (PRODUCTION GRADE):
+- Database Query Optimization:
+  - MANDATORY: Use `.lean()` for all read-only queries (bypasses Mongoose hydration overhead).
+  - MANDATORY: Use `.select()` to retrieve ONLY needed fields (reduce network I/O).
+  - MANDATORY: Create compound indexes for frequent query pairs (e.g., `status` + `createdAt`).
+  - AVOID: `$regex` without anchors (full collection scan risk). Use Text Index instead.
+  - AVOID: Large `.populate()`. Use aggregation pipelines (`$lookup`) for complex joins.
+- Connection Handling:
+  - Ensure `maxPoolSize` is configured (default 10 is too low for high-scale).
+  - Use persistent connections (Keep-Alive).
+- Code Efficiency:
+  - Use `Promise.all()` for independent concurrent tasks.
+  - Avoid blocking the Event Loop (offload heavy compute to Worker Threads).
+  - Use Stream API for large file processing (never load >10MB into memory).
+- Network & Response:
+  - Enable Gzip/Brotli compression for JSON responses.
+  - Use ETags for caching static resources.
+  - Pagination is MANDATORY for all list endpoints.
+
+INPUT VALIDATION & SANITIZATION (STRICT):
+- Validate all inputs at controllers (Zod/Joi).
+- Reject invalid data early with clear 400 errors.
+- Validate types, ranges, formats, length, and enums.
+- Sanitization:
+  - Strip HTML tags from string inputs (XSS prevention).
+  - Sanitize object keys to prevent Prototype Pollution.
+  - Maximum payload size limits (body-parser).
 
 ERROR HANDLING:
-- Use explicit error types (not generic exceptions)
-- Differentiate between:
-  - Client errors (4xx)
-  - Server errors (5xx)
-  - Dependency failures
-- Fail fast and loudly rather than silently
-- Errors must be actionable and debuggable
-- Never catch an error without handling or rethrowing it
-
-EDGE CASE DISCIPLINE:
-Always consider and handle:
-- Empty input
-- Duplicate requests
-- Replay attacks / retries
-- Partial failures
-- Timeouts
-- Network failures
-- Database unavailable or slow
-- Third-party API failures
-- Unexpected data shapes
-- Out-of-order execution
-- Concurrent requests
-- Race conditions
-- Inconsistent state
-
-CONCURRENCY & IDEMPOTENCY:
-- Assume the same request can be sent multiple times
-- Protect against duplicate writes
-- Design idempotent APIs where applicable
-- Use locks, transactions, or versioning when required
-- Never assume single-threaded execution
+- Use explicit error types (AppError).
+- Differentiate between Client (4xx) and Server (5xx) errors.
+- Fail fast and loudly rather than silently.
+- Errors must be actionable and debuggable.
 
 LOGGING & OBSERVABILITY:
-- Add structured logs (never console spam)
-- Log all critical paths, failures, and state transitions
-- Include correlation/request IDs where applicable
-- Logs must explain WHAT failed and WHY
-- Do not log sensitive data (tokens, passwords, PII)
+- Add structured logs (Logger.info, Logger.error).
+- Log all critical paths, failures, and state transitions.
+- Do not log sensitive data (tokens, passwords, PII).
+
+ARCHITECTURE RULES:
+- Controllers: Validation + Orchestration only.
+- Services: Business logic only.
+- Repositories: Data access only.
+- No business logic in controllers.
+- No database logic in services (use Repository).
 
 DEBUG-FIRST MODE:
 - Before writing code:
@@ -79,37 +115,5 @@ DEBUG-FIRST MODE:
   - Explain how failures are detected
   - Explain how failures are logged
   - Explain how the system behaves under stress
-
-ARCHITECTURE RULES:
-- Controllers/Handlers: validation + orchestration only
-- Services: business logic only
-- Repositories: data access only
-- No business logic in controllers
-- No database logic in services
-- Follow clean architecture and separation of concerns
-
-SECURITY:
-- Treat all external input as hostile
-- Protect against injection, replay, and abuse
-- Never hardcode secrets
-- Never assume authentication equals authorization
-- Validate permissions explicitly
-
-TESTING MINDSET:
-- Write code that is testable by design
-- Avoid hidden side effects
-- Avoid tight coupling
-- Make failure paths testable
-
-OUTPUT FORMAT REQUIREMENT:
-Before coding:
-- Assumptions
-- Edge cases
-- Failure scenarios
-
-After coding:
-- Key decisions explained
-- Known risks
-- What is intentionally NOT handled and why
 
 If any rule is violated, explain explicitly why it was necessary.

@@ -7,9 +7,7 @@ import { generateToken, generateRefreshToken } from '../utils/jwt.js';
 import AuditLogger from '../utils/audit.js';
 import TransactionManager from '../utils/transaction.js';
 import Logger from '../utils/logger.js';
-
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCK_TIME = 2 * 60 * 60 * 1000; // 2 hours
+import LoginSettingRepository from '../repositories/loginSetting.repository.js';
 
 class CustomerService {
   /**
@@ -68,27 +66,54 @@ class CustomerService {
    * Step 2: Verify OTP and activate account (Atomic update to prevent race conditions)
    */
   async verifyOtp(email, code) {
-    // Atomic find AND update and unset OTP in one step
-    // This is the CRITICAL PATTERN for preventing race conditions
-    const customer = await Customer.findOneAndUpdate(
-      { 
-        email, 
-        verificationCode: code, 
-        verificationCodeExpires: { $gt: Date.now() },
-        isVerified: false 
-      },
-      { 
-        $unset: { verificationCode: 1, verificationCodeExpires: 1 },
-        $set: { isVerified: true }
-      },
-      { new: true }
-    );
+    const loginSettings = await LoginSettingRepository.getSettings();
+    const maxOtpHit = loginSettings.maxOtpHit;
+    const blockTime = loginSettings.temporaryBlockTime * 1000;
 
+    const customer = await Customer.findOne({ email, isVerified: false }).select('+verificationCode +verificationCodeExpires +otpAttempts +otpLockUntil');
+    
     if (!customer) {
-      Logger.warn(`OTP verification failure for email: ${email}`);
-      // We don't distinguish between "wrong code" and "expired code" to prevent side-channel timing attacks
-      throw new AppError('Invalid or expired verification code.', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Account not found or already verified.', HTTP_STATUS.NOT_FOUND);
     }
+
+    // 1. Check if OTP is locked
+    if (customer.otpLockUntil && customer.otpLockUntil > Date.now()) {
+      const remainingTime = Math.ceil((customer.otpLockUntil - Date.now()) / (60 * 1000));
+      throw new AppError(`Too many failed attempts. Please try again in ${remainingTime} minutes.`, HTTP_STATUS.FORBIDDEN);
+    }
+
+    // 2. Verify Code
+    const isCodeValid = customer.verificationCode === code && customer.verificationCodeExpires > Date.now();
+
+    if (!isCodeValid) {
+      const updatedAttempts = (customer.otpAttempts || 0) + 1;
+      const isLocked = updatedAttempts >= maxOtpHit;
+      
+      await Customer.updateOne(
+        { _id: customer._id },
+        { 
+          $inc: { otpAttempts: 1 },
+          $set: { 
+            otpLockUntil: isLocked ? Date.now() + blockTime : undefined 
+          }
+        }
+      );
+
+      const remaining = maxOtpHit - updatedAttempts;
+      const message = remaining > 0 
+        ? `Invalid or expired code. ${remaining} attempts remaining.`
+        : `Too many failed attempts. Account locked for OTP for ${loginSettings.temporaryBlockTime / 3600} hours.`;
+
+      throw new AppError(message, HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // 3. Success - Reset OTP fields and verify
+    customer.isVerified = true;
+    customer.verificationCode = undefined;
+    customer.verificationCodeExpires = undefined;
+    customer.otpAttempts = 0;
+    customer.otpLockUntil = undefined;
+    await customer.save();
 
     Logger.info(`Email verified successfully for customer: ${customer._id}`);
     AuditLogger.log('CUSTOMER_VERIFIED', 'CUSTOMER', { customerId: customer._id });
@@ -102,23 +127,36 @@ class CustomerService {
    * Resend OTP (Atomic refresh)
    */
   async resendOtp(email) {
+    const loginSettings = await LoginSettingRepository.getSettings();
+    const resendTimeSec = loginSettings.otpResendTime;
+
+    const customer = await Customer.findOne({ email, isVerified: false }).select('+updatedAt');
+    if (!customer) {
+      throw new AppError('Either account is already verified or not found.', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Check resend cooldown
+    const lastUpdate = new Date(customer.updatedAt).getTime();
+    const now = Date.now();
+    const cooldownMs = resendTimeSec * 1000;
+
+    if (now - lastUpdate < cooldownMs) {
+      const waitTime = Math.ceil((cooldownMs - (now - lastUpdate)) / 1000);
+      throw new AppError(`Please wait ${waitTime} seconds before resending OTP.`, HTTP_STATUS.TOO_MANY_REQUESTS);
+    }
+
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-    const customer = await Customer.findOneAndUpdate(
-      { email, isVerified: false },
+    await Customer.updateOne(
+      { _id: customer._id },
       { 
         $set: { 
           verificationCode, 
           verificationCodeExpires 
         } 
-      },
-      { new: true }
+      }
     );
-
-    if (!customer) {
-      throw new AppError('Either account is already verified or not found.', HTTP_STATUS.BAD_REQUEST);
-    }
 
     await EmailService.sendVerificationEmail(email, verificationCode, 'customer');
 
@@ -137,10 +175,20 @@ class CustomerService {
       throw new AppError("Don't have an account? Please sign up.", HTTP_STATUS.UNAUTHORIZED);
     }
 
+    // Status check
+    if (customer.isActive === false) {
+      throw new AppError('Your account has been blocked. Please contact support.', HTTP_STATUS.FORBIDDEN);
+    }
+
     // 1. Check if account is locked
+    const loginSettings = await LoginSettingRepository.getSettings();
+    const maxLoginHit = loginSettings.maxLoginHit;
+    const blockTime = loginSettings.temporaryLoginBlockTime * 1000;
+
     if (customer.lockUntil && customer.lockUntil > Date.now()) {
+      const remainingTime = Math.ceil((customer.lockUntil - Date.now()) / (60 * 1000));
       AuditLogger.security('CUSTOMER_LOGIN_LOCKED_ATTEMPT', { email });
-      throw new AppError(`Account is temporarily locked. Please try again in 2 hours.`, HTTP_STATUS.FORBIDDEN);
+      throw new AppError(`Account is temporarily locked. Please try again in ${remainingTime} minutes.`, HTTP_STATUS.FORBIDDEN);
     }
 
     if (!customer.isVerified) {
@@ -157,17 +205,17 @@ class CustomerService {
         { 
           $inc: { loginAttempts: 1 },
           $set: { 
-            lockUntil: customer.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS ? Date.now() + LOCK_TIME : undefined 
+            lockUntil: customer.loginAttempts + 1 >= maxLoginHit ? Date.now() + blockTime : undefined 
           }
         }
       );
 
       AuditLogger.security('CUSTOMER_LOGIN_FAILED', { email });
       
-      const remaining = MAX_LOGIN_ATTEMPTS - (customer.loginAttempts + 1);
+      const remaining = maxLoginHit - (customer.loginAttempts + 1);
       const message = remaining > 0 
         ? `Wrong password. ${remaining} attempts remaining before lockout.`
-        : 'Too many failed attempts. Your account has been locked for 2 hours.';
+        : `Too many failed attempts. Your account has been locked for ${loginSettings.temporaryLoginBlockTime / 3600} hours.`;
         
       throw new AppError(message, HTTP_STATUS.UNAUTHORIZED);
     }

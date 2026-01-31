@@ -67,6 +67,15 @@ const customerSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    otpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    otpLockUntil: {
+      type: Date,
+      select: false,
+    },
     lastPasswordReset: {
       type: Date,
     },

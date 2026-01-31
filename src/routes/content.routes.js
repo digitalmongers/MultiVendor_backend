@@ -5,6 +5,7 @@ import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import { z } from 'zod';
 import cacheMiddleware from '../middleware/cache.middleware.js';
+import lockRequest from '../middleware/idempotency.middleware.js';
 
 const router = express.Router();
 
@@ -34,12 +35,12 @@ router.get('/cancellation-policy', cacheMiddleware(3600), ContentController.getC
  */
 router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
-router.patch('/about-us', validate(contentSchema('aboutUs')), ContentController.updateAboutUs);
-router.patch('/terms-and-conditions', validate(contentSchema('termsAndConditions')), ContentController.updateTermsAndConditions);
-router.patch('/privacy-policy', validate(contentSchema('privacyPolicy')), ContentController.updatePrivacyPolicy);
-router.patch('/refund-policy', validate(contentSchema('refundPolicy')), ContentController.updateRefundPolicy);
-router.patch('/return-policy', validate(contentSchema('returnPolicy')), ContentController.updateReturnPolicy);
-router.patch('/shipping-policy', validate(contentSchema('shippingPolicy')), ContentController.updateShippingPolicy);
-router.patch('/cancellation-policy', validate(contentSchema('cancellationPolicy')), ContentController.updateCancellationPolicy);
+router.patch('/about-us', lockRequest('update_about_us'), validate(contentSchema('aboutUs')), ContentController.updateAboutUs);
+router.patch('/terms-and-conditions', lockRequest('update_terms'), validate(contentSchema('termsAndConditions')), ContentController.updateTermsAndConditions);
+router.patch('/privacy-policy', lockRequest('update_privacy'), validate(contentSchema('privacyPolicy')), ContentController.updatePrivacyPolicy);
+router.patch('/refund-policy', lockRequest('update_refund'), validate(contentSchema('refundPolicy')), ContentController.updateRefundPolicy);
+router.patch('/return-policy', lockRequest('update_return'), validate(contentSchema('returnPolicy')), ContentController.updateReturnPolicy);
+router.patch('/shipping-policy', lockRequest('update_shipping'), validate(contentSchema('shippingPolicy')), ContentController.updateShippingPolicy);
+router.patch('/cancellation-policy', lockRequest('update_cancellation'), validate(contentSchema('cancellationPolicy')), ContentController.updateCancellationPolicy);
 
 export default router;

@@ -6,6 +6,7 @@ import validate from '../middleware/validate.middleware.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import { z } from 'zod';
 import cacheMiddleware from '../middleware/cache.middleware.js';
+import lockRequest from '../middleware/idempotency.middleware.js';
 
 const router = express.Router();
 
@@ -34,10 +35,10 @@ router.get('/', cacheMiddleware(3600), FAQController.getAllFAQs);
  */
 router.use(authorizeStaff(SYSTEM_PERMISSIONS.SYSTEM_SETTINGS));
 
-router.post('/', validate(faqSchema), FAQController.createFAQ);
+router.post('/', lockRequest('create_faq'), validate(faqSchema), FAQController.createFAQ);
 router.get('/admin', FAQController.getAllFAQs);
 router.get('/:id', FAQController.getFAQById);
-router.patch('/:id', validate(updateFaqSchema), FAQController.updateFAQ);
-router.delete('/:id', FAQController.deleteFAQ);
+router.patch('/:id', lockRequest('update_faq'), validate(updateFaqSchema), FAQController.updateFAQ);
+router.delete('/:id', lockRequest('delete_faq'), FAQController.deleteFAQ);
 
 export default router;

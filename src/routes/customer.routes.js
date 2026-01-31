@@ -5,6 +5,8 @@ import CustomerValidation from '../validations/customer.validation.js';
 import CustomerController from '../controllers/customer.controller.js';
 import { protectCustomer } from '../middleware/customerAuth.middleware.js';
 
+import lockRequest from '../middleware/idempotency.middleware.js';
+
 const router = express.Router();
 
 // Rate limiting for auth/otp endpoints
@@ -46,6 +48,7 @@ router.get(
 router.patch(
   '/profile',
   protectCustomer,
+  lockRequest(),
   validate(CustomerValidation.updateProfile),
   CustomerController.updateProfile
 );
@@ -53,6 +56,7 @@ router.patch(
 router.post(
   '/signup',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.signup),
   CustomerController.signup
 );
@@ -60,6 +64,7 @@ router.post(
 router.post(
   '/verify-otp',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.verifyOtp),
   CustomerController.verifyOtp
 );
@@ -67,6 +72,7 @@ router.post(
 router.post(
   '/resend-otp',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.resendOtp),
   CustomerController.resendOtp
 );
@@ -74,6 +80,7 @@ router.post(
 router.post(
   '/login',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.login),
   CustomerController.login
 );
@@ -81,6 +88,7 @@ router.post(
 router.post(
   '/forgot-password',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.forgotPassword),
   CustomerController.forgotPassword
 );
@@ -88,6 +96,7 @@ router.post(
 router.post(
   '/verify-reset-otp',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.verifyResetOtp),
   CustomerController.verifyResetOtp
 );
@@ -95,6 +104,7 @@ router.post(
 router.post(
   '/reset-password',
   authLimiter,
+  lockRequest(),
   validate(CustomerValidation.resetPassword),
   CustomerController.resetPassword
 );

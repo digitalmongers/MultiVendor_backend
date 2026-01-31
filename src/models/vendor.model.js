@@ -114,6 +114,24 @@ const vendorSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    lockUntil: {
+      type: Date,
+      select: false,
+    },
+    otpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    otpLockUntil: {
+      type: Date,
+      select: false,
+    },
     tokenVersion: {
       type: Number,
       default: 0,

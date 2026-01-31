@@ -9,6 +9,7 @@ import { generateToken, generateRefreshToken } from '../utils/jwt.js';
 import AuditLogger from '../utils/audit.js';
 import TransactionManager from '../utils/transaction.js';
 import Logger from '../utils/logger.js';
+import LoginSettingRepository from '../repositories/loginSetting.repository.js';
 
 class VendorService {
   /**
@@ -89,13 +90,13 @@ class VendorService {
    * Vendor Login
    */
   async login(email, password) {
-    const vendor = await Vendor.findOne({ email }).select('+password +tokenVersion');
+    const vendor = await Vendor.findOne({ email }).select('+password +loginAttempts +lockUntil +tokenVersion');
     
     if (!vendor) {
       throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
     }
 
-    // Status check
+    // 1. Status check
     if (vendor.status !== VENDOR_STATUS.ACTIVE) {
       let message = 'Your account is not active.';
       if (vendor.status === VENDOR_STATUS.PENDING) message = 'Your account is pending admin approval.';
@@ -104,16 +105,46 @@ class VendorService {
       throw new AppError(message, HTTP_STATUS.FORBIDDEN);
     }
 
-    const isMatch = await vendor.matchPassword(password);
-    if (!isMatch) {
-      AuditLogger.security('VENDOR_LOGIN_FAILED', { email });
-      throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+    const loginSettings = await LoginSettingRepository.getSettings();
+    const maxLoginHit = loginSettings.maxLoginHit;
+    const blockTime = loginSettings.temporaryLoginBlockTime * 1000;
+
+    // 2. Check if account is locked
+    if (vendor.lockUntil && vendor.lockUntil > Date.now()) {
+      const remainingTime = Math.ceil((vendor.lockUntil - Date.now()) / (60 * 1000));
+      AuditLogger.security('VENDOR_LOGIN_LOCKED_ATTEMPT', { email });
+      throw new AppError(`Account is temporarily locked. Please try again in ${remainingTime} minutes.`, HTTP_STATUS.FORBIDDEN);
     }
 
-    // Reset token version or update last login
+    const isMatch = await vendor.matchPassword(password);
+    if (!isMatch) {
+      Logger.warn(`Login failed: Invalid password for account ${email}`);
+      // 3. Increment failed attempts
+      await Vendor.updateOne(
+        { _id: vendor._id },
+        { 
+          $inc: { loginAttempts: 1 },
+          $set: { 
+            lockUntil: (vendor.loginAttempts || 0) + 1 >= maxLoginHit ? Date.now() + blockTime : undefined 
+          }
+        }
+      );
+
+      AuditLogger.security('VENDOR_LOGIN_FAILED', { email });
+      
+      const remaining = maxLoginHit - ((vendor.loginAttempts || 0) + 1);
+      const message = remaining > 0 
+        ? `Wrong password. ${remaining} attempts remaining before lockout.`
+        : `Too many failed attempts. Your account has been locked for ${loginSettings.temporaryLoginBlockTime / 3600} hours.`;
+        
+      throw new AppError(message, HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    // 4. Success - Reset attempts, update last login and increment tokenVersion
     await Vendor.updateOne({ _id: vendor._id }, { 
         lastLogin: new Date(),
-        $inc: { tokenVersion: 1 } 
+        $inc: { tokenVersion: 1 },
+        $unset: { loginAttempts: 1, lockUntil: 1 }
     });
 
     const updatedVendor = await VendorRepository.findById(vendor._id, '+tokenVersion');

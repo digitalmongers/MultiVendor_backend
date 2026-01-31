@@ -1,8 +1,13 @@
+import SystemSettingRepository from '../repositories/systemSetting.repository.js';
 import VendorService from '../services/vendor.service.js';
 import ApiResponse from '../utils/apiResponse.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS, SUCCESS_MESSAGES } from '../constants.js';
 import Logger from '../utils/logger.js';
+
+// ...
+
+
 
 /**
  * @desc    Vendor Signup Step 1
@@ -43,17 +48,20 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   const { vendor, accessToken, refreshToken } = await VendorService.login(email, password);
 
+  const settings = await SystemSettingRepository.getSettings();
+  const isProduction = settings.appMode === 'Live';
+
   const accessCookieOptions = {
     httpOnly: true,
     expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     sameSite: 'strict'
   };
 
   const refreshCookieOptions = {
     httpOnly: true,
     expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     sameSite: 'strict'
   };
 
@@ -72,10 +80,13 @@ export const refreshToken = async (req, res) => {
   const token = req.cookies?.vendorRefreshToken || req.body.refreshToken;
   const { accessToken } = await VendorService.refreshToken(token);
 
+  const settings = await SystemSettingRepository.getSettings();
+  const isProduction = settings.appMode === 'Live';
+
   const accessCookieOptions = {
     httpOnly: true,
     expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     sameSite: 'strict'
   };
 

@@ -6,6 +6,7 @@ import VendorController, { uploadTinCertificate, uploadGstDocument, uploadPanDoc
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import { protectVendor } from '../middleware/vendorAuth.middleware.js';
 import catchAsync from '../utils/catchAsync.js';
+import lockRequest from '../middleware/idempotency.middleware.js';
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ const authLimiter = rateLimit({
 router.post(
   '/signup-step-1',
   authLimiter,
+  lockRequest(),
   validate(VendorValidation.signupStep1),
   VendorController.signupStep1
 );
@@ -25,6 +27,7 @@ router.post(
 router.post(
   '/signup-step-2/:vendorId',
   authLimiter,
+  lockRequest(),
   validate(VendorValidation.signupStep2),
   VendorController.signupStep2
 );
@@ -32,6 +35,7 @@ router.post(
 router.post(
   '/login',
   authLimiter,
+  lockRequest(),
   validate(VendorValidation.login),
   VendorController.login
 );
@@ -50,6 +54,7 @@ router.get(
 router.patch(
   '/profile',
   protectVendor,
+  lockRequest(),
   validate(VendorValidation.updateProfile),
   VendorController.updateProfile
 );
@@ -57,19 +62,21 @@ router.patch(
 router.patch(
   '/bank-details',
   protectVendor,
+  lockRequest(),
   validate(VendorValidation.updateBankDetails),
   VendorController.updateBankDetails
 );
 
-// Document Uploads (Protected)
-router.patch('/documents/tin-certificate', protectVendor, uploadMiddleware.single('document'), catchAsync(VendorController.uploadTinCertificate));
-router.patch('/documents/gst-document', protectVendor, uploadMiddleware.single('document'), catchAsync(VendorController.uploadGstDocument));
-router.patch('/documents/pan-document', protectVendor, uploadMiddleware.single('document'), catchAsync(VendorController.uploadPanDocument));
-router.patch('/documents/address-proof', protectVendor, uploadMiddleware.single('document'), catchAsync(VendorController.uploadAddressProof));
+// Document Uploads (Protected) - Idempotency needed for file uploads
+router.patch('/documents/tin-certificate', protectVendor, lockRequest('vendor_upload_tin'), uploadMiddleware.single('document'), catchAsync(VendorController.uploadTinCertificate));
+router.patch('/documents/gst-document', protectVendor, lockRequest('vendor_upload_gst'), uploadMiddleware.single('document'), catchAsync(VendorController.uploadGstDocument));
+router.patch('/documents/pan-document', protectVendor, lockRequest('vendor_upload_pan'), uploadMiddleware.single('document'), catchAsync(VendorController.uploadPanDocument));
+router.patch('/documents/address-proof', protectVendor, lockRequest('vendor_upload_address'), uploadMiddleware.single('document'), catchAsync(VendorController.uploadAddressProof));
 
 router.patch(
   '/photo',
   protectVendor,
+  lockRequest('vendor_update_photo'),
   uploadMiddleware.single('photo'),
   VendorController.updatePhoto
 );
@@ -77,6 +84,7 @@ router.patch(
 router.patch(
   '/business-logo',
   protectVendor,
+  lockRequest('vendor_update_logo'),
   uploadMiddleware.single('logo'),
   VendorController.updateBusinessLogo
 );
@@ -84,6 +92,7 @@ router.patch(
 router.patch(
   '/business-banner',
   protectVendor,
+  lockRequest('vendor_update_banner'),
   uploadMiddleware.single('banner'),
   VendorController.updateBusinessBanner
 );
@@ -91,6 +100,7 @@ router.patch(
 router.patch(
   '/update-password',
   protectVendor,
+  lockRequest(),
   validate(VendorValidation.updatePassword),
   VendorController.updatePassword
 );

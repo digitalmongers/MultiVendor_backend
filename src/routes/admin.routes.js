@@ -10,6 +10,7 @@ import cacheMiddleware from '../middleware/cache.middleware.js';
 import VendorValidation from '../validations/vendor.validation.js';
 import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
 import { SYSTEM_PERMISSIONS } from '../constants.js';
+import lockRequest from '../middleware/idempotency.middleware.js';
 
 const router = express.Router();
 
@@ -94,31 +95,31 @@ router.use('/me', adminProtect);
 router.get('/me', cacheMiddleware(3600), AdminController.getMe);
 
 router.use('/profile', adminProtect);
-router.patch('/profile', validate(updateProfileSchema), AdminController.updateProfile);
+router.patch('/profile', lockRequest('admin_update_profile'), validate(updateProfileSchema), AdminController.updateProfile);
 
 router.use('/photo', adminProtect);
-router.patch('/photo', uploadMiddleware.single('photo'), AdminController.updatePhoto);
-router.delete('/photo', AdminController.deletePhoto);
+router.patch('/photo', lockRequest('admin_update_photo'), uploadMiddleware.single('photo'), AdminController.updatePhoto);
+router.delete('/photo', lockRequest('admin_delete_photo'), AdminController.deletePhoto);
 
 router.use('/update-password', adminProtect);
-router.patch('/update-password', validate(updatePasswordSchema), AdminController.updatePassword);
+router.patch('/update-password', lockRequest('admin_update_password'), validate(updatePasswordSchema), AdminController.updatePassword);
 
 // Vendor Management
 router.get('/vendors/export', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.exportVendors);
 router.get('/vendors', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.getAllVendors);
-router.post('/vendors', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), validate(VendorValidation.adminCreateVendor), AdminController.createVendor);
+router.post('/vendors', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_create_vendor'), validate(VendorValidation.adminCreateVendor), AdminController.createVendor);
 router.get('/vendors/:vendorId', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.getVendorById);
-router.patch('/vendors/:vendorId/approve', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.approveVendor);
-router.patch('/vendors/:vendorId/reject', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.rejectVendor);
-router.patch('/vendors/:vendorId/suspend', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.suspendVendor);
-router.patch('/vendors/:vendorId/activate', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.activateVendor);
-router.delete('/vendors/:vendorId', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), AdminController.deleteVendor);
+router.patch('/vendors/:vendorId/approve', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_approve_vendor'), AdminController.approveVendor);
+router.patch('/vendors/:vendorId/reject', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_reject_vendor'), AdminController.rejectVendor);
+router.patch('/vendors/:vendorId/suspend', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_suspend_vendor'), AdminController.suspendVendor);
+router.patch('/vendors/:vendorId/activate', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_activate_vendor'), AdminController.activateVendor);
+router.delete('/vendors/:vendorId', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_delete_vendor'), AdminController.deleteVendor);
 
 // Vendor Document Uploads (Admin/Staff)
-router.patch('/vendors/:vendorId/documents/tin-certificate', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), uploadMiddleware.single('document'), AdminController.uploadVendorTinCertificate);
-router.patch('/vendors/:vendorId/documents/gst-document', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), uploadMiddleware.single('document'), AdminController.uploadVendorGstDocument);
-router.patch('/vendors/:vendorId/documents/pan-document', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), uploadMiddleware.single('document'), AdminController.uploadVendorPanDocument);
-router.patch('/vendors/:vendorId/documents/address-proof', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), uploadMiddleware.single('document'), AdminController.uploadVendorAddressProof);
+router.patch('/vendors/:vendorId/documents/tin-certificate', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_upload_tin'), uploadMiddleware.single('document'), AdminController.uploadVendorTinCertificate);
+router.patch('/vendors/:vendorId/documents/gst-document', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_upload_gst'), uploadMiddleware.single('document'), AdminController.uploadVendorGstDocument);
+router.patch('/vendors/:vendorId/documents/pan-document', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_upload_pan'), uploadMiddleware.single('document'), AdminController.uploadVendorPanDocument);
+router.patch('/vendors/:vendorId/documents/address-proof', authorizeStaff(SYSTEM_PERMISSIONS.VENDOR_MANAGEMENT), lockRequest('admin_upload_address'), uploadMiddleware.single('document'), AdminController.uploadVendorAddressProof);
 
 // Customer Management
 router.get('/customers', authorizeStaff(SYSTEM_PERMISSIONS.USER_MANAGEMENT), AdminController.getAllCustomers);
