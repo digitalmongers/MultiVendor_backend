@@ -1,42 +1,27 @@
-import XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 /**
  * Generate Excel Template for Bulk Product Import
  * Enterprise-grade template with instructions and validation hints
  */
-export const generateProductImportTemplate = () => {
-    // Main product data sheet
+export const generateProductImportTemplate = async () => {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'MultiVendor System';
+    workbook.lastModifiedBy = 'MultiVendor System';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    // 1. Products Sheet
+    const productSheet = workbook.addWorksheet('Products');
+
     const productHeaders = [
-        'name',
-        'description',
-        'category',
-        'subCategory',
-        'brand',
-        'productType',
-        'unit',
-        'searchTags',
-        'price',
-        'purchasePrice',
-        'tax',
-        'taxType',
-        'discount',
-        'discountType',
-        'shippingCost',
-        'multiplyShippingCost',
-        'quantity',
-        'sku',
-        'colors',
-        'thumbnailUrl',
-        'imageUrls',
-        'videoLink',
-        'metaTitle',
-        'metaDescription',
-        'metaImage',
-        'variations',
-        'attributes'
+        'name', 'description', 'category', 'subCategory', 'brand', 'productType',
+        'unit', 'searchTags', 'price', 'purchasePrice', 'tax', 'taxType',
+        'discount', 'discountType', 'shippingCost', 'multiplyShippingCost',
+        'quantity', 'sku', 'colors', 'thumbnailUrl', 'imageUrls', 'videoLink',
+        'metaTitle', 'metaDescription', 'metaImage', 'variations', 'attributes'
     ];
 
-    // Field descriptions for help
     const fieldDescriptions = [
         'Product name (3-200 characters) *REQUIRED',
         'Product description (10-5000 characters) *REQUIRED',
@@ -67,8 +52,7 @@ export const generateProductImportTemplate = () => {
         'Attributes JSON (optional, see instructions)'
     ];
 
-    // Sample data row
-    const sampleData = [
+    const sampleRow = [
         'Premium Cotton T-Shirt',
         'High-quality cotton t-shirt with comfortable fit. Perfect for casual wear. Available in multiple colors and sizes.',
         'Clothing',
@@ -77,15 +61,15 @@ export const generateProductImportTemplate = () => {
         'physical',
         'pc',
         'tshirt, cotton, casual, comfortable',
-        '599',
-        '299',
-        '18',
+        599,
+        299,
+        18,
         'percent',
-        '10',
+        10,
         'percent',
-        '50',
+        50,
         'false',
-        '100',
+        100,
         'SKU-TSHIRT-001',
         '#FF0000, #0000FF, #000000',
         'https://example.com/images/tshirt-thumb.jpg',
@@ -98,19 +82,28 @@ export const generateProductImportTemplate = () => {
         ''
     ];
 
-    // Create product data sheet
-    const productData = [
-        productHeaders,
-        fieldDescriptions,
-        sampleData
-    ];
+    // Add headers and rows
+    productSheet.addRow(productHeaders);
+    productSheet.addRow(fieldDescriptions);
+    productSheet.addRow(sampleRow);
 
-    const productSheet = XLSX.utils.aoa_to_sheet(productData);
+    // Style the header row
+    productSheet.getRow(1).font = { bold: true };
+    productSheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+    };
 
-    // Set column widths for better readability
-    productSheet['!cols'] = productHeaders.map(() => ({ wch: 20 }));
+    // Set column widths
+    productSheet.columns = productHeaders.map(header => ({
+        header: header,
+        key: header,
+        width: 25
+    }));
 
-    // Instructions sheet
+    // 2. Instructions Sheet
+    const instructionsSheet = workbook.addWorksheet('Instructions');
     const instructions = [
         ['BULK PRODUCT IMPORT - INSTRUCTIONS'],
         [''],
@@ -185,10 +178,12 @@ export const generateProductImportTemplate = () => {
         ['6. Check response for success or error details']
     ];
 
-    const instructionsSheet = XLSX.utils.aoa_to_sheet(instructions);
-    instructionsSheet['!cols'] = [{ wch: 80 }];
+    instructions.forEach(row => instructionsSheet.addRow(row));
+    instructionsSheet.getColumn(1).width = 100;
+    instructionsSheet.getRow(1).font = { bold: true, size: 14 };
 
-    // Valid values reference sheet
+    // 3. Valid Values Reference Sheet
+    const validValuesSheet = workbook.addWorksheet('Valid Values');
     const validValues = [
         ['VALID VALUES REFERENCE'],
         [''],
@@ -227,17 +222,11 @@ export const generateProductImportTemplate = () => {
         ['NOTE: Units can be any string, above are just common examples']
     ];
 
-    const validValuesSheet = XLSX.utils.aoa_to_sheet(validValues);
-    validValuesSheet['!cols'] = [{ wch: 40 }];
-
-    // Create workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, productSheet, 'Products');
-    XLSX.utils.book_append_sheet(workbook, instructionsSheet, 'Instructions');
-    XLSX.utils.book_append_sheet(workbook, validValuesSheet, 'Valid Values');
+    validValues.forEach(row => validValuesSheet.addRow(row));
+    validValuesSheet.getColumn(1).width = 50;
+    validValuesSheet.getRow(1).font = { bold: true, size: 14 };
 
     // Generate buffer
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
-    return excelBuffer;
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
 };

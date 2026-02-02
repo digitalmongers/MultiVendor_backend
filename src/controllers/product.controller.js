@@ -120,7 +120,7 @@ class ProductController {
         const { generateProductImportTemplate } = await import('../utils/excelTemplate.util.js');
 
         // Generate Excel template
-        const excelBuffer = generateProductImportTemplate();
+        const excelBuffer = await generateProductImportTemplate();
 
         // Set headers for file download
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
