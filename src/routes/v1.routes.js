@@ -47,6 +47,7 @@ import dealOfTheDayRoutes from './dealOfTheDay.routes.js';
 import adminDealOfTheDayRoutes from './adminDealOfTheDay.routes.js';
 import adminCouponRoutes from './adminCoupon.routes.js';
 import cartRoutes from './cart.routes.js';
+import wishlistRoutes from './wishlist.routes.js';
 
 const router = express.Router();
 
@@ -100,6 +101,7 @@ router.use('/deal-of-the-day', dealOfTheDayRoutes);
 router.use('/admin/deal-of-the-day', adminDealOfTheDayRoutes);
 router.use('/admin/coupons', adminCouponRoutes);
 router.use('/cart', cartRoutes);
+router.use('/wishlist', wishlistRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);
