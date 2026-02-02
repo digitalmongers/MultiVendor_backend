@@ -10,6 +10,21 @@ class ProductController {
         return res.status(HTTP_STATUS.CREATED).json(new ApiResponse(HTTP_STATUS.CREATED, product, SUCCESS_MESSAGES.CREATED));
     };
 
+
+
+    getLimitedStockProducts = async (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const search = req.query.search;
+
+        const filter = {};
+        if (search) filter.search = search;
+
+        // Service handles the low stock threshold filter internally
+        const result = await ProductService.getLimitedStockProducts(req.vendor._id, { filter, page, limit });
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.FETCHED));
+    };
+
     getVendorProducts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
@@ -80,12 +95,153 @@ class ProductController {
         return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, product, SUCCESS_MESSAGES.UPDATED));
     };
 
+    restockProduct = async (req, res) => {
+        // req.body has quantity and/or variations
+        const product = await ProductService.restockProduct(req.params.id, req.body, req.vendor._id);
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, product, 'Product restocked successfully'));
+    };
+
     deleteProduct = async (req, res) => {
         await ProductService.deleteProduct(req.params.id, req.vendor._id);
         return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, null, SUCCESS_MESSAGES.DELETED));
     };
 
+    // --- Bulk Import Methods ---
+
+    downloadBulkImportTemplate = async (req, res) => {
+        const { generateProductImportTemplate } = await import('../utils/excelTemplate.util.js');
+
+        // Generate Excel template
+        const excelBuffer = generateProductImportTemplate();
+
+        // Set headers for file download
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="product-bulk-import-template-${Date.now()}.xlsx"`);
+        res.setHeader('Content-Length', excelBuffer.length);
+
+        return res.send(excelBuffer);
+    };
+
+    bulkImportProducts = async (req, res) => {
+        // Validate file upload
+        if (!req.file) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(
+                new ApiResponse(HTTP_STATUS.BAD_REQUEST, null, 'No file uploaded. Please upload an Excel file.')
+            );
+        }
+
+        // Validate file type
+        const allowedMimeTypes = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+            'application/vnd.ms-excel' // .xls
+        ];
+
+        if (!allowedMimeTypes.includes(req.file.mimetype)) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(
+                new ApiResponse(
+                    HTTP_STATUS.BAD_REQUEST,
+                    null,
+                    'Invalid file type. Please upload an Excel file (.xlsx or .xls)'
+                )
+            );
+        }
+
+        // Validate file size (5MB limit)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (req.file.size > maxSize) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(
+                new ApiResponse(
+                    HTTP_STATUS.BAD_REQUEST,
+                    null,
+                    'File too large. Maximum file size is 5MB.'
+                )
+            );
+        }
+
+        // Process bulk import
+        const result = await ProductService.bulkImportProducts(req.file.buffer, req.vendor._id);
+
+        if (result.success) {
+            return res.status(HTTP_STATUS.CREATED).json(
+                new ApiResponse(
+                    HTTP_STATUS.CREATED,
+                    result,
+                    result.message
+                )
+            );
+        } else {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(
+                new ApiResponse(
+                    HTTP_STATUS.BAD_REQUEST,
+                    result,
+                    result.message
+                )
+            );
+        }
+    };
+
     // --- Admin Actions ---
+
+    adminBulkImportProducts = async (req, res) => {
+        // Validate file upload
+        if (!req.file) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(new ApiResponse(HTTP_STATUS.BAD_REQUEST, null, 'No file uploaded. Please upload an Excel file.'));
+        }
+
+        const allowedMimeTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+        if (!allowedMimeTypes.includes(req.file.mimetype)) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(new ApiResponse(HTTP_STATUS.BAD_REQUEST, null, 'Invalid file type. Please upload an Excel file (.xlsx or .xls)'));
+        }
+
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (req.file.size > maxSize) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(new ApiResponse(HTTP_STATUS.BAD_REQUEST, null, 'File too large. Maximum file size is 5MB.'));
+        }
+
+        const result = await ProductService.adminBulkImportProducts(req.file.buffer);
+
+        if (result.success) {
+            return res.status(HTTP_STATUS.CREATED).json(new ApiResponse(HTTP_STATUS.CREATED, result, 'Admin bulk import completed successfully'));
+        } else {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json(new ApiResponse(HTTP_STATUS.BAD_REQUEST, result, result.message));
+        }
+    };
+
+    getAdminInHouseProducts = async (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const search = req.query.search;
+
+        const filter = {};
+        if (search) filter.search = search;
+
+        const result = await ProductService.getAdminInHouseProducts({ filter, page, limit });
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.FETCHED));
+    };
+
+    getAdminLimitedStockProducts = async (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const search = req.query.search;
+
+        const filter = {};
+        if (search) filter.search = search;
+
+        // Admin-specific limited stock view (In-House)
+        const result = await ProductService.getAdminLimitedStockProducts({ filter, page, limit });
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.FETCHED));
+    };
+
+    adminRestockProduct = async (req, res) => {
+        // Accepts same quantity/variations payload as vendor restock
+        const product = await ProductService.adminRestockProduct(req.params.id, req.body);
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, product, 'Product stock updated successfully'));
+    };
+
+    adminCreateProduct = async (req, res) => {
+        const product = await ProductService.adminCreateProduct(req.body);
+        return res.status(HTTP_STATUS.CREATED).json(new ApiResponse(HTTP_STATUS.CREATED, product, SUCCESS_MESSAGES.CREATED));
+    };
 
     adminUpdateStatus = async (req, res) => {
         // status and reason in body

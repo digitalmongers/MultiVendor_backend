@@ -95,6 +95,19 @@ const updateProductSchema = z.object({
     }),
 });
 
+const restockProductSchema = z.object({
+    body: z.object({
+        quantity: z.number().int().min(1, 'Restock quantity must be at least 1').optional(),
+        variations: z.array(z.object({
+            sku: z.string().min(1, 'Variation SKU is required'),
+            stock: z.number().int().min(1, 'Restock quantity must be at least 1')
+        })).optional()
+    }).refine(data => data.quantity || (data.variations && data.variations.length > 0), {
+        message: "Either quantity or variations stock update is required",
+        path: ["quantity"]
+    })
+});
+
 /**
  * Public Routes
  */
@@ -118,6 +131,9 @@ router.post(
     ProductController.createProduct
 );
 
+// Vendor Limited Stock Products (Must be before generic /:id routes if any, though currently /:id is further down)
+router.get('/limit-stock', ProductController.getLimitedStockProducts);
+
 router.get('/', ProductController.getVendorProducts);
 
 // Vendor Product Statistics
@@ -126,11 +142,32 @@ router.get('/stats/dashboard', ProductController.getVendorProductStats);
 // Vendor Export Products
 router.get('/export/csv', ProductController.exportVendorProducts);
 
+// --- Bulk Import Routes ---
+import { uploadExcel } from '../utils/multer.js';
+
+// Download Bulk Import Template
+router.get('/bulk-import/template', ProductController.downloadBulkImportTemplate);
+
+// Upload Bulk Import Excel
+router.post(
+    '/bulk-import',
+    lockRequest('bulk_product_import'),
+    uploadExcel.single('file'),
+    ProductController.bulkImportProducts
+);
+
 router.patch(
     '/:id',
     lockRequest('update_product'),
     validate(updateProductSchema),
     ProductController.updateProduct
+);
+
+router.patch(
+    '/:id/restock',
+    lockRequest('restock_product'),
+    validate(restockProductSchema),
+    ProductController.restockProduct
 );
 
 router.delete(
@@ -148,6 +185,54 @@ import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
 import { SYSTEM_PERMISSIONS } from '../constants.js';
 
 const adminRouter = express.Router(); // Sub-router or just attach to main router with check
+
+// Admin Bulk Import Template
+router.get(
+    '/admin/bulk-import/template',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    ProductController.downloadBulkImportTemplate
+);
+
+// Admin Bulk Import
+router.post(
+    '/admin/bulk-import',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    lockRequest('admin_bulk_import'),
+    uploadExcel.single('file'),
+    ProductController.adminBulkImportProducts
+);
+
+// Admin Create Product (No Approval Needed)
+router.post(
+    '/admin/create',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    lockRequest('admin_create_product'),
+    validate(createProductSchema),
+    ProductController.adminCreateProduct
+);
+
+// Admin List In-House Products
+router.get(
+    '/admin/in-house',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    ProductController.getAdminInHouseProducts
+);
+
+// Admin Limited Stock Products
+router.get(
+    '/admin/limit-stock',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    ProductController.getAdminLimitedStockProducts
+);
+
+// Admin Restock Product
+router.patch(
+    '/admin/:id/restock',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    lockRequest('admin_restock_product'),
+    validate(restockProductSchema),
+    ProductController.adminRestockProduct
+);
 
 // Admin List All Products
 router.get(
@@ -191,12 +276,21 @@ router.patch(
     ProductController.adminUpdateStatus
 );
 
-// Admin Full Edit
+// Admin Full Edit (PUT)
 router.put(
     '/admin/:id',
     authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
     lockRequest('admin_product_edit'),
-    validate(createProductSchema), // Admins use same schema but can force values
+    validate(createProductSchema), // Requires full payload
+    ProductController.adminUpdateProduct
+);
+
+// Admin Partial Edit (PATCH)
+router.patch(
+    '/admin/:id',
+    authorizeStaff(SYSTEM_PERMISSIONS.PRODUCT_MANAGEMENT),
+    lockRequest('admin_product_edit_partial'),
+    validate(updateProductSchema), // Allows partial payload
     ProductController.adminUpdateProduct
 );
 

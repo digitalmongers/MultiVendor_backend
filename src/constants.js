@@ -30,14 +30,14 @@ export const ERROR_MESSAGES = {
   NOT_FOUND: 'The requested resource was not found.',
   CONFLICT: 'A conflict occurred with the current state of the resource.',
   TOO_MANY_REQUESTS: 'Rate limit exceeded. Please try again later.',
-  
+
   // Validation & Logic Errors
   VALIDATION_ERROR: 'One or more fields failed validation.',
   INVALID_CREDENTIALS: 'The email or password provided is incorrect.',
   TOKEN_EXPIRED: 'Your session has expired. Please log in again.',
   INVALID_TOKEN: 'The provided authentication token is invalid or malformed.',
   DUPLICATE_RESOURCE: 'This resource already exists in our system.',
-  
+
   // Server Side Errors
   INTERNAL_ERROR: 'An unexpected error occurred on our end. Please try again later.',
   SERVICE_UNAVAILABLE: 'The service is temporarily unavailable. We are working on it!',
@@ -70,6 +70,9 @@ export const CONFIG = {
     BCRYPT_SALT_ROUNDS: 12,
     JWT_EXPIRES_IN: '90d',
     COOKIE_EXPIRES_IN: 90,
+  },
+  INVENTORY: {
+    LOW_STOCK_THRESHOLD: 10,
   },
 };
 

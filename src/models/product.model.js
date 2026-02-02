@@ -34,7 +34,7 @@ const productSchema = new mongoose.Schema(
         vendor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Vendor', // Assuming there is a Vendor model
-            required: true,
+            required: false, // Optional for Admin products
             index: true,
         },
         brand: {
