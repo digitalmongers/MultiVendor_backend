@@ -67,6 +67,8 @@ export const couponCSVHeaders = [
   { label: 'Start Date', key: 'startDate' },
   { label: 'Expire Date', key: 'expireDate' },
   { label: 'Status', key: 'isActive' },
+  { label: 'Bearer', key: 'bearer' },
+  { label: 'Vendor', key: 'vendor.businessName' },
   { label: 'Total Used', key: 'totalUsed' },
   { label: 'Created At', key: 'createdAt' }
 ];
