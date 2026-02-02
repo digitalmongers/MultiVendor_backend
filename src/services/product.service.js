@@ -9,6 +9,7 @@ import ClearanceSaleService from './clearanceSale.service.js';
 import FlashDealService from './flashDeal.service.js';
 import FeaturedDealService from './featuredDeal.service.js';
 import DealOfTheDayService from './dealOfTheDay.service.js';
+import vendorCache from '../utils/vendorCache.js';
 import { deleteMultipleImages } from '../utils/imageUpload.util.js';
 import crypto from 'crypto';
 
@@ -118,6 +119,7 @@ class ProductService {
 
         // 10. Invalidate Public List Cache
         await this.invalidateCache();
+        await vendorCache.invalidateAllVendorCaches();
 
         return product;
     }
@@ -592,6 +594,7 @@ class ProductService {
 
         const product = await ProductRepository.create(data);
         await this.invalidateCache();
+        await vendorCache.invalidateAllVendorCaches();
         return product;
     }
 
@@ -784,6 +787,7 @@ class ProductService {
 
         await ProductRepository.delete(id);
         await this.invalidateCache();
+        await vendorCache.invalidateAllVendorCaches();
         return true;
     }
 
@@ -902,6 +906,7 @@ class ProductService {
 
             await session.commitTransaction();
             await this.invalidateCache();
+            await vendorCache.invalidateAllVendorCaches();
             return { success: true, created: createdProducts.length, failed: 0, products: createdProducts };
 
         } catch (error) {
@@ -977,6 +982,7 @@ class ProductService {
 
         await ProductRepository.delete(id);
         await this.invalidateCache();
+        await vendorCache.invalidateAllVendorCaches();
         return true;
     }
 
@@ -1178,6 +1184,7 @@ class ProductService {
 
             // Invalidate cache after successful import
             await this.invalidateCache();
+            await vendorCache.invalidateAllVendorCaches();
 
             Logger.info('Bulk import completed successfully', {
                 vendorId,
@@ -1199,7 +1206,7 @@ class ProductService {
 
         } catch (error) {
             // Rollback transaction on any error
-            await session.abortTransaction();
+            if (session) await session.abortTransaction();
 
             // Cleanup uploaded images from Cloudinary
             if (uploadedImages.length > 0) {
@@ -1232,7 +1239,7 @@ class ProductService {
 
         } finally {
             // End session
-            await session.endSession();
+            if (session) await session.endSession();
         }
     }
 
@@ -1249,6 +1256,53 @@ class ProductService {
         // Get all products without pagination for export
         const result = await ProductRepository.findAll(filter, { createdAt: -1 }, 1, 10000);
         return result.products;
+    }
+
+    /**
+     * Delete all products for a vendor (Cascade Delete)
+     * Handles bulk asset cleanup from Cloudinary
+     */
+    async deleteVendorProducts(vendorId, session = null) {
+        // 1. Find all products for this vendor (use lean for performance)
+        const products = await ProductRepository.findAll({ vendor: vendorId }, {}, 1, 100000);
+
+        if (!products.products || products.products.length === 0) {
+            return { deletedCount: 0 };
+        }
+
+        Logger.info(`Starting cascade delete for ${products.products.length} products of vendor: ${vendorId}`);
+
+        // 2. Gather all image public IDs for bulk deletion
+        const imagesToDelete = [];
+        for (const product of products.products) {
+            if (product.thumbnail?.publicId) imagesToDelete.push(product.thumbnail.publicId);
+            if (product.images && product.images.length > 0) {
+                imagesToDelete.push(...product.images.map(img => img.publicId).filter(id => id));
+            }
+            if (product.variations && product.variations.length > 0) {
+                imagesToDelete.push(...product.variations.map(v => v.image?.publicId).filter(id => id));
+            }
+            if (product.seo?.metaImage?.publicId) imagesToDelete.push(product.seo.metaImage.publicId);
+        }
+
+        // 3. Purge assets from Cloudinary
+        if (imagesToDelete.length > 0) {
+            Logger.info(`Purging ${imagesToDelete.length} images from Cloudinary for vendor: ${vendorId}`);
+            await deleteMultipleImages(imagesToDelete);
+        }
+
+        // 4. Delete product documents
+        // Using Repository/Model directly for bulk deletion
+        const result = await import('../models/product.model.js').then(m =>
+            m.default.deleteMany({ vendor: vendorId }, { session })
+        );
+
+        // 5. Invalidate caches
+        await this.invalidateCache();
+        await vendorCache.invalidateAllVendorCaches();
+
+        Logger.info(`Successfully deleted ${result.deletedCount} products for vendor: ${vendorId}`);
+        return { deletedCount: result.deletedCount };
     }
 }
 

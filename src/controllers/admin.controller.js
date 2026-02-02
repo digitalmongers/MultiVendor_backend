@@ -23,7 +23,7 @@ class AdminController {
 
     // 3. Set Refresh Token Cookie (Long Lived)
     const refreshExpires = new Date(Date.now() + (rememberMe ? 30 : 1) * 24 * 60 * 60 * 1000);
-    
+
     res.cookie('adminRefreshToken', result.tokens.refreshToken, {
       expires: refreshExpires,
       httpOnly: true,
@@ -50,9 +50,9 @@ class AdminController {
   refreshToken = async (req, res) => {
     // Get Refresh Token from Cookie (Secure) or Body (Fallback)
     const token = req.cookies?.adminRefreshToken || req.body.refreshToken;
-    
+
     const result = await AdminService.refreshToken(token);
-    
+
     // Dynamic System Settings
     const settings = await SystemSettingRepository.getSettings();
     const isProduction = settings.appMode === 'Live';
@@ -76,9 +76,9 @@ class AdminController {
   refreshToken = async (req, res) => {
     // Get Refresh Token from Cookie (Secure) or Body (Fallback)
     const token = req.cookies?.adminRefreshToken || req.body.refreshToken;
-    
+
     const result = await AdminService.refreshToken(token);
-    
+
     // Set new Access Token Cookie
     res.cookie('adminAccessToken', result.accessToken, {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
@@ -100,7 +100,7 @@ class AdminController {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
     };
-    
+
     res.cookie('adminAccessToken', 'none', options);
     res.cookie('adminRefreshToken', 'none', options);
 
@@ -305,6 +305,7 @@ class AdminController {
       'IFSC Code',
       'GST Number',
       'PAN Number',
+      'Product Count',
       'Registered At',
       'Last Login',
     ];
@@ -327,6 +328,7 @@ class AdminController {
         vendor.ifscCode,
         vendor.gstNumber,
         vendor.panNumber,
+        vendor.productCount || 0,
         new Date(vendor.registeredAt).toLocaleDateString(),
         vendor.lastLogin === 'Never' ? 'Never' : new Date(vendor.lastLogin).toLocaleDateString(),
       ];
@@ -419,7 +421,7 @@ class AdminController {
   toggleCustomerStatus = async (req, res) => {
     const { customerId } = req.params;
     const { isActive } = req.body;
-    
+
     if (isActive === undefined) {
       throw new AppError('isActive status is required', HTTP_STATUS.BAD_REQUEST);
     }

@@ -1,5 +1,6 @@
 import SystemSettingRepository from '../repositories/systemSetting.repository.js';
 import VendorService from '../services/vendor.service.js';
+import Product from '../models/product.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS, SUCCESS_MESSAGES } from '../constants.js';
@@ -17,7 +18,7 @@ import Logger from '../utils/logger.js';
 export const signupStep1 = async (req, res) => {
   Logger.info(`Vendor Step 1 signup request for: ${req.body.email}`);
   const result = await VendorService.signupStep1(req.body);
-  
+
   res.status(HTTP_STATUS.CREATED).json(
     new ApiResponse(HTTP_STATUS.CREATED, result, 'Step 1 complete.')
   );
@@ -32,7 +33,7 @@ export const signupStep2 = async (req, res) => {
   const { vendorId } = req.params;
   Logger.info(`Vendor Step 2 signup request for vendor ID: ${vendorId}`);
   const result = await VendorService.signupStep2(vendorId, req.body);
-  
+
   res.status(HTTP_STATUS.CREATED).json(
     new ApiResponse(HTTP_STATUS.CREATED, result, result.message)
   );
@@ -105,33 +106,36 @@ export const getMe = async (req, res) => {
     id: req.vendor._id,
     email: req.vendor.email,
     phoneNumber: req.vendor.phoneNumber,
-    
+
     // Personal Information
     firstName: req.vendor.firstName,
     lastName: req.vendor.lastName,
     photo: req.vendor.photo,
-    
+
     // Business Information
     businessName: req.vendor.businessName,
     businessAddress: req.vendor.businessAddress,
     businessLogo: req.vendor.businessLogo,
     businessBanner: req.vendor.businessBanner,
-    
+
     // Business TIN (Optional)
     businessTin: req.vendor.businessTin,
-    
+
     // Tax & Legal (Optional)
     taxAndLegal: req.vendor.taxAndLegal,
-    
+
     // Bank Details
     bankDetails: req.vendor.bankDetails,
-    
+
+    // Statistics
+    productCount: await Product.countDocuments({ vendor: req.vendor._id }),
+
     // Metadata
     status: req.vendor.status,
     role: req.vendor.role,
     registrationStep: req.vendor.registrationStep,
     isEmailVerified: req.vendor.isEmailVerified,
-    
+
     // Timestamps
     registeredAt: req.vendor.createdAt,
     lastLogin: req.vendor.lastLogin,

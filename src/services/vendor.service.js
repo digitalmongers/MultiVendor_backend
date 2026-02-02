@@ -1,5 +1,6 @@
 import VendorRepository from '../repositories/vendor.repository.js';
 import Vendor from '../models/vendor.model.js';
+import Product from '../models/product.model.js';
 import EmailService from './email.service.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import vendorCache from '../utils/vendorCache.js';
@@ -10,6 +11,9 @@ import AuditLogger from '../utils/audit.js';
 import TransactionManager from '../utils/transaction.js';
 import Logger from '../utils/logger.js';
 import LoginSettingRepository from '../repositories/loginSetting.repository.js';
+import ProductService from './product.service.js';
+import Coupon from '../models/coupon.model.js';
+import ClearanceSale from '../models/clearanceSale.model.js';
 
 class VendorService {
   /**
@@ -52,7 +56,7 @@ class VendorService {
     }
 
     if (vendor.registrationStep >= 2) {
-        // Allow updates if needed, or prevent duplicate
+      // Allow updates if needed, or prevent duplicate
     }
 
     // Update vendor with Step 2 data
@@ -77,7 +81,7 @@ class VendorService {
         phoneNumber: updatedVendor.phoneNumber
       }, 'admin');
     } catch (error) {
-       Logger.error('Failed to send vendor signup emails', { error: error.message });
+      Logger.error('Failed to send vendor signup emails', { error: error.message });
     }
 
     return {
@@ -91,7 +95,7 @@ class VendorService {
    */
   async login(email, password) {
     const vendor = await Vendor.findOne({ email }).select('+password +loginAttempts +lockUntil +tokenVersion');
-    
+
     if (!vendor) {
       throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
     }
@@ -101,7 +105,7 @@ class VendorService {
       let message = 'Your account is not active.';
       if (vendor.status === VENDOR_STATUS.PENDING) message = 'Your account is pending admin approval.';
       if (vendor.status === VENDOR_STATUS.REJECTED) message = 'Your account has been rejected.';
-      
+
       throw new AppError(message, HTTP_STATUS.FORBIDDEN);
     }
 
@@ -122,29 +126,29 @@ class VendorService {
       // 3. Increment failed attempts
       await Vendor.updateOne(
         { _id: vendor._id },
-        { 
+        {
           $inc: { loginAttempts: 1 },
-          $set: { 
-            lockUntil: (vendor.loginAttempts || 0) + 1 >= maxLoginHit ? Date.now() + blockTime : undefined 
+          $set: {
+            lockUntil: (vendor.loginAttempts || 0) + 1 >= maxLoginHit ? Date.now() + blockTime : undefined
           }
         }
       );
 
       AuditLogger.security('VENDOR_LOGIN_FAILED', { email });
-      
+
       const remaining = maxLoginHit - ((vendor.loginAttempts || 0) + 1);
-      const message = remaining > 0 
+      const message = remaining > 0
         ? `Wrong password. ${remaining} attempts remaining before lockout.`
         : `Too many failed attempts. Your account has been locked for ${loginSettings.temporaryLoginBlockTime / 3600} hours.`;
-        
+
       throw new AppError(message, HTTP_STATUS.UNAUTHORIZED);
     }
 
     // 4. Success - Reset attempts, update last login and increment tokenVersion
-    await Vendor.updateOne({ _id: vendor._id }, { 
-        lastLogin: new Date(),
-        $inc: { tokenVersion: 1 },
-        $unset: { loginAttempts: 1, lockUntil: 1 }
+    await Vendor.updateOne({ _id: vendor._id }, {
+      lastLogin: new Date(),
+      $inc: { tokenVersion: 1 },
+      $unset: { loginAttempts: 1, lockUntil: 1 }
     });
 
     const updatedVendor = await VendorRepository.findById(vendor._id, '+tokenVersion');
@@ -171,7 +175,7 @@ class VendorService {
 
     try {
       const decoded = await import('jsonwebtoken').then(jwt => jwt.default.verify(token, process.env.JWT_REFRESH_SECRET));
-      
+
       const vendor = await VendorRepository.findById(decoded.id, '+tokenVersion', true);
       if (!vendor) {
         throw new AppError('Vendor not found', HTTP_STATUS.UNAUTHORIZED);
@@ -273,7 +277,7 @@ class VendorService {
 
     // Upload new image
     const result = await uploadToCloudinary(file, `vendors/${vendorId}/${field}`);
-    
+
     const updateData = {
       [field]: {
         url: result.secure_url,
@@ -398,16 +402,16 @@ class VendorService {
         status: VENDOR_STATUS.ACTIVE, // Admin-created vendors are active by default
         registrationStep: 2, // Mark as complete
         isEmailVerified: true, // Admin-created accounts are pre-verified
-        
+
         // Track that this was admin-created
         createdBy: 'admin',
         createdByAdminId: adminId,
       }], { session });
 
-      AuditLogger.log('VENDOR_CREATED_BY_ADMIN', 'ADMIN', { 
-        vendorId: vendor[0]._id, 
+      AuditLogger.log('VENDOR_CREATED_BY_ADMIN', 'ADMIN', {
+        vendorId: vendor[0]._id,
         adminId,
-        email: vendorData.email 
+        email: vendorData.email
       });
 
       // CACHE INVALIDATION: Clear all vendor caches
@@ -443,10 +447,10 @@ class VendorService {
     }
 
     AuditLogger.log(`VENDOR_STATUS_UPDATED_${status.toUpperCase()}`, 'ADMIN', { vendorId, status });
-    
+
     // CACHE INVALIDATION: Clear ALL vendor caches (status affects lists and filters)
     await vendorCache.invalidateAllVendorCaches();
-    
+
     // Trigger Dynamic Emails
     try {
       if (status === VENDOR_STATUS.ACTIVE) {
@@ -483,16 +487,32 @@ class VendorService {
   }
 
   async deleteVendor(vendorId) {
-    const vendor = await VendorRepository.deleteById(vendorId);
-    if (!vendor) {
-      throw new AppError('Vendor not found', HTTP_STATUS.NOT_FOUND);
-    }
-    AuditLogger.log('VENDOR_DELETED', 'ADMIN', { vendorId });
+    return await TransactionManager.execute(async (session) => {
+      Logger.info(`Starting cascade delete for vendor: ${vendorId}`);
 
-    // CACHE INVALIDATION: Clear ALL vendor caches
-    await vendorCache.invalidateAllVendorCaches();
+      // 1. Delete all products (includes asset cleanup)
+      await ProductService.deleteVendorProducts(vendorId, session);
 
-    return { message: 'Vendor account deleted successfully from database' };
+      // 2. Delete all coupons
+      await Coupon.deleteMany({ vendor: vendorId }, { session });
+
+      // 3. Delete all clearance sales
+      await ClearanceSale.deleteMany({ vendor: vendorId }, { session });
+
+      // 4. Delete vendor account
+      const vendor = await VendorRepository.deleteById(vendorId, { session });
+      if (!vendor) {
+        throw new AppError('Vendor not found', HTTP_STATUS.NOT_FOUND);
+      }
+
+      AuditLogger.log('VENDOR_CASCADE_DELETED', 'ADMIN', { vendorId });
+
+      // CACHE INVALIDATION: Clear ALL vendor caches
+      await vendorCache.invalidateAllVendorCaches();
+
+      Logger.info(`Successfully performed cascade delete for vendor: ${vendorId}`);
+      return { message: 'Vendor account and all associated data deleted successfully' };
+    });
   }
 
   /**
@@ -516,33 +536,34 @@ class VendorService {
       id: vendor._id,
       email: vendor.email,
       phoneNumber: vendor.phoneNumber,
-      
+      productCount: await Product.countDocuments({ vendor: vendorId }),
+
       // Personal Information
       firstName: vendor.firstName,
       lastName: vendor.lastName,
       photo: vendor.photo,
-      
+
       // Business Information
       businessName: vendor.businessName,
       businessAddress: vendor.businessAddress,
       businessLogo: vendor.businessLogo,
       businessBanner: vendor.businessBanner,
-      
+
       // Business TIN
       businessTin: vendor.businessTin,
-      
+
       // Tax & Legal
       taxAndLegal: vendor.taxAndLegal,
-      
+
       // Bank Details
       bankDetails: vendor.bankDetails,
-      
+
       // Metadata
       status: vendor.status,
       role: vendor.role,
       registrationStep: vendor.registrationStep,
       isEmailVerified: vendor.isEmailVerified,
-      
+
       // Timestamps
       registeredAt: vendor.createdAt,
       lastLogin: vendor.lastLogin,
@@ -584,10 +605,19 @@ class VendorService {
     // Export mode - return all vendors without pagination
     if (exportMode) {
       const vendors = await Vendor.find(filter)
-        .select('-password -tokenVersion') // Exclude sensitive fields
+        .select('-password -tokenVersion')
         .sort({ createdAt: -1 })
-        .lean() // OPTIMIZATION: Convert to plain JS objects (faster)
+        .lean()
         .exec();
+
+      // Fetch product counts for all matching vendors
+      const vendorIds = vendors.map(v => v._id);
+      const productCounts = await Product.aggregate([
+        { $match: { vendor: { $in: vendorIds } } },
+        { $group: { _id: '$vendor', count: { $sum: 1 } } }
+      ]);
+      const countMap = {};
+      productCounts.forEach(c => countMap[c._id.toString()] = c.count);
 
       return vendors.map(vendor => ({
         id: vendor._id,
@@ -604,15 +634,14 @@ class VendorService {
         ifscCode: vendor.bankDetails?.ifscCode || '',
         gstNumber: vendor.taxAndLegal?.gstNumber || '',
         panNumber: vendor.taxAndLegal?.panNumber || '',
+        productCount: countMap[vendor._id.toString()] || 0,
         registeredAt: vendor.createdAt,
         lastLogin: vendor.lastLogin || 'Never',
       }));
     }
 
-    // OPTIMIZED: Normal pagination mode with field projection
+    // Normal pagination mode
     const skip = (page - 1) * limit;
-    
-    // Only select fields needed for list view (reduces data transfer)
     const projection = {
       email: 1,
       phoneNumber: 1,
@@ -632,12 +661,21 @@ class VendorService {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean() // OPTIMIZATION: Convert to plain JS objects
+        .lean()
         .exec(),
       Vendor.countDocuments(filter).exec(),
     ]);
 
-    return {
+    // Fetch product counts for these vendors
+    const vendorIds = vendors.map(v => v._id);
+    const productCounts = await Product.aggregate([
+      { $match: { vendor: { $in: vendorIds } } },
+      { $group: { _id: '$vendor', count: { $sum: 1 } } }
+    ]);
+    const countMap = {};
+    productCounts.forEach(c => countMap[c._id.toString()] = c.count);
+
+    const result = {
       vendors: vendors.map(vendor => ({
         id: vendor._id,
         email: vendor.email,
@@ -651,6 +689,7 @@ class VendorService {
         registrationStep: vendor.registrationStep,
         registeredAt: vendor.createdAt,
         lastLogin: vendor.lastLogin,
+        productCount: countMap[vendor._id.toString()] || 0,
       })),
       pagination: {
         currentPage: page,
