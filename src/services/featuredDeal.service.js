@@ -1,17 +1,17 @@
-import FlashDealRepository from '../repositories/flashDeal.repository.js';
+import FeaturedDealRepository from '../repositories/featuredDeal.repository.js';
 import ProductRepository from '../repositories/product.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
 import { uploadImageFromUrl, deleteMultipleImages } from '../utils/imageUpload.util.js';
 
-class FlashDealService {
-    async createFlashDeal(data) {
+class FeaturedDealService {
+    async createFeaturedDeal(data) {
         if (new Date(data.endDate) <= new Date(data.startDate)) {
             throw new AppError('End date must be after start date', HTTP_STATUS.BAD_REQUEST, 'INVALID_DATE_RANGE');
         }
 
-        const folder = 'multi-vendor/flash-deals';
+        const folder = 'multi-vendor/featured-deals';
 
         // Handle Main Image
         if (data.image && typeof data.image === 'string') {
@@ -25,35 +25,35 @@ class FlashDealService {
             data.metaImage = { url: upload.url, publicId: upload.publicId };
         }
 
-        const result = await FlashDealRepository.create(data);
+        const result = await FeaturedDealRepository.create(data);
         await this.invalidateCache();
         return result;
     }
 
-    async getAllFlashDeals(query = {}) {
+    async getAllFeaturedDeals(query = {}) {
         const { page = 1, limit = 10, title, isPublished } = query;
         const filter = {};
         if (title) filter.title = { $regex: title, $options: 'i' };
         if (isPublished !== undefined) filter.isPublished = isPublished === 'true';
 
-        return await FlashDealRepository.findAllWithStats(filter, { createdAt: -1 }, parseInt(page), parseInt(limit));
+        return await FeaturedDealRepository.findAllWithStats(filter, { createdAt: -1 }, parseInt(page), parseInt(limit));
     }
 
-    async getFlashDealById(id) {
-        const deal = await FlashDealRepository.findByIdPopulated(id);
-        if (!deal) throw new AppError('Flash deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
+    async getFeaturedDealById(id) {
+        const deal = await FeaturedDealRepository.findByIdPopulated(id);
+        if (!deal) throw new AppError('Featured deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
         return deal;
     }
 
-    async getPublicFlashDealById(id) {
-        const deal = await FlashDealRepository.model.findOne({ _id: id, isPublished: true })
+    async getPublicFeaturedDealById(id) {
+        const deal = await FeaturedDealRepository.model.findOne({ _id: id, isPublished: true })
             .populate({
                 path: 'products.product',
                 match: { isActive: true, status: 'approved' }
             })
             .lean({ virtuals: true });
 
-        if (!deal) throw new AppError('Flash deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
+        if (!deal) throw new AppError('Featured deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
 
         const now = new Date();
         if (now < deal.startDate || now > deal.endDate) {
@@ -66,15 +66,15 @@ class FlashDealService {
         return deal;
     }
 
-    async updateFlashDeal(id, data) {
-        const deal = await FlashDealRepository.findById(id);
-        if (!deal) throw new AppError('Flash deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
+    async updateFeaturedDeal(id, data) {
+        const deal = await FeaturedDealRepository.findById(id);
+        if (!deal) throw new AppError('Featured deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
 
         if (data.startDate && data.endDate && new Date(data.endDate) <= new Date(data.startDate)) {
             throw new AppError('End date must be after start date', HTTP_STATUS.BAD_REQUEST, 'INVALID_DATE_RANGE');
         }
 
-        const folder = 'multi-vendor/flash-deals';
+        const folder = 'multi-vendor/featured-deals';
         const imagesToDelete = [];
 
         // Handle Image Update
@@ -91,7 +91,7 @@ class FlashDealService {
             data.metaImage = { url: upload.url, publicId: upload.publicId };
         }
 
-        const result = await FlashDealRepository.update(id, data);
+        const result = await FeaturedDealRepository.update(id, data);
 
         // Cleanup old images if update was successful
         if (imagesToDelete.length > 0) {
@@ -102,15 +102,15 @@ class FlashDealService {
         return result;
     }
 
-    async deleteFlashDeal(id) {
-        const deal = await FlashDealRepository.findById(id);
-        if (!deal) throw new AppError('Flash deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
+    async deleteFeaturedDeal(id) {
+        const deal = await FeaturedDealRepository.findById(id);
+        if (!deal) throw new AppError('Featured deal not found', HTTP_STATUS.NOT_FOUND, 'DEAL_NOT_FOUND');
 
         const imagesToDelete = [];
         if (deal.image?.publicId) imagesToDelete.push(deal.image.publicId);
         if (deal.metaImage?.publicId) imagesToDelete.push(deal.metaImage.publicId);
 
-        const result = await FlashDealRepository.delete(id);
+        const result = await FeaturedDealRepository.delete(id);
 
         // Delete from Cloudinary
         if (imagesToDelete.length > 0) {
@@ -130,33 +130,33 @@ class FlashDealService {
             throw new AppError('One or more products not found', HTTP_STATUS.NOT_FOUND, 'PRODUCTS_NOT_FOUND');
         }
 
-        const result = await FlashDealRepository.addProducts(dealId, products);
+        const result = await FeaturedDealRepository.addProducts(dealId, products);
         await this.invalidateCache();
         return result;
     }
 
     async removeProductFromDeal(dealId, productId) {
-        const result = await FlashDealRepository.removeProduct(dealId, productId);
+        const result = await FeaturedDealRepository.removeProduct(dealId, productId);
         await this.invalidateCache();
         return result;
     }
 
     async togglePublishStatus(dealId, isPublished) {
-        const result = await FlashDealRepository.togglePublish(dealId, isPublished);
+        const result = await FeaturedDealRepository.togglePublish(dealId, isPublished);
         await this.invalidateCache();
         return result;
     }
 
     async toggleProductStatus(dealId, productId, isActive) {
-        const result = await FlashDealRepository.toggleProductStatus(dealId, productId, isActive);
+        const result = await FeaturedDealRepository.toggleProductStatus(dealId, productId, isActive);
         if (!result) throw new AppError('Deal or product not found', HTTP_STATUS.NOT_FOUND);
         await this.invalidateCache();
         return result;
     }
 
-    async getActiveFlashDeals(limit = 10) {
+    async getActiveFeaturedDeals(limit = 10) {
         const now = new Date();
-        const deals = await FlashDealRepository.model.find({
+        const deals = await FeaturedDealRepository.model.find({
             isPublished: true,
             startDate: { $lte: now },
             endDate: { $gte: now }
@@ -165,7 +165,7 @@ class FlashDealService {
             .limit(limit)
             .populate({
                 path: 'products.product',
-                match: { isActive: true, status: 'approved' } // Ensure product itself is active
+                match: { isActive: true, status: 'approved' }
             })
             .lean({ virtuals: true });
 
@@ -178,19 +178,18 @@ class FlashDealService {
     }
 
     /**
-     * Platform-wide Product Enrichment
-     * Calculates flashDeal price if product is part of an active/published flash deal.
+     * Platform-wide Product Enrichment for Featured Deals
      */
-    async enrichProductsWithFlashDeals(products) {
+    async enrichProductsWithFeaturedDeals(products) {
         if (!products || (Array.isArray(products) && products.length === 0)) return products;
 
         const isArray = Array.isArray(products);
         const productList = isArray ? products : [products];
         const productIds = productList.map(p => p._id.toString());
 
-        // Find ALL active/published flash deals that contain any of these products
+        // Find ALL active/published featured deals that contain any of these products
         const now = new Date();
-        const activeDeals = await FlashDealRepository.model.find({
+        const activeDeals = await FeaturedDealRepository.model.find({
             isPublished: true,
             startDate: { $lte: now },
             endDate: { $gte: now },
@@ -199,14 +198,13 @@ class FlashDealService {
 
         if (activeDeals.length === 0) return products;
 
-        // Map product ID to its best/latest flash deal
-        // Note: Realistically 1 product shouldn't be in 2 active flash deals, but we take the latest.
-        const productFlashMap = {};
+        // Map product ID to its latest featured deal
+        const productFeaturedMap = {};
         activeDeals.forEach(deal => {
             deal.products.forEach(dp => {
                 const pid = dp.product.toString();
                 if (productIds.includes(pid) && dp.isActive !== false) {
-                    productFlashMap[pid] = {
+                    productFeaturedMap[pid] = {
                         dealTitle: deal.title,
                         discount: dp.discount,
                         discountType: dp.discountType,
@@ -217,14 +215,14 @@ class FlashDealService {
         });
 
         productList.forEach(p => {
-            const flash = productFlashMap[p._id.toString()];
-            if (flash) {
-                p.flashDeal = flash;
-                // Calculate flash price
-                if (flash.discountType === 'flat') {
-                    p.flashPrice = Math.max(0, p.price - flash.discount);
+            const featured = productFeaturedMap[p._id.toString()];
+            if (featured) {
+                p.featuredDeal = featured;
+                // Calculate featured price
+                if (featured.discountType === 'flat') {
+                    p.featuredPrice = Math.max(0, p.price - featured.discount);
                 } else {
-                    p.flashPrice = Math.max(0, p.price - (p.price * (flash.discount / 100)));
+                    p.featuredPrice = Math.max(0, p.price - (p.price * (featured.discount / 100)));
                 }
             }
         });
@@ -233,8 +231,8 @@ class FlashDealService {
     }
 
     async invalidateCache() {
-        await Cache.delByPattern('flash-deals*');
+        await Cache.delByPattern('featured-deals*');
     }
 }
 
-export default new FlashDealService();
+export default new FeaturedDealService();

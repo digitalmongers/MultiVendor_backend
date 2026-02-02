@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { SYSTEM_PERMISSIONS } from '../constants.js';
 import validate from '../middleware/validate.middleware.js';
 import { authorizeStaff } from '../middleware/employeeAuth.middleware.js';
-import AdminFlashDealController from '../controllers/adminFlashDeal.controller.js';
+import AdminFeaturedDealController from '../controllers/adminFeaturedDeal.controller.js';
 import lockRequest from '../middleware/idempotency.middleware.js';
 
 const router = express.Router();
@@ -40,20 +40,20 @@ const addProductsSchema = z.object({
 router.use(authorizeStaff(SYSTEM_PERMISSIONS.OFFERS_AND_DEALS));
 
 router.route('/')
-    .get(AdminFlashDealController.getDeals)
-    .post(lockRequest(), validate(dealSchema), AdminFlashDealController.createDeal);
+    .get(AdminFeaturedDealController.getDeals)
+    .post(lockRequest(), validate(dealSchema), AdminFeaturedDealController.createDeal);
 
 router.route('/:id')
-    .get(AdminFlashDealController.getDeal)
-    .patch(lockRequest(), validate(dealSchema.partial()), AdminFlashDealController.updateDeal)
-    .delete(lockRequest(), AdminFlashDealController.deleteDeal);
+    .get(AdminFeaturedDealController.getDeal)
+    .patch(lockRequest(), validate(dealSchema.partial()), AdminFeaturedDealController.updateDeal)
+    .delete(lockRequest(), AdminFeaturedDealController.deleteDeal);
 
-router.patch('/:id/publish', lockRequest(), validate(publishSchema), AdminFlashDealController.togglePublish);
+router.patch('/:id/publish', lockRequest(), validate(publishSchema), AdminFeaturedDealController.togglePublish);
 
-router.post('/:id/products', lockRequest(), validate(addProductsSchema), AdminFlashDealController.addProducts);
+router.post('/:id/products', lockRequest(), validate(addProductsSchema), AdminFeaturedDealController.addProducts);
 
-router.patch('/:id/products/:productId/status', lockRequest(), AdminFlashDealController.toggleProductStatus);
+router.patch('/:id/products/:productId/status', lockRequest(), AdminFeaturedDealController.toggleProductStatus);
 
-router.delete('/:id/products/:productId', lockRequest(), AdminFlashDealController.removeProduct);
+router.delete('/:id/products/:productId', lockRequest(), AdminFeaturedDealController.removeProduct);
 
 export default router;

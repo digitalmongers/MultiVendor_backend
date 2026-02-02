@@ -11,4 +11,9 @@ router.get('/active', async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, deals, SUCCESS_MESSAGES.FETCHED));
 });
 
+router.get('/:id', async (req, res) => {
+    const deal = await FlashDealService.getPublicFlashDealById(req.params.id);
+    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, deal, SUCCESS_MESSAGES.FETCHED));
+});
+
 export default router;

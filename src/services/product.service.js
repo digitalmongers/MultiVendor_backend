@@ -7,6 +7,7 @@ import Cache from '../utils/cache.js';
 import Logger from '../utils/logger.js';
 import ClearanceSaleService from './clearanceSale.service.js';
 import FlashDealService from './flashDeal.service.js';
+import FeaturedDealService from './featuredDeal.service.js';
 import { deleteMultipleImages } from '../utils/imageUpload.util.js';
 import crypto from 'crypto';
 
@@ -246,6 +247,9 @@ class ProductService {
         // Enrich with Flash Deals
         result.products = await FlashDealService.enrichProductsWithFlashDeals(result.products);
 
+        // Enrich with Featured Deals
+        result.products = await FeaturedDealService.enrichProductsWithFeaturedDeals(result.products);
+
         return result;
     }
 
@@ -283,6 +287,9 @@ class ProductService {
 
         // Enrich with Flash Deals
         enriched = await FlashDealService.enrichProductsWithFlashDeals(enriched);
+
+        // Enrich with Featured Deals
+        enriched = await FeaturedDealService.enrichProductsWithFeaturedDeals(enriched);
 
         return enriched;
     }
@@ -650,7 +657,14 @@ class ProductService {
     async adminGetAllProducts(query) {
         // Admin sees ALL products, no default filters applied unless specified
         const filter = query.filter || {};
-        return await ProductRepository.findAll(filter, query.sort, query.page, query.limit);
+        const result = await ProductRepository.findAll(filter, query.sort, query.page, query.limit);
+
+        // Enrich with sales and deals
+        result.products = await ClearanceSaleService.enrichProductsWithSales(result.products);
+        result.products = await FlashDealService.enrichProductsWithFlashDeals(result.products);
+        result.products = await FeaturedDealService.enrichProductsWithFeaturedDeals(result.products);
+
+        return result;
     }
 
     async adminGetProductById(id) {

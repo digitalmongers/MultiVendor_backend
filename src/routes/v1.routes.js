@@ -41,6 +41,8 @@ import clearanceSaleRoutes from './clearanceSale.routes.js';
 import adminClearanceSaleRoutes from './adminClearanceSale.routes.js';
 import flashDealRoutes from './flashDeal.routes.js';
 import adminFlashDealRoutes from './adminFlashDeal.routes.js';
+import featuredDealRoutes from './featuredDeal.routes.js';
+import adminFeaturedDealRoutes from './adminFeaturedDeal.routes.js';
 
 const router = express.Router();
 
@@ -88,6 +90,8 @@ router.use('/clearance-sale', clearanceSaleRoutes);
 router.use('/admin/clearance-sale', adminClearanceSaleRoutes);
 router.use('/flash-deals', flashDealRoutes);
 router.use('/admin/flash-deals', adminFlashDealRoutes);
+router.use('/featured-deals', featuredDealRoutes);
+router.use('/admin/featured-deals', adminFeaturedDealRoutes);
 
 // Health check can also be versioned if needed, but usually kept root
 router.use('/health', healthRoutes);

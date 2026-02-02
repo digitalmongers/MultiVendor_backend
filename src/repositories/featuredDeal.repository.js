@@ -1,15 +1,14 @@
-import FlashDeal from '../models/flashDeal.model.js';
+import FeaturedDeal from '../models/featuredDeal.model.js';
 import BaseRepository from './base.repository.js';
 
-class FlashDealRepository extends BaseRepository {
+class FeaturedDealRepository extends BaseRepository {
     constructor() {
-        super(FlashDeal);
+        super(FeaturedDeal);
     }
 
     async findAllWithStats(filter = {}, sort = { createdAt: -1 }, page = 1, limit = 10) {
         const skip = (page - 1) * limit;
 
-        // Fetch deals and populate product count
         const deals = await this.model.find(filter)
             .sort(sort)
             .skip(skip)
@@ -73,4 +72,4 @@ class FlashDealRepository extends BaseRepository {
     }
 }
 
-export default new FlashDealRepository();
+export default new FeaturedDealRepository();

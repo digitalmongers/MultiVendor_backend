@@ -45,6 +45,13 @@ class AdminFlashDealController {
         const deal = await FlashDealService.removeProductFromDeal(id, productId);
         return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, deal, 'Product removed from flash deal'));
     };
+
+    toggleProductStatus = async (req, res) => {
+        const { id, productId } = req.params;
+        const { isActive } = req.body;
+        const deal = await FlashDealService.toggleProductStatus(id, productId, isActive);
+        return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, deal, 'Product status updated in flash deal'));
+    };
 }
 
 export default new AdminFlashDealController();

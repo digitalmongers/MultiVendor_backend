@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const flashDealSchema = new mongoose.Schema({
+const featuredDealSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -23,7 +23,7 @@ const flashDealSchema = new mongoose.Schema({
         default: false,
         index: true
     },
-    // Meta Data
+    // Meta Data for SEO
     metaTitle: {
         type: String,
         trim: true
@@ -36,7 +36,7 @@ const flashDealSchema = new mongoose.Schema({
         url: { type: String },
         publicId: { type: String }
     },
-    // Products included in the flash deal
+    // Products included in the featured deal
     products: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
@@ -63,14 +63,14 @@ const flashDealSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-// Virtual for status (Active/Expired)
-flashDealSchema.virtual('status').get(function () {
+// Virtual for status (Upcoming/Active/Expired)
+featuredDealSchema.virtual('status').get(function () {
     const now = new Date();
     if (now < this.startDate) return 'upcoming';
     if (now > this.endDate) return 'expired';
     return 'active';
 });
 
-const FlashDeal = mongoose.model('FlashDeal', flashDealSchema);
+const FeaturedDeal = mongoose.model('FeaturedDeal', featuredDealSchema);
 
-export default FlashDeal;
+export default FeaturedDeal;

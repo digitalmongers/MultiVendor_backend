@@ -5,7 +5,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Task Manager API',
+      title: 'Multi Vendor API',
       version: '1.0.0',
       description: 'API documentation',
     },
@@ -15,7 +15,7 @@ const options = {
       },
     ],
   },
-  apis: ['./src/routes/*.js'], 
+  apis: ['./src/routes/*.js'],
 };
 
 // The original global specs initialization is removed as per the implied change
