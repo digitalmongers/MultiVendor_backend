@@ -1,10 +1,11 @@
-import XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { z } from 'zod';
 import AppError from './AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Logger from './logger.js';
 import ProductCategoryRepository from '../repositories/productCategory.repository.js';
 import ProductSubCategoryRepository from '../repositories/productSubCategory.repository.js';
+import stream from 'stream';
 
 /**
  * Zod schema for validating individual product row from Excel
@@ -177,7 +178,7 @@ const productRowSchema = z.object({
         .transform(val => {
             if (!val || val.trim().length === 0) return [];
             try {
-                const parsed = JSON.parse(val);
+                const parsed = typeof val === 'string' ? JSON.parse(val) : val;
                 return Array.isArray(parsed) ? parsed : [];
             } catch (error) {
                 throw new Error('Invalid variations JSON format');
@@ -190,7 +191,7 @@ const productRowSchema = z.object({
         .transform(val => {
             if (!val || val.trim().length === 0) return [];
             try {
-                const parsed = JSON.parse(val);
+                const parsed = typeof val === 'string' ? JSON.parse(val) : val;
                 return Array.isArray(parsed) ? parsed : [];
             } catch (error) {
                 throw new Error('Invalid attributes JSON format');
@@ -202,38 +203,59 @@ const productRowSchema = z.object({
  * Parse Excel file and extract product data
  * 
  * @param {Buffer} buffer - Excel file buffer
- * @returns {Array<Object>} Array of product objects
+ * @returns {Promise<Array<Object>>} Array of product objects
  */
-const parseExcelToJson = (buffer) => {
+const parseExcelToJson = async (buffer) => {
     try {
-        const workbook = XLSX.read(buffer, { type: 'buffer' });
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(buffer);
 
-        // Get the first sheet (Products sheet)
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        const worksheet = workbook.worksheets[0];
+        const jsonData = [];
 
-        // Convert to JSON
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-            raw: false, // Keep values as strings for validation
-            defval: null // Default value for empty cells
+        // header row is row 1
+        const headerRow = worksheet.getRow(1);
+        const headers = [];
+        headerRow.eachCell((cell, colNumber) => {
+            headers[colNumber] = cell.value?.toString();
+        });
+
+        // Iterate through rows starting from row 3 (after headers and descriptions)
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber <= 2) return;
+
+            const rowData = {};
+            row.eachCell((cell, colNumber) => {
+                const header = headers[colNumber];
+                if (header) {
+                    // Extract value from cell, handle possible objects (especially for hyperlinked or formatted cells)
+                    let value = cell.value;
+                    if (value && typeof value === 'object' && value.result !== undefined) {
+                        value = value.result;
+                    } else if (value && typeof value === 'object' && value.text !== undefined) {
+                        value = value.text;
+                    }
+                    rowData[header] = value;
+                }
+            });
+
+            // Only add if row has data
+            if (Object.keys(rowData).length > 0) {
+                jsonData.push(rowData);
+            }
         });
 
         return jsonData;
     } catch (error) {
         Logger.error('Excel parsing failed', { error: error.message });
-        throw new AppError('Failed to parse Excel file. Please ensure it is a valid .xlsx or .xls file.', HTTP_STATUS.BAD_REQUEST);
+        throw new AppError('Failed to parse Excel file. Please ensure it is a valid .xlsx file.', HTTP_STATUS.BAD_REQUEST);
     }
 };
 
 /**
  * Validate and resolve category/subcategory names to IDs
- * 
- * @param {string} categoryName - Category name from Excel
- * @param {string|undefined} subCategoryName - Subcategory name from Excel
- * @returns {Promise<{categoryId: string, subCategoryId: string|undefined}>}
  */
 const resolveCategoryIds = async (categoryName, subCategoryName) => {
-    // Find category by name
     const category = await ProductCategoryRepository.findOne({ name: categoryName });
 
     if (!category) {
@@ -263,25 +285,16 @@ const resolveCategoryIds = async (categoryName, subCategoryName) => {
 
 /**
  * Validate single product row
- * 
- * @param {Object} row - Raw row data from Excel
- * @param {number} rowIndex - Row index for error reporting
- * @returns {Promise<Object>} Validated product data
  */
 const validateProductRow = async (row, rowIndex) => {
-    const errors = [];
-
     try {
-        // Validate with Zod schema
         const validatedData = productRowSchema.parse(row);
 
-        // Resolve category and subcategory IDs
         const { categoryId, subCategoryId } = await resolveCategoryIds(
             validatedData.category,
             validatedData.subCategory
         );
 
-        // Build final product object
         const productData = {
             name: validatedData.name,
             description: validatedData.description,
@@ -306,11 +319,9 @@ const validateProductRow = async (row, rowIndex) => {
             variations: validatedData.variations,
             attributes: validatedData.attributes,
 
-            // Image URLs (to be processed later)
             _thumbnailUrl: validatedData.thumbnailUrl,
             _imageUrls: validatedData.imageUrls,
 
-            // SEO data
             seo: {
                 metaTitle: validatedData.metaTitle,
                 metaDescription: validatedData.metaDescription,
@@ -344,17 +355,11 @@ const validateProductRow = async (row, rowIndex) => {
 
 /**
  * Parse and validate Excel file for bulk product import
- * 
- * @param {Buffer} buffer - Excel file buffer
- * @param {string} vendorId - Vendor ID for product ownership
- * @returns {Promise<{success: boolean, products?: Array, errors?: Array}>}
  */
 export const parseProductExcel = async (buffer, vendorId) => {
     try {
-        // Parse Excel to JSON
-        const rawData = parseExcelToJson(buffer);
+        const rawData = await parseExcelToJson(buffer);
 
-        // Validate row count
         if (rawData.length === 0) {
             throw new AppError('Excel file is empty. Please add at least one product.', HTTP_STATUS.BAD_REQUEST);
         }
@@ -368,19 +373,16 @@ export const parseProductExcel = async (buffer, vendorId) => {
             rowCount: rawData.length
         });
 
-        // Validate all rows
         const validationResults = await Promise.all(
-            rawData.map((row, index) => validateProductRow(row, index + 2)) // +2 because Excel is 1-indexed and has header row
+            rawData.map((row, index) => validateProductRow(row, index + 3)) // +3 because row 1 is headers, row 2 is descriptions
         );
 
-        // Separate successful and failed validations
         const successfulProducts = validationResults
             .filter(result => result.success)
             .map(result => ({ ...result.data, vendor: vendorId }));
 
         const failedValidations = validationResults.filter(result => !result.success);
 
-        // If any validation failed, return all errors
         if (failedValidations.length > 0) {
             const errorReport = failedValidations.map(failure => ({
                 row: failure.rowIndex,
@@ -401,7 +403,6 @@ export const parseProductExcel = async (buffer, vendorId) => {
             };
         }
 
-        // Check for duplicate SKUs within the file
         const skus = successfulProducts.map(p => p.sku);
         const duplicateSkus = skus.filter((sku, index) => skus.indexOf(sku) !== index);
 
