@@ -17,6 +17,13 @@ const faqSchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Index for question text search
+faqSchema.index({ question: 'text', answer: 'text' });
+
 const FAQ = mongoose.model('FAQ', faqSchema);
 
 export default FAQ;

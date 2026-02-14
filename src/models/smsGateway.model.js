@@ -37,6 +37,18 @@ const smsGatewaySchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: name index is already created by { unique: true } in schema definition
+
+// Index for active SMS gateway lookups
+smsGatewaySchema.index({ isActive: 1 });
+
+// Compound index for active gateway by name
+smsGatewaySchema.index({ name: 1, isActive: 1 });
+
 const SmsGateway = mongoose.model('SmsGateway', smsGatewaySchema);
 
 export default SmsGateway;

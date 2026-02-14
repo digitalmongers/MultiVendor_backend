@@ -45,6 +45,27 @@ const supportTicketSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: ticketId index is already created by { unique: true } in schema definition
+
+// Index for customer ticket lookups (most common query)
+supportTicketSchema.index({ customer: 1, createdAt: -1 });
+
+// Index for status filtering (admin dashboard)
+supportTicketSchema.index({ status: 1, createdAt: -1 });
+
+// Index for priority-based sorting
+supportTicketSchema.index({ priority: 1, createdAt: -1 });
+
+// Compound index for admin dashboard filters
+supportTicketSchema.index({ status: 1, priority: 1, createdAt: -1 });
+
+// Index for subject search
+supportTicketSchema.index({ subject: 'text', description: 'text' });
+
 // Pre-save hook to generate Ticket ID (e.g., TK1001)
 supportTicketSchema.pre('validate', async function (next) {
   if (this.isNew && !this.ticketId) {

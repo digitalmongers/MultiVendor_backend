@@ -76,6 +76,19 @@ const clearanceSaleSchema = new mongoose.Schema({
     versionKey: false
 });
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Index for active sale lookups
+clearanceSaleSchema.index({ isActive: 1 });
+
+// Index for date range queries (active sales)
+clearanceSaleSchema.index({ startDate: 1, expireDate: 1 });
+
+// Compound index for vendor/admin sales
+clearanceSaleSchema.index({ vendor: 1, isAdmin: 1, isActive: 1 });
+
 const ClearanceSale = mongoose.model('ClearanceSale', clearanceSaleSchema);
 
 export default ClearanceSale;

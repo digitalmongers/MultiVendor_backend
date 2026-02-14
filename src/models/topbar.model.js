@@ -28,6 +28,13 @@ const topbarSchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Index for active topbar lookups
+topbarSchema.index({ status: 1 });
+
 const Topbar = mongoose.model('Topbar', topbarSchema);
 
 export default Topbar;

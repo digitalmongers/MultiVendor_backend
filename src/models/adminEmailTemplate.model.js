@@ -56,6 +56,18 @@ const adminEmailTemplateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: event index is already created by { unique: true } in schema definition
+
+// Index for enabled template lookups
+adminEmailTemplateSchema.index({ isEnabled: 1 });
+
+// Compound index for active event lookup
+adminEmailTemplateSchema.index({ event: 1, isEnabled: 1 });
+
 const AdminEmailTemplate = mongoose.model('AdminEmailTemplate', adminEmailTemplateSchema);
 
 export default AdminEmailTemplate;

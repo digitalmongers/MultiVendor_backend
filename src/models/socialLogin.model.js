@@ -36,6 +36,18 @@ const socialLoginSchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: provider index is already created by { unique: true } in schema definition
+
+// Index for active social login lookups
+socialLoginSchema.index({ isActive: 1 });
+
+// Compound index for active provider lookup
+socialLoginSchema.index({ provider: 1, isActive: 1 });
+
 const SocialLogin = mongoose.model('SocialLogin', socialLoginSchema);
 
 export default SocialLogin;

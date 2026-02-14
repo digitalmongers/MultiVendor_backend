@@ -60,6 +60,18 @@ const adminSchema = new mongoose.Schema(
 // Index for session validation
 adminSchema.index({ _id: 1, tokenVersion: 1 });
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: Email index is already created by { unique: true } in schema definition
+
+// Index for phone number lookup
+adminSchema.index({ phoneNumber: 1 });
+
+// Index for admin search by name
+adminSchema.index({ name: 'text', email: 'text' });
+
 // Encrypt password using Argon2
 adminSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {

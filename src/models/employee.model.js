@@ -80,6 +80,30 @@ employeeSchema.methods.comparePassword = async function (candidatePassword, user
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: Email index is already created by { unique: true } in schema definition
+
+// Index for authentication queries (login)
+employeeSchema.index({ email: 1, isActive: 1 });
+
+// Index for session validation (token refresh)
+employeeSchema.index({ _id: 1, tokenVersion: 1 });
+
+// Index for role-based lookups
+employeeSchema.index({ role: 1, isActive: 1 });
+
+// Index for phone number lookup
+employeeSchema.index({ phoneNumber: 1 });
+
+// Index for active employees filtering
+employeeSchema.index({ isActive: 1, createdAt: -1 });
+
+// Index for employee search
+employeeSchema.index({ name: 'text', email: 'text' });
+
 const Employee = mongoose.model('Employee', employeeSchema);
 
 export default Employee;

@@ -18,6 +18,18 @@ const newsletterSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: email index is already created by { unique: true } in schema definition
+
+// Index for status filtering (active subscribers)
+newsletterSchema.index({ status: 1 });
+
+// Compound index for subscribed users by signup date
+newsletterSchema.index({ status: 1, createdAt: -1 });
+
 const Newsletter = mongoose.model('Newsletter', newsletterSchema);
 
 export default Newsletter;

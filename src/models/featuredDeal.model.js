@@ -20,8 +20,7 @@ const featuredDealSchema = new mongoose.Schema({
     },
     isPublished: {
         type: Boolean,
-        default: false,
-        index: true
+        default: false
     },
     // Meta Data for SEO
     metaTitle: {
@@ -70,6 +69,19 @@ featuredDealSchema.virtual('status').get(function () {
     if (now > this.endDate) return 'expired';
     return 'active';
 });
+
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Index for published status filtering
+featuredDealSchema.index({ isPublished: 1 });
+
+// Index for date range queries
+featuredDealSchema.index({ startDate: 1, endDate: 1 });
+
+// Compound index for finding published active deals
+featuredDealSchema.index({ isPublished: 1, startDate: 1, endDate: 1 });
 
 const FeaturedDeal = mongoose.model('FeaturedDeal', featuredDealSchema);
 

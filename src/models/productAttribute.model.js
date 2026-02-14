@@ -29,6 +29,18 @@ const productAttributeSchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: name index is already created by { unique: true } in schema definition
+
+// Index for active attribute lookups
+productAttributeSchema.index({ isActive: 1 });
+
+// Index for name search
+productAttributeSchema.index({ name: 'text' });
+
 const ProductAttribute = mongoose.model('ProductAttribute', productAttributeSchema);
 
 export default ProductAttribute;

@@ -111,6 +111,27 @@ customerSchema.virtual('isLocked').get(function() {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: Email index is already created by { unique: true } in schema definition
+
+// Index for authentication queries (login by email)
+customerSchema.index({ email: 1, isActive: 1 });
+
+// Index for phone number lookup (optional login)
+customerSchema.index({ phoneNumber: 1 });
+
+// Index for session validation (token refresh)
+customerSchema.index({ _id: 1, tokenVersion: 1 });
+
+// Index for user search (name, email)
+customerSchema.index({ name: 'text', email: 'text' });
+
+// Index for filtering active/verified users
+customerSchema.index({ isActive: 1, isVerified: 1, createdAt: -1 });
+
 const Customer = mongoose.model('Customer', customerSchema);
 
 export default Customer;

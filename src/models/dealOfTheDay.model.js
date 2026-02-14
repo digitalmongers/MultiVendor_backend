@@ -37,6 +37,9 @@ const dealOfTheDaySchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
+dealOfTheDaySchema.index({ title: 1 });
+dealOfTheDaySchema.index({ 'products.product': 1 });
+
 const DealOfTheDay = mongoose.model('DealOfTheDay', dealOfTheDaySchema);
 
 export default DealOfTheDay;

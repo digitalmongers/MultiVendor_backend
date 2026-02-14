@@ -47,8 +47,7 @@ const cartSchema = new mongoose.Schema({
     items: [cartItemSchema],
     expiresAt: {
         type: Date,
-        default: null,
-        index: true
+        default: null
     }
 }, {
     timestamps: true,

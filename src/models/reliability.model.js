@@ -34,6 +34,18 @@ const reliabilitySchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: key index is already created by { unique: true } in schema definition
+
+// Index for active status filtering
+reliabilitySchema.index({ status: 1 });
+
+// Index for key-based lookups
+reliabilitySchema.index({ key: 1, status: 1 });
+
 const Reliability = mongoose.model('Reliability', reliabilitySchema);
 
 export default Reliability;

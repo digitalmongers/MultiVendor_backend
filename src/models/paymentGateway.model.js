@@ -45,6 +45,18 @@ const paymentGatewaySchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: name index is already created by { unique: true } in schema definition
+
+// Index for active payment gateway lookups
+paymentGatewaySchema.index({ isActive: 1 });
+
+// Compound index for active gateway by name
+paymentGatewaySchema.index({ name: 1, isActive: 1 });
+
 const PaymentGateway = mongoose.model('PaymentGateway', paymentGatewaySchema);
 
 export default PaymentGateway;

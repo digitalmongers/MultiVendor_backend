@@ -32,6 +32,18 @@ const socialMediaChatSchema = new mongoose.Schema(
   }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: platform index is already created by { unique: true } in schema definition
+
+// Index for active chat platform lookups
+socialMediaChatSchema.index({ isActive: 1 });
+
+// Compound index for active platform lookup
+socialMediaChatSchema.index({ platform: 1, isActive: 1 });
+
 const SocialMediaChat = mongoose.model('SocialMediaChat', socialMediaChatSchema);
 
 export default SocialMediaChat;

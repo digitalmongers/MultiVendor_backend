@@ -20,8 +20,7 @@ const flashDealSchema = new mongoose.Schema({
     },
     isPublished: {
         type: Boolean,
-        default: false,
-        index: true
+        default: false
     },
     // Meta Data
     metaTitle: {
@@ -70,6 +69,19 @@ flashDealSchema.virtual('status').get(function () {
     if (now > this.endDate) return 'expired';
     return 'active';
 });
+
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Index for published status filtering
+flashDealSchema.index({ isPublished: 1 });
+
+// Index for date range queries (active deals lookup)
+flashDealSchema.index({ startDate: 1, endDate: 1 });
+
+// Compound index for finding published active deals
+flashDealSchema.index({ isPublished: 1, startDate: 1, endDate: 1 });
 
 const FlashDeal = mongoose.model('FlashDeal', flashDealSchema);
 

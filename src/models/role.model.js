@@ -22,6 +22,18 @@ const roleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ========================================
+// PERFORMANCE OPTIMIZATION: Database Indexes
+// ========================================
+
+// Note: name index is already created by { unique: true } in schema definition
+
+// Index for active role lookups
+roleSchema.index({ isActive: 1 });
+
+// Index for role name search
+roleSchema.index({ name: 'text' });
+
 const Role = mongoose.model('Role', roleSchema);
 
 export default Role;
