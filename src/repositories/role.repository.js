@@ -6,11 +6,11 @@ class RoleRepository {
   }
 
   async findByName(name) {
-    return await Role.findOne({ name });
+    return await Role.findOne({ name }).lean();
   }
 
   async findById(id) {
-    return await Role.findById(id);
+    return await Role.findById(id).lean();
   }
 
   async findAll(query = {}) {

@@ -22,7 +22,7 @@ class PaymentGatewayRepository {
   }
 
   async findById(id) {
-    return await PaymentGateway.findById(id);
+    return await PaymentGateway.findById(id).lean();
   }
 }
 

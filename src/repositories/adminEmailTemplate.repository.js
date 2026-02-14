@@ -14,11 +14,11 @@ class AdminEmailTemplateRepository {
       { event },
       { $set: updateData },
       { new: true, upsert: true, runValidators: true }
-    );
+    ).lean();
   }
 
   async findById(id) {
-    return await AdminEmailTemplate.findById(id);
+    return await AdminEmailTemplate.findById(id).lean();
   }
 
   async updateById(id, updateData) {

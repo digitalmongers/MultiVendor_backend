@@ -90,7 +90,7 @@ class SupplierEmailTemplateService {
     ];
 
     for (const event of events) {
-      const exists = await SupplierEmailTemplate.findOne({ event });
+      const exists = await SupplierEmailTemplate.findOne({ event }).lean();
       if (!exists) {
         await SupplierEmailTemplate.create({
           event,

@@ -6,7 +6,7 @@ class EmployeeRepository {
   }
 
   async findByEmail(email, selectPassword = false) {
-    const query = Employee.findOne({ email }).populate('role');
+    const query = Employee.findOne({ email }).populate('role').lean();
     if (selectPassword) {
       query.select('+password');
     }
@@ -14,7 +14,7 @@ class EmployeeRepository {
   }
 
   async findById(id) {
-    return await Employee.findById(id).populate('role');
+    return await Employee.findById(id).populate('role').lean();
   }
 
   async findAll(query = {}, skip = 0, limit = 10) {

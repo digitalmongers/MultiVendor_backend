@@ -81,7 +81,7 @@ class AdminEmailTemplateService {
     ];
 
     for (const event of events) {
-      const exists = await AdminEmailTemplate.findOne({ event });
+      const exists = await AdminEmailTemplate.findOne({ event }).lean();
       if (!exists) {
         await AdminEmailTemplate.create({
           event,

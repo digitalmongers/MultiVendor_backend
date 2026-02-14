@@ -6,11 +6,11 @@ class TrustedByRepository {
   }
 
   async findById(id) {
-    return await TrustedBy.findById(id);
+    return await TrustedBy.findById(id).lean();
   }
 
   async findAll(filter = {}, sort = { createdAt: -1 }) {
-    return await TrustedBy.find(filter).sort(sort);
+    return await TrustedBy.find(filter).sort(sort).lean();
   }
 
   async update(id, data) {

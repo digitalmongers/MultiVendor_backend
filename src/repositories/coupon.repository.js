@@ -7,7 +7,7 @@ class CouponRepository extends BaseRepository {
     }
 
     async findByCode(code) {
-        return await this.model.findOne({ code: code.toUpperCase() });
+        return await this.model.findOne({ code: code.toUpperCase() }).lean();
     }
 
     async findByVendor(vendorId, options = {}) {

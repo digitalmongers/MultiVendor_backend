@@ -6,19 +6,19 @@ class ProductSubCategoryRepository {
   }
 
   async findAll(filter = {}, sort = { createdAt: -1 }) {
-    return await ProductSubCategory.find(filter).populate('category', 'name').sort(sort);
+    return await ProductSubCategory.find(filter).populate('category', 'name').sort(sort).lean();
   }
 
   async findById(id) {
-    return await ProductSubCategory.findById(id).populate('category', 'name');
+    return await ProductSubCategory.findById(id).populate('category', 'name').lean();
   }
 
   async findByNameAndCategory(name, categoryId) {
-    return await ProductSubCategory.findOne({ name, category: categoryId });
+    return await ProductSubCategory.findOne({ name, category: categoryId }).lean();
   }
 
   async findByCategoryId(categoryId) {
-    return await ProductSubCategory.find({ category: categoryId }).populate('category', 'name').sort({ createdAt: -1 });
+    return await ProductSubCategory.find({ category: categoryId }).populate('category', 'name').sort({ createdAt: -1 }).lean();
   }
 
   async updateById(id, updateData) {

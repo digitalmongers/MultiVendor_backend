@@ -18,7 +18,7 @@ class CustomerEmailTemplateRepository {
   }
 
   async findById(id) {
-    return await CustomerEmailTemplate.findById(id);
+    return await CustomerEmailTemplate.findById(id).lean();
   }
 
   async updateById(id, updateData) {

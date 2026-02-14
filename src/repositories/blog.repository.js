@@ -20,7 +20,8 @@ class BlogRepository {
         .sort(sort)
         .skip(skip)
         .limit(limit)
-        .populate(populate),
+        .populate(populate)
+        .lean(),
       Blog.countDocuments(filter)
     ]);
 
@@ -34,15 +35,17 @@ class BlogRepository {
       .populate({
         path: 'category',
         match: { status: 'active' }
-      }).then(blogs => blogs.filter(blog => blog.category)); // Filter out blogs where category is not active (match returns null)
+      })
+      .lean()
+      .then(blogs => blogs.filter(blog => blog.category)); // Filter out blogs where category is not active (match returns null)
   }
 
   async findBySlug(slug, populate = 'category') {
-    return await Blog.findOne({ slug }).populate(populate);
+    return await Blog.findOne({ slug }).populate(populate).lean();
   }
 
   async findById(id, populate = 'category') {
-    return await Blog.findById(id).populate(populate);
+    return await Blog.findById(id).populate(populate).lean();
   }
 
   async updateById(id, updateData) {

@@ -14,7 +14,7 @@ class TopbarRepository {
   }
 
   async getTopbar() {
-    return await Topbar.findOne();
+    return await Topbar.findOne().lean();
   }
 }
 

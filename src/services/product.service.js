@@ -26,13 +26,13 @@ class ProductService {
             .replace(/[^\w-]+/g, '');
 
         // Check uniqueness
-        let existing = await ProductRepository.findOne({ slug });
+        let existing = await ProductRepository.findOne({ slug }).select('_id');
         let counter = 1;
         let originalSlug = slug;
 
         while (existing) {
             slug = `${originalSlug}-${counter}`;
-            existing = await ProductRepository.findOne({ slug });
+            existing = await ProductRepository.findOne({ slug }).select('_id');
             counter++;
         }
 
@@ -479,7 +479,7 @@ class ProductService {
                 const existingVarSku = await ProductRepository.findOne({
                     'variations.sku': varSku,
                     _id: { $ne: id } // Exclude current product
-                });
+                }).select('_id');
                 if (existingVarSku) {
                     throw new AppError(`Variation SKU '${varSku}' already exists`, HTTP_STATUS.CONFLICT, 'DUPLICATE_VARIATION_SKU');
                 }
@@ -551,7 +551,7 @@ class ProductService {
         // data.isActive is respected from payload (default false per schema default, but admin might send true)
 
         // 5. Validate SKU Uniqueness
-        const existingSku = await ProductRepository.findOne({ sku: data.sku });
+        const existingSku = await ProductRepository.findOne({ sku: data.sku }).select('_id');
         if (existingSku) {
             throw new AppError(`SKU '${data.sku}' already exists`, HTTP_STATUS.CONFLICT, 'DUPLICATE_SKU');
         }
@@ -565,7 +565,7 @@ class ProductService {
             }
 
             for (const varSku of variationSkus) {
-                const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku });
+                const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku }).select('_id');
                 if (existingVarSku) {
                     throw new AppError(`Variation SKU '${varSku}' already exists`, HTTP_STATUS.CONFLICT, 'DUPLICATE_VARIATION_SKU');
                 }
@@ -880,7 +880,7 @@ class ProductService {
                         if (variationSkus.length !== uniqueSkus.size) throw new Error('Duplicate SKUs found in variations');
 
                         for (const varSku of variationSkus) {
-                            const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku });
+                            const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku }).select('_id');
                             if (existingVarSku) throw new Error(`Variation SKU '${varSku}' already exists`);
                         }
                         productData.quantity = productData.variations.reduce((sum, v) => sum + (parseInt(v.stock) || 0), 0);
@@ -1041,7 +1041,7 @@ class ProductService {
 
                 try {
                     // 1. Validate SKU uniqueness
-                    const existingSku = await ProductRepository.findOne({ sku: productData.sku });
+                    const existingSku = await ProductRepository.findOne({ sku: productData.sku }).select('_id');
                     if (existingSku) {
                         throw new Error(`SKU '${productData.sku}' already exists`);
                     }
@@ -1126,7 +1126,7 @@ class ProductService {
 
                         // Check if any variation SKU already exists in database
                         for (const varSku of variationSkus) {
-                            const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku });
+                            const existingVarSku = await ProductRepository.findOne({ 'variations.sku': varSku }).select('_id');
                             if (existingVarSku) {
                                 throw new Error(`Variation SKU '${varSku}' already exists`);
                             }

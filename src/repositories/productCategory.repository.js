@@ -6,19 +6,19 @@ class ProductCategoryRepository {
   }
 
   async findAll(filter = {}, sort = { createdAt: -1 }) {
-    return await ProductCategory.find(filter).sort(sort);
+    return await ProductCategory.find(filter).sort(sort).lean();
   }
 
   async findById(id) {
-    return await ProductCategory.findById(id);
+    return await ProductCategory.findById(id).lean();
   }
 
   async findByName(name) {
-    return await ProductCategory.findOne({ name });
+    return await ProductCategory.findOne({ name }).lean();
   }
 
   async updateById(id, updateData) {
-    return await ProductCategory.findByIdAndUpdate(id, updateData, { new: true });
+    return await ProductCategory.findByIdAndUpdate(id, updateData, { new: true }).lean();
   }
 
   async deleteById(id) {

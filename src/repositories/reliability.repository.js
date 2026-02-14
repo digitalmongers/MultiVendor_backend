@@ -10,11 +10,11 @@ class ReliabilityRepository {
   }
 
   async findByKey(key) {
-    return await Reliability.findOne({ key });
+    return await Reliability.findOne({ key }).lean();
   }
 
   async findAll(filter = {}) {
-    return await Reliability.find(filter);
+    return await Reliability.find(filter).lean();
   }
 
   async updateStatus(key, status) {

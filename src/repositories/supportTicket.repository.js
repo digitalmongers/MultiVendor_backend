@@ -17,7 +17,7 @@ class SupportTicketRepository {
   }
 
   async findById(id) {
-    return await SupportTicket.findById(id).populate('customer', 'name email phoneNumber');
+    return await SupportTicket.findById(id).populate('customer', 'name email phoneNumber').lean();
   }
 
   async updateById(id, updateData) {

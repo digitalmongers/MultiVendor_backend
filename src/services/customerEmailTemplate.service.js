@@ -85,7 +85,7 @@ class CustomerEmailTemplateService {
     ];
 
     for (const event of events) {
-      const exists = await CustomerEmailTemplate.findOne({ event });
+      const exists = await CustomerEmailTemplate.findOne({ event }).lean();
       if (!exists) {
         let emailContent = `Hello {username}, this is a notification for ${event}.`;
         if (event === 'Support Ticket Reply') {

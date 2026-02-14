@@ -376,7 +376,7 @@ class VendorService {
     }
 
     // Check phone number
-    const existingPhone = await Vendor.findOne({ phoneNumber: vendorData.phoneNumber });
+    const existingPhone = await Vendor.findOne({ phoneNumber: vendorData.phoneNumber }).select('_id').lean();
     if (existingPhone) {
       throw new AppError('Vendor with this phone number already exists', HTTP_STATUS.CONFLICT);
     }

@@ -7,11 +7,11 @@ class ClearanceSaleRepository extends BaseRepository {
     }
 
     async findByVendor(vendorId) {
-        return await this.model.findOne({ vendor: vendorId, isAdmin: false }).populate('products.product');
+        return await this.model.findOne({ vendor: vendorId, isAdmin: false }).populate('products.product').lean();
     }
 
     async findAdminSale() {
-        return await this.model.findOne({ isAdmin: true }).populate('products.product');
+        return await this.model.findOne({ isAdmin: true }).populate('products.product').lean();
     }
 
     async findAllActive(limit = 10) {

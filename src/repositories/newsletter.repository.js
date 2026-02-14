@@ -18,7 +18,7 @@ class NewsletterRepository {
   }
 
   async findByEmail(email) {
-    return await Newsletter.findOne({ email });
+    return await Newsletter.findOne({ email }).lean();
   }
 
   async findAll(options = {}) {
@@ -65,7 +65,8 @@ class NewsletterRepository {
     const subscribers = await Newsletter.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     const total = await Newsletter.countDocuments(query);
 

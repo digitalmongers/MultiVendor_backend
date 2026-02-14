@@ -6,22 +6,22 @@ class SocialMediaRepository {
       { platform },
       { link, platform },
       { new: true, upsert: true, runValidators: true }
-    );
+    ).lean();
   }
 
   async findById(id) {
-    return await SocialMedia.findById(id);
+    return await SocialMedia.findById(id).lean();
   }
 
   async findAll(filter = {}, sort = { platform: 1 }) {
-    return await SocialMedia.find(filter).sort(sort);
+    return await SocialMedia.find(filter).sort(sort).lean();
   }
 
   async update(id, data) {
     return await SocialMedia.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
-    });
+    }).lean();
   }
 
   async delete(id) {

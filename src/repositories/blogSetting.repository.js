@@ -2,7 +2,7 @@ import BlogSetting from '../models/blogSetting.model.js';
 
 class BlogSettingRepository {
   async getSettings() {
-    let settings = await BlogSetting.findOne();
+    let settings = await BlogSetting.findOne().lean();
     if (!settings) {
       settings = await BlogSetting.create({ isBlogEnabled: true });
     }

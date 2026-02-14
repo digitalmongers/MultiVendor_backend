@@ -6,15 +6,15 @@ class BlogCategoryRepository {
   }
 
   async findAll(filter = {}, sort = { createdAt: -1 }) {
-    return await BlogCategory.find(filter).sort(sort);
+    return await BlogCategory.find(filter).sort(sort).lean();
   }
 
   async findById(id) {
-    return await BlogCategory.findById(id);
+    return await BlogCategory.findById(id).lean();
   }
 
   async findByName(name) {
-    return await BlogCategory.findOne({ name });
+    return await BlogCategory.findOne({ name }).lean();
   }
 
   async updateById(id, updateData) {

@@ -19,7 +19,7 @@ class SystemSettingRepository {
 
     // 2. Database Fallback (Upsert Pattern)
     // We try to find one, if not exists, we return default structure (but don't save unless needed)
-    let settings = await SystemSetting.findOne();
+    let settings = await SystemSetting.findOne().lean();
     
     if (!settings) {
       // Create default if completely missing

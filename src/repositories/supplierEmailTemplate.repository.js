@@ -18,7 +18,7 @@ class SupplierEmailTemplateRepository {
   }
 
   async findById(id) {
-    return await SupplierEmailTemplate.findById(id);
+    return await SupplierEmailTemplate.findById(id).lean();
   }
 
   async updateById(id, updateData) {

@@ -6,7 +6,7 @@ class FAQRepository {
   }
 
   async findById(id) {
-    return await FAQ.findById(id);
+    return await FAQ.findById(id).lean();
   }
 
   async findAll(filter = {}) {

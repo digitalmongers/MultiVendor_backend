@@ -29,7 +29,7 @@ class FeaturedDealRepository extends BaseRepository {
     }
 
     async findByIdPopulated(id) {
-        return await this.model.findById(id).populate('products.product');
+        return await this.model.findById(id).populate('products.product').lean();
     }
 
     async addProducts(dealId, productData) {
