@@ -3,6 +3,11 @@ import ProductRepository from '../repositories/product.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import MultiLayerCache from '../utils/multiLayerCache.js';
+import L1Cache from '../utils/l1Cache.js';
+
+const DEAL_CACHE_KEY = 'deals:active';
+const DEAL_PATTERN = 'deals*';
 
 class DealOfTheDayService {
     async createDeal(data) {
@@ -88,6 +93,31 @@ class DealOfTheDayService {
         return result;
     }
 
+    /**
+     * Get active deals with CURSOR pagination (for public APIs - fast & scalable)
+     * With Multi-Layer Caching
+     */
+    async getActiveDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
+        const cacheKey = `deals:cursor:${cursor}:${limit}:${sortDirection}`;
+        
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const filter = { isPublished: true };
+
+            const result = await DealOfTheDayRepository.findAllWithCursor(filter, cursor, limit, sortDirection);
+
+            // Filter products
+            result.data.forEach(deal => {
+                deal.products = deal.products.filter(p => p.product && p.isActive !== false);
+            });
+
+            return result;
+        }, { l1TTL: 60, l2TTL: 300 }); // L1: 1min, L2: 5min
+    }
+
+    /**
+     * Get active deals (simple list without pagination)
+     * @deprecated Use getActiveDealsCursor for better performance
+     */
     async getActiveDeals(limit = 10) {
         const deals = await DealOfTheDayRepository.model.find({ isPublished: true })
             .sort({ createdAt: -1 })
@@ -153,7 +183,8 @@ class DealOfTheDayService {
     }
 
     async invalidateCache() {
-        await Cache.delByPattern('deal-of-the-day*');
+        await Cache.delByPattern(DEAL_PATTERN);
+        L1Cache.delByPattern('deals');
     }
 }
 

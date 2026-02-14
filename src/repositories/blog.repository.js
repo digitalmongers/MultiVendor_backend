@@ -5,6 +5,9 @@ class BlogRepository {
     return await Blog.create(data);
   }
 
+  /**
+   * Find all blogs with OFFSET pagination (for admin/fixed pages)
+   */
   async findAll(filter = {}, options = {}) {
     const { 
       page = 1, 
@@ -26,6 +29,47 @@ class BlogRepository {
     ]);
 
     return { blogs, total, page, limit };
+  }
+
+  /**
+   * Find blogs with CURSOR pagination (for public APIs - fast & scalable)
+   * Use for infinite scroll, mobile apps, large datasets
+   */
+  async findAllCursor(filter = {}, cursor = null, limit = 10, sortDirection = 'desc') {
+    // Build query with cursor
+    const query = { ...filter };
+    if (cursor) {
+      const operator = sortDirection === 'desc' ? '$lt' : '$gt';
+      query._id = { [operator]: cursor };
+    }
+
+    const sort = sortDirection === 'desc' ? { _id: -1 } : { _id: 1 };
+
+    // Fetch one extra to determine if there's a next page
+    const blogs = await Blog.find(query)
+      .sort(sort)
+      .limit(limit + 1)
+      .populate('category')
+      .lean();
+
+    // Check if there's a next page
+    const hasNextPage = blogs.length > limit;
+    const items = hasNextPage ? blogs.slice(0, limit) : blogs;
+
+    // Get next cursor from last item
+    const nextCursor = items.length > 0 && hasNextPage 
+      ? items[items.length - 1]._id 
+      : null;
+
+    return {
+      blogs: items,
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        limit,
+        count: items.length
+      }
+    };
   }
 
   async findActiveBlogs(filter = {}, sort = { createdAt: -1 }) {

@@ -2,6 +2,7 @@ import CouponRepository from '../repositories/coupon.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import L1Cache from '../utils/l1Cache.js';
 
 class CouponService {
     async createCoupon(data, vendorId) {
@@ -38,8 +39,7 @@ class CouponService {
     async invalidateCache(vendorId) {
         // Invalidate public coupon lists and vendor specific lists
         await Cache.delByPattern('coupons*');
-        // If we had scoped cache like 'vendor:coupons:${vendorId}', we would clear that too.
-        // For now, assume 'response:/api/v1/coupons*' or specific patterns if using route caching.
+        L1Cache.delByPattern('coupon');
     }
 
     async getVendorCoupons(vendorId, query) {

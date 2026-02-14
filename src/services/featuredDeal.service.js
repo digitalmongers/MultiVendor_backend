@@ -3,7 +3,12 @@ import ProductRepository from '../repositories/product.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import MultiLayerCache from '../utils/multiLayerCache.js';
+import L1Cache from '../utils/l1Cache.js';
 import { uploadImageFromUrl, deleteMultipleImages } from '../utils/imageUpload.util.js';
+
+const FEATURED_DEAL_CACHE_KEY = 'featured-deals:active';
+const FEATURED_DEAL_PATTERN = 'featured-deals*';
 
 class FeaturedDealService {
     async createFeaturedDeal(data) {
@@ -154,6 +159,32 @@ class FeaturedDealService {
         return result;
     }
 
+    /**
+     * Get active featured deals with CURSOR pagination (for public APIs - fast & scalable)
+     * With Multi-Layer Caching
+     */
+    async getActiveFeaturedDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
+        const cacheKey = `featured-deals:cursor:${cursor}:${limit}:${sortDirection}`;
+        
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const now = new Date();
+            const filter = {
+                isPublished: true,
+                startDate: { $lte: now },
+                endDate: { $gte: now }
+            };
+
+            const result = await FeaturedDealRepository.findAllWithCursor(filter, cursor, limit, sortDirection);
+
+            // Filter out products that are either null (due to match) or marked inactive in the deal
+            result.data.forEach(deal => {
+                deal.products = deal.products.filter(p => p.product && p.isActive !== false);
+            });
+
+            return result;
+        }, { l1TTL: 60, l2TTL: 300 }); // L1: 1min, L2: 5min
+    }
+
     async getActiveFeaturedDeals(limit = 10) {
         const now = new Date();
         const deals = await FeaturedDealRepository.model.find({
@@ -231,7 +262,8 @@ class FeaturedDealService {
     }
 
     async invalidateCache() {
-        await Cache.delByPattern('featured-deals*');
+        await Cache.delByPattern(FEATURED_DEAL_PATTERN);
+        L1Cache.delByPattern('featured-deals');
     }
 }
 

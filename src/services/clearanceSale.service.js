@@ -3,6 +3,7 @@ import ProductRepository from '../repositories/product.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import L1Cache from '../utils/l1Cache.js';
 import { uploadImageFromUrl, deleteMultipleImages } from '../utils/imageUpload.util.js';
 
 class ClearanceSaleService {
@@ -177,16 +178,31 @@ class ClearanceSaleService {
 
     async invalidateCache(vendorId) {
         await Cache.delByPattern('clearance*');
-        // If we cache specific vendor sales
+        L1Cache.delByPattern('clearance');
     }
 
     async getPublicSales(limit = 10) {
-        // Fetch all ACTIVE clearance sales where current date is within range
-        // Includes both Vendor and Admin sales
-        const result = await ClearanceSaleRepository.findAllActive(limit);
+        const cacheKey = `clearance:public:${limit}`;
+        
+        // Try L1 first
+        const l1Cached = L1Cache.get(cacheKey);
+        if (l1Cached) {
+            return l1Cached;
+        }
 
-        // We return everything. The frontend will check 'isActive' on each product 
-        // within the sale to decide whether to show the "Clearance Price" or "Normal Price".
+        // Try L2
+        const l2Cached = await Cache.get(cacheKey);
+        if (l2Cached) {
+            L1Cache.set(cacheKey, l2Cached, 300);
+            return l2Cached;
+        }
+
+        // Fetch all ACTIVE clearance sales
+        const result = await ClearanceSaleRepository.findAllActive(limit);
+        
+        // Cache results
+        await Cache.set(cacheKey, result, 1800);
+        L1Cache.set(cacheKey, result, 300); // L1: 5min
 
         return result;
     }

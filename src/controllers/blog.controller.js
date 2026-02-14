@@ -10,6 +10,26 @@ class BlogController {
     );
   };
 
+  getPublicBlogs = async (req, res) => {
+    // Use cursor-based pagination for public APIs (fast & scalable)
+    const { cursor, category, startDate, endDate } = req.query;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortDirection = req.query.sort === 'asc' ? 'asc' : 'desc';
+
+    const result = await BlogService.getPublicBlogsCursor({
+      cursor,
+      limit,
+      sortDirection,
+      category,
+      startDate,
+      endDate
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+      new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.FETCHED)
+    );
+  };
+
   getAllBlogs = async (req, res) => {
     const { blogs, total, page, limit } = await BlogService.getAllBlogs(req.query);
     

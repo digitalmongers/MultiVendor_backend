@@ -4,6 +4,8 @@ import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
 import Logger from '../utils/logger.js';
+import MultiLayerCache from '../utils/multiLayerCache.js';
+import L1Cache from '../utils/l1Cache.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 
 const CATEGORY_CACHE_KEY = 'product:categories:all';
@@ -13,7 +15,9 @@ class ProductCategoryService {
   async invalidateCache() {
     await Cache.del(CATEGORY_CACHE_KEY);
     await Cache.delByPattern(CATEGORY_RESPONSE_PATTERN);
-    Logger.debug('Product Category Cache Invalidated');
+    // Also invalidate L1 cache
+    L1Cache.delByPattern('category');
+    Logger.debug('Product Category Cache Invalidated (L1 + L2)');
   }
 
   async createCategory(data, file) {
@@ -41,17 +45,30 @@ class ProductCategoryService {
   }
 
   async getAllCategories(filter = {}) {
-    // Try data cache first
-    const cached = await Cache.get(CATEGORY_CACHE_KEY);
-    if (cached && Object.keys(filter).length === 0) {
-      Logger.debug('Product Categories Data Cache Hit');
-      return cached;
+    // Multi-layer cache check
+    if (Object.keys(filter).length === 0) {
+      // Try L1 first
+      const l1Cached = L1Cache.get(CATEGORY_CACHE_KEY);
+      if (l1Cached) {
+        Logger.debug('Product Categories L1 Cache Hit');
+        return l1Cached;
+      }
+
+      // Try L2 (Redis)
+      const l2Cached = await Cache.get(CATEGORY_CACHE_KEY);
+      if (l2Cached) {
+        Logger.debug('Product Categories L2 Cache Hit');
+        L1Cache.set(CATEGORY_CACHE_KEY, l2Cached, 600); // Populate L1
+        return l2Cached;
+      }
     }
 
     const categories = await ProductCategoryRepository.findAll(filter);
     
+    // Cache only if no filters
     if (Object.keys(filter).length === 0) {
       await Cache.set(CATEGORY_CACHE_KEY, categories, 3600);
+      L1Cache.set(CATEGORY_CACHE_KEY, categories, 600); // L1: 10min
     }
     
     return categories;
