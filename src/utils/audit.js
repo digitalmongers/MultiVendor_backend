@@ -9,7 +9,7 @@ class AuditLogger {
       target,
       ...meta,
       requestId: context.requestId,
-      userId: context.userId,
+      userId: context.userId, 
       ip: context.ip,
       userAgent: context.userAgent,
       timestamp: new Date().toISOString(),
