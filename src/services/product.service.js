@@ -10,10 +10,17 @@ import FlashDealService from './flashDeal.service.js';
 import FeaturedDealService from './featuredDeal.service.js';
 import DealOfTheDayService from './dealOfTheDay.service.js';
 import vendorCache from '../utils/vendorCache.js';
+import MultiLayerCache from '../utils/multiLayerCache.js';
+import L1Cache from '../utils/l1Cache.js';
 import { deleteMultipleImages } from '../utils/imageUpload.util.js';
 import crypto from 'crypto';
 
 const PRODUCT_CACHE_KEY = 'products';
+const CACHE_TAGS = {
+  PRODUCTS: 'products',
+  DEALS: 'deals',
+  CATEGORIES: 'categories'
+};
 
 class ProductService {
     /**
@@ -201,6 +208,11 @@ class ProductService {
     }
 
     async getVendorProductStats(vendorId) {
+        // Check L1 cache first (ultra fast)
+        const cacheKey = `vendor:stats:${vendorId}`;
+        const cached = L1Cache.get(cacheKey);
+        if (cached) return cached;
+
         // Get product counts by status for vendor dashboard
         const { INVENTORY } = (await import('../constants.js')).CONFIG;
         const lowStockThreshold = INVENTORY?.LOW_STOCK_THRESHOLD || 10;
@@ -213,21 +225,20 @@ class ProductService {
             ProductRepository.count({ vendor: vendorId, status: 'suspended' }),
             ProductRepository.count({ vendor: vendorId, isActive: true }),
             ProductRepository.count({ vendor: vendorId, isFeatured: true }),
-            ProductRepository.count({ vendor: vendorId, quantity: { $lt: lowStockThreshold } }), // Add low stock count
+            ProductRepository.count({ vendor: vendorId, quantity: { $lt: lowStockThreshold } }),
         ]);
 
-        return {
+        const result = {
             total,
-            byStatus: {
-                pending,
-                approved,
-                rejected,
-                suspended
-            },
+            byStatus: { pending, approved, rejected, suspended },
             active,
             featured,
-            lowStock // Return low stock count
+            lowStock
         };
+
+        // Cache in L1 for 5 minutes (stats change frequently)
+        L1Cache.set(cacheKey, result, 300);
+        return result;
     }
 
     async getAllProducts(query) {
@@ -259,9 +270,43 @@ class ProductService {
         return result;
     }
 
+    /**
+     * Get all public products with CURSOR pagination (fast & scalable)
+     * For infinite scroll, mobile apps, public APIs
+     */
+    async getAllProductsCursor(query) {
+        // Generate cache key based on query params
+        const cacheKey = `products:cursor:${JSON.stringify(query)}`;
+        
+        // Use multi-layer cache (L1 + L2)
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const defaultFilter = { status: 'approved', isActive: true };
+            const filter = query.filter ? { ...defaultFilter, ...query.filter } : defaultFilter;
+
+            const result = await ProductRepository.findAllCursor(
+                filter, 
+                query.cursor || null, 
+                query.limit || 20, 
+                query.sortDirection || 'desc'
+            );
+
+            // Enrich with deals
+            result.products = await ClearanceSaleService.enrichProductsWithSales(result.products);
+            result.products = await FlashDealService.enrichProductsWithFlashDeals(result.products);
+            result.products = await FeaturedDealService.enrichProductsWithFeaturedDeals(result.products);
+            result.products = await DealOfTheDayService.enrichProductsWithDailyDeals(result.products);
+
+            return result;
+        }, { l1TTL: 60, l2TTL: 300 }); // L1: 1min, L2: 5min
+    }
+
     async searchProducts(searchQuery, limit = 20) {
-        // Lightweight search for search bar autocomplete
-        // Returns only essential fields for performance
+        // Search autocomplete - use L1 cache for very short TTL
+        const cacheKey = `search:${searchQuery.trim().toLowerCase()}:${limit}`;
+        
+        const cached = L1Cache.get(cacheKey);
+        if (cached) return cached;
+
         if (!searchQuery || searchQuery.trim().length < 2) {
             return [];
         }
@@ -272,10 +317,8 @@ class ProductService {
             quantity: { $gt: 0 },
             search: searchQuery.trim()
         };
-        // Use repository but limit fields returned
         const result = await ProductRepository.findAll(filter, { createdAt: -1 }, 1, limit);
 
-        // Return lightweight data for search suggestions
         const products = result.products.map(p => ({
             _id: p._id,
             name: p.name,
@@ -285,21 +328,16 @@ class ProductService {
             thumbnail: p.thumbnail,
             slug: p.slug,
             category: p.category?.name,
-            vendor: p.vendor?.businessName || 'Admin' // Default to Admin
+            vendor: p.vendor?.businessName || 'Admin'
         }));
 
-        // Enrich with clearance sale info (optional for autocomplete, but good for consistent pricing)
         let enriched = await ClearanceSaleService.enrichProductsWithSales(products);
-
-        // Enrich with Flash Deals
         enriched = await FlashDealService.enrichProductsWithFlashDeals(enriched);
-
-        // Enrich with Featured Deals
         enriched = await FeaturedDealService.enrichProductsWithFeaturedDeals(enriched);
-
-        // Enrich with Deal of the Day
         enriched = await DealOfTheDayService.enrichProductsWithDailyDeals(enriched);
 
+        // Cache search results for 2 minutes (search results change frequently)
+        L1Cache.set(cacheKey, enriched, 120);
         return enriched;
     }
 
@@ -339,59 +377,68 @@ class ProductService {
     }
 
     async getPublicProductById(id) {
-        const product = await ProductRepository.findById(id);
-        if (!product) {
-            throw new AppError('Product not found', HTTP_STATUS.NOT_FOUND, 'PRODUCT_NOT_FOUND');
-        }
+        // Multi-layer cache for individual product
+        const cacheKey = `product:${id}`;
+        
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const product = await ProductRepository.findById(id);
+            if (!product) {
+                throw new AppError('Product not found', HTTP_STATUS.NOT_FOUND, 'PRODUCT_NOT_FOUND');
+            }
 
-        // Strict Filtering: Hide variations with 0 stock
-        if (product.variations && product.variations.length > 0) {
-            product.variations = product.variations.filter(v => v.stock > 0);
-        }
+            // Strict Filtering: Hide variations with 0 stock
+            if (product.variations && product.variations.length > 0) {
+                product.variations = product.variations.filter(v => v.stock > 0);
+            }
 
-        // Enrich with clearance sale info
-        const withClearance = await ClearanceSaleService.enrichProductsWithSales(product);
+            // Enrich with clearance sale info
+            const withClearance = await ClearanceSaleService.enrichProductsWithSales(product);
 
-        // Enrich with Flash Deal info
-        return await FlashDealService.enrichProductsWithFlashDeals(withClearance);
+            // Enrich with Flash Deal info
+            return await FlashDealService.enrichProductsWithFlashDeals(withClearance);
+        }, { l1TTL: 300, l2TTL: 1800 }); // L1: 5min, L2: 30min
     }
 
     async getSimilarProducts(productId, limit = 10) {
-        // Get the current product to extract search tags
-        const currentProduct = await ProductRepository.findById(productId);
-        if (!currentProduct) {
-            throw new AppError('Product not found', HTTP_STATUS.NOT_FOUND, 'PRODUCT_NOT_FOUND');
-        }
+        // Cache similar products (they don't change often for same product)
+        const cacheKey = `product:similar:${productId}:${limit}`;
+        
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const currentProduct = await ProductRepository.findById(productId);
+            if (!currentProduct) {
+                throw new AppError('Product not found', HTTP_STATUS.NOT_FOUND, 'PRODUCT_NOT_FOUND');
+            }
 
-        // If no search tags, return products from same category
-        if (!currentProduct.searchTags || currentProduct.searchTags.length === 0) {
+            // If no search tags, return products from same category
+            if (!currentProduct.searchTags || currentProduct.searchTags.length === 0) {
+                const filter = {
+                    status: 'approved',
+                    isActive: true,
+                    quantity: { $gt: 0 },
+                    category: currentProduct.category._id || currentProduct.category,
+                    _id: { $ne: productId }
+                };
+                const result = await ProductRepository.findAll(filter, { createdAt: -1 }, 1, limit);
+                return result.products;
+            }
+
+            // Find products with matching search tags
             const filter = {
                 status: 'approved',
                 isActive: true,
                 quantity: { $gt: 0 },
-                category: currentProduct.category._id || currentProduct.category,
-                _id: { $ne: productId } // Exclude current product
+                searchTags: { $in: currentProduct.searchTags },
+                _id: { $ne: productId }
             };
+
             const result = await ProductRepository.findAll(filter, { createdAt: -1 }, 1, limit);
-            return result.products;
-        }
 
-        // Find products with matching search tags
-        const filter = {
-            status: 'approved',
-            isActive: true,
-            quantity: { $gt: 0 },
-            searchTags: { $in: currentProduct.searchTags }, // Match any of the tags
-            _id: { $ne: productId } // Exclude current product
-        };
+            // Enrich with clearance sale info
+            const withClearance = await ClearanceSaleService.enrichProductsWithSales(result.products);
 
-        const result = await ProductRepository.findAll(filter, { createdAt: -1 }, 1, limit);
-
-        // Enrich with clearance sale info
-        const withClearance = await ClearanceSaleService.enrichProductsWithSales(result.products);
-
-        // Enrich with Flash Deal info
-        return await FlashDealService.enrichProductsWithFlashDeals(withClearance);
+            // Enrich with Flash Deal info
+            return await FlashDealService.enrichProductsWithFlashDeals(withClearance);
+        }, { l1TTL: 600, l2TTL: 3600 }); // L1: 10min, L2: 1hour
     }
 
     async updateProduct(id, data, vendorId) {
@@ -989,6 +1036,9 @@ class ProductService {
     async invalidateCache() {
         await Cache.delByPattern(`${PRODUCT_CACHE_KEY}*`);
         await Cache.delByPattern('response:/api/v1/products*');
+        // Also invalidate L1 cache
+        L1Cache.delByPattern('product');
+        L1Cache.delByPattern('vendor:stats');
     }
 
     /**

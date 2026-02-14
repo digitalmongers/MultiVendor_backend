@@ -5,6 +5,9 @@ class ProductRepository {
     return await Product.create(data);
   }
 
+  /**
+   * Find all products with OFFSET pagination (for admin/fixed pages)
+   */
   async findAll(filter = {}, sort = { createdAt: -1 }, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
     
@@ -21,29 +24,83 @@ class ProductRepository {
         .limit(limit)
         .populate('category', 'name')
         .populate('subCategory', 'name')
-        .populate('vendor', 'businessName businessAddress status') // Include vendor status
+        .populate('vendor', 'businessName businessAddress status')
         .lean(),
       Product.countDocuments(filter)
     ]);
 
-    // Filter out products from blocked/inactive vendors (for public queries)
-    // This is done in application layer since we can't do complex joins in MongoDB
+    // Filter out products from blocked/inactive vendors
     const filteredProducts = products.filter(product => {
-      // If vendor is populated and has status, check if active
       if (product.vendor && product.vendor.status) {
         return product.vendor.status === 'active';
       }
-      // If vendor not populated or no status field, include it (admin/vendor views)
       return true;
     });
 
     return {
       products: filteredProducts,
       pagination: {
-        total: filteredProducts.length, // Adjusted total after filtering
+        total: filteredProducts.length,
         page,
         limit,
         pages: Math.ceil(filteredProducts.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Find products with CURSOR pagination (for public APIs - fast & scalable)
+   * Use for infinite scroll, mobile apps, large datasets
+   */
+  async findAllCursor(filter = {}, cursor = null, limit = 20, sortDirection = 'desc') {
+    // Support Text Search if 'search' is in filter
+    if (filter.search) {
+        filter.$text = { $search: filter.search };
+        delete filter.search;
+    }
+
+    // Build query with cursor
+    const query = { ...filter };
+    if (cursor) {
+      const operator = sortDirection === 'desc' ? '$lt' : '$gt';
+      query._id = { [operator]: cursor };
+    }
+
+    const sort = sortDirection === 'desc' ? { _id: -1 } : { _id: 1 };
+
+    // Fetch one extra to determine if there's a next page
+    const products = await Product.find(query)
+      .sort(sort)
+      .limit(limit + 1)
+      .populate('category', 'name')
+      .populate('subCategory', 'name')
+      .populate('vendor', 'businessName businessAddress status')
+      .lean();
+
+    // Check if there's a next page
+    const hasNextPage = products.length > limit;
+    const items = hasNextPage ? products.slice(0, limit) : products;
+
+    // Filter out products from blocked/inactive vendors
+    const filteredItems = items.filter(product => {
+      if (product.vendor && product.vendor.status) {
+        return product.vendor.status === 'active';
+      }
+      return true;
+    });
+
+    // Get next cursor from last item
+    const nextCursor = filteredItems.length > 0 && hasNextPage 
+      ? filteredItems[filteredItems.length - 1]._id 
+      : null;
+
+    return {
+      products: filteredItems,
+      pagination: {
+        nextCursor,
+        hasNextPage,
+        limit,
+        count: filteredItems.length
       }
     };
   }

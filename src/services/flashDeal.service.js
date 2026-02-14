@@ -3,7 +3,12 @@ import ProductRepository from '../repositories/product.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import MultiLayerCache from '../utils/multiLayerCache.js';
+import L1Cache from '../utils/l1Cache.js';
 import { uploadImageFromUrl, deleteMultipleImages } from '../utils/imageUpload.util.js';
+
+const FLASH_DEAL_CACHE_KEY = 'flash-deals:active';
+const FLASH_DEAL_PATTERN = 'flash-deals*';
 
 class FlashDealService {
     async createFlashDeal(data) {
@@ -30,6 +35,9 @@ class FlashDealService {
         return result;
     }
 
+    /**
+     * Get all flash deals with OFFSET pagination (for admin)
+     */
     async getAllFlashDeals(query = {}) {
         const { page = 1, limit = 10, title, isPublished } = query;
         const filter = {};
@@ -37,6 +45,32 @@ class FlashDealService {
         if (isPublished !== undefined) filter.isPublished = isPublished === 'true';
 
         return await FlashDealRepository.findAllWithStats(filter, { createdAt: -1 }, parseInt(page), parseInt(limit));
+    }
+
+    /**
+     * Get active flash deals with CURSOR pagination (for public APIs - fast & scalable)
+     * With Multi-Layer Caching
+     */
+    async getActiveFlashDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
+        const cacheKey = `flash-deals:cursor:${cursor}:${limit}:${sortDirection}`;
+        
+        return await MultiLayerCache.get(cacheKey, async () => {
+            const now = new Date();
+            const filter = {
+                isPublished: true,
+                startDate: { $lte: now },
+                endDate: { $gte: now }
+            };
+
+            const result = await FlashDealRepository.findAllWithCursor(filter, cursor, limit, sortDirection);
+
+            // Filter out products that are either null (due to match) or marked inactive in the deal
+            result.data.forEach(deal => {
+                deal.products = deal.products.filter(p => p.product && p.isActive !== false);
+            });
+
+            return result;
+        }, { l1TTL: 60, l2TTL: 300 }); // L1: 1min, L2: 5min
     }
 
     async getFlashDealById(id) {
@@ -154,6 +188,10 @@ class FlashDealService {
         return result;
     }
 
+    /**
+     * Get active flash deals (simple list without pagination)
+     * @deprecated Use getActiveFlashDealsCursor for better performance
+     */
     async getActiveFlashDeals(limit = 10) {
         const now = new Date();
         const deals = await FlashDealRepository.model.find({
@@ -165,7 +203,7 @@ class FlashDealService {
             .limit(limit)
             .populate({
                 path: 'products.product',
-                match: { isActive: true, status: 'approved' } // Ensure product itself is active
+                match: { isActive: true, status: 'approved' }
             })
             .lean({ virtuals: true });
 
@@ -233,7 +271,8 @@ class FlashDealService {
     }
 
     async invalidateCache() {
-        await Cache.delByPattern('flash-deals*');
+        await Cache.delByPattern(FLASH_DEAL_PATTERN);
+        L1Cache.delByPattern('flash-deals');
     }
 }
 

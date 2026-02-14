@@ -45,8 +45,11 @@ class ProductController {
     };
 
     getAllPublicProducts = async (req, res) => {
-        const page = parseInt(req.query.page) || 1;
+        // Use cursor-based pagination for public APIs (fast & scalable)
+        const cursor = req.query.cursor || null;
         const limit = parseInt(req.query.limit) || 20;
+        const sortDirection = req.query.sort === 'asc' ? 'asc' : 'desc';
+        
         // Filter out unapproved products AND Out of Stock products (Enterprise Standard)
         const filter = {
             status: 'approved',
@@ -58,7 +61,14 @@ class ProductController {
             filter.search = req.query.search;
         }
 
-        const result = await ProductService.getAllProducts({ filter, page, limit });
+        // Use cursor-based pagination for better performance
+        const result = await ProductService.getAllProductsCursor({ 
+            filter, 
+            cursor, 
+            limit, 
+            sortDirection 
+        });
+        
         return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.FETCHED));
     };
 

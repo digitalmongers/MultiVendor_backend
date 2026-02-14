@@ -6,6 +6,9 @@ class DealOfTheDayRepository extends BaseRepository {
         super(DealOfTheDay);
     }
 
+    /**
+     * Find all deals with OFFSET pagination (for admin/fixed pages)
+     */
     async findAllWithStats(filter = {}, sort = { createdAt: -1 }, page = 1, limit = 10) {
         const skip = (page - 1) * limit;
 
@@ -24,6 +27,46 @@ class DealOfTheDayRepository extends BaseRepository {
                 page,
                 limit,
                 pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    /**
+     * Find deals with CURSOR pagination (for public APIs - fast & scalable)
+     * Use for infinite scroll, mobile apps, large datasets
+     */
+    async findAllWithCursor(filter = {}, cursor = null, limit = 10, sortDirection = 'desc') {
+        // Build query with cursor
+        const query = { ...filter };
+        if (cursor) {
+            const operator = sortDirection === 'desc' ? '$lt' : '$gt';
+            query._id = { [operator]: cursor };
+        }
+
+        const sort = sortDirection === 'desc' ? { _id: -1 } : { _id: 1 };
+
+        // Fetch one extra to determine if there's a next page
+        const deals = await this.model.find(query)
+            .sort(sort)
+            .limit(limit + 1)
+            .lean({ virtuals: true });
+
+        // Check if there's a next page
+        const hasNextPage = deals.length > limit;
+        const items = hasNextPage ? deals.slice(0, limit) : deals;
+
+        // Get next cursor from last item
+        const nextCursor = items.length > 0 && hasNextPage 
+            ? items[items.length - 1]._id 
+            : null;
+
+        return {
+            data: items,
+            pagination: {
+                nextCursor,
+                hasNextPage,
+                limit,
+                count: items.length
             }
         };
     }
