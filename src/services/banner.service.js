@@ -3,6 +3,9 @@ import { deleteFromCloudinary } from '../utils/cloudinary.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Cache from '../utils/cache.js';
+import L1Cache from '../utils/l1Cache.js';
+
+const BANNER_CACHE_KEY = 'banners:public';
 
 class BannerService {
   /**
@@ -10,6 +13,8 @@ class BannerService {
    */
   async invalidateCache() {
     await Cache.delByPattern('response:/api/v1/banners/public*');
+    await Cache.del(BANNER_CACHE_KEY);
+    L1Cache.delByPattern('banner');
   }
 
   async createBanner(bannerData) {
@@ -64,7 +69,26 @@ class BannerService {
   }
 
   async getPublicBanners() {
-    return await BannerRepository.findAll({ published: true });
+    // Try L1 first
+    const l1Cached = L1Cache.get(BANNER_CACHE_KEY);
+    if (l1Cached) {
+      return l1Cached;
+    }
+
+    // Try L2
+    const l2Cached = await Cache.get(BANNER_CACHE_KEY);
+    if (l2Cached) {
+      L1Cache.set(BANNER_CACHE_KEY, l2Cached, 600);
+      return l2Cached;
+    }
+
+    const banners = await BannerRepository.findAll({ published: true });
+    
+    // Cache results
+    await Cache.set(BANNER_CACHE_KEY, banners, 3600);
+    L1Cache.set(BANNER_CACHE_KEY, banners, 600); // L1: 10min
+    
+    return banners;
   }
 }
 
