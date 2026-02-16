@@ -1,7 +1,6 @@
 import VendorRepository from '../repositories/vendor.repository.js';
 import Vendor from '../models/vendor.model.js';
 import Product from '../models/product.model.js';
-import EmailService from './email.service.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import vendorCache from '../utils/vendorCache.js';
 import AppError from '../utils/AppError.js';
@@ -14,6 +13,7 @@ import LoginSettingRepository from '../repositories/loginSetting.repository.js';
 import ProductService from './product.service.js';
 import Coupon from '../models/coupon.model.js';
 import ClearanceSale from '../models/clearanceSale.model.js';
+import { emailQueue } from '../config/queue.js';
 
 class VendorService {
   /**
@@ -69,19 +69,36 @@ class VendorService {
     Logger.info(`Vendor signup Step 2 complete for: ${vendor.email}`);
     AuditLogger.log('VENDOR_SIGNUP_STEP2_COMPLETE', 'VENDOR', { vendorId: vendor._id });
 
-    // Send Welcome Email
+    // Send Welcome Email - ASYNC via Queue (No API blocking)
     try {
-      await EmailService.sendEmailTemplate(updatedVendor.email, 'Registration', { username: `${updatedVendor.firstName} ${updatedVendor.lastName}` });
-      // Notify Admin using dynamic template
-      await EmailService.sendEmailTemplate(env.EMAIL_FROM, 'Vendor Request', {
-        email: updatedVendor.email,
-        firstName: updatedVendor.firstName,
-        lastName: updatedVendor.lastName,
-        businessName: updatedVendor.businessName,
-        phoneNumber: updatedVendor.phoneNumber
-      }, 'admin');
+      // Queue welcome email to vendor
+      await emailQueue.add('send-welcome', {
+        type: 'send-welcome',
+        to: updatedVendor.email,
+        template: 'Registration',
+        data: { username: `${updatedVendor.firstName} ${updatedVendor.lastName}` },
+        role: 'supplier'
+      });
+
+      // Queue admin notification email
+      await emailQueue.add('send-custom', {
+        type: 'send-custom',
+        to: env.EMAIL_FROM,
+        template: 'Vendor Request',
+        data: {
+          email: updatedVendor.email,
+          firstName: updatedVendor.firstName,
+          lastName: updatedVendor.lastName,
+          businessName: updatedVendor.businessName,
+          phoneNumber: updatedVendor.phoneNumber
+        },
+        role: 'admin'
+      });
+
+      Logger.info('📧 Vendor signup emails queued successfully');
     } catch (error) {
-      Logger.error('Failed to send vendor signup emails', { error: error.message });
+      Logger.error('Failed to queue vendor signup emails', { error: error.message });
+      // Don't throw - email failure shouldn't break signup
     }
 
     return {
@@ -451,15 +468,27 @@ class VendorService {
     // CACHE INVALIDATION: Clear ALL vendor caches (status affects lists and filters)
     await vendorCache.invalidateAllVendorCaches();
 
-    // Trigger Dynamic Emails
+    // Trigger Dynamic Emails - ASYNC via Queue
     try {
       if (status === VENDOR_STATUS.ACTIVE) {
-        await EmailService.sendEmailTemplate(vendor.email, 'Registration Approved', { username: `${vendor.firstName} ${vendor.lastName}` });
+        await emailQueue.add('send-welcome', {
+          type: 'send-welcome',
+          to: vendor.email,
+          template: 'Registration Approved',
+          data: { username: `${vendor.firstName} ${vendor.lastName}` },
+          role: 'supplier'
+        });
       } else if (status === VENDOR_STATUS.INACTIVE) {
-        await EmailService.sendEmailTemplate(vendor.email, 'Account Suspended', { username: `${vendor.firstName} ${vendor.lastName}` });
+        await emailQueue.add('send-welcome', {
+          type: 'send-welcome',
+          to: vendor.email,
+          template: 'Account Suspended',
+          data: { username: `${vendor.firstName} ${vendor.lastName}` },
+          role: 'supplier'
+        });
       }
     } catch (error) {
-      Logger.error('Failed to send vendor status update email', { vendorId, status, error: error.message });
+      Logger.error('Failed to queue vendor status update email', { vendorId, status, error: error.message });
     }
 
     let message = `Vendor ${status} successfully`;

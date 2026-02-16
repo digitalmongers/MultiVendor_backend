@@ -11,7 +11,10 @@ const storage = multer.memoryStorage();
 const uploadMiddleware = multer({
   storage,
   limits: { 
-    fileSize: 10 * 1024 * 1024 // 10MB Enterprise safety limit
+    fileSize: 10 * 1024 * 1024,  // 10MB max file size
+    files: 5,                     // Max 5 files per request
+    fields: 10,                   // Max 10 non-file fields
+    parts: 15                     // Max 15 total parts (files + fields)
   },
   fileFilter: (req, file, cb) => {
     // Whitelist for common enterprise attachment types

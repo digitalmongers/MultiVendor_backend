@@ -8,13 +8,14 @@ import CustomerEmailTemplateRepository from '../repositories/customerEmailTempla
 import AdminEmailTemplateRepository from '../repositories/adminEmailTemplate.repository.js';
 import SocialMediaRepository from '../repositories/socialMedia.repository.js';
 import SiteContentRepository from '../repositories/siteContent.repository.js';
+import emailBreaker from '../utils/email.breaker.js';
 
 // Initialize SendGrid
 sgMail.setApiKey(env.SENDGRID_API_KEY);
 
 class EmailService {
   /**
-   * Core Email Sending Method
+   * Core Email Sending Method with Circuit Breaker
    */
   async sendEmail(to, subject, html) {
     const msg = {
@@ -28,12 +29,12 @@ class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      // Use circuit breaker for SendGrid call
+      await emailBreaker.fire(msg);
       Logger.info(`📧 Email sent to ${to}`);
     } catch (error) {
-      Logger.error('❌ SendGrid Error:', error);
-      // We don't throw here to prevent breaking the caller flow (like signup)
-      // but we log it heavily.
+      Logger.error('❌ SendGrid Error (Circuit Breaker):', error);
+      // Circuit breaker handles fallback - we don't throw to prevent breaking caller flow
     }
   }
 

@@ -50,6 +50,9 @@ await SupplierEmailTemplateService.bootstrapTemplates();
 await CustomerEmailTemplateService.bootstrapTemplates();
 await AdminEmailTemplateService.bootstrapTemplates();
 
+// Initialize Background Workers (BullMQ)
+await import('./src/workers/index.js');
+
 const app = express();
 
 
@@ -57,10 +60,59 @@ const app = express();
 /**
  * PRODUCTION-GRADE MIDDLEWARE STACK
  */
-app.use(express.json({ limit: '10kb' })); 
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// 1. Request Size Limits - Security & Performance
+// JSON API limit - sufficient for most requests, prevents DoS
+app.use(express.json({ 
+  limit: '100kb',              // 100KB for JSON (bulk operations support)
+  strict: true,                // Only arrays/objects, no primitives
+  verify: (req, res, buf) => {
+    // Log large requests for monitoring
+    if (buf.length > 50000) {
+      Logger.warn('Large JSON request detected', { 
+        size: buf.length, 
+        path: req.path,
+        ip: req.ip 
+      });
+    }
+  }
+}));
+
+// URL-encoded form data limit
+app.use(express.urlencoded({ 
+  extended: true,              // Allow rich objects/arrays
+  limit: '50kb',              // 50KB for form data
+  parameterLimit: 1000        // Max 1000 parameters (prevent hash collision attacks)
+}));
+
+// Text body limit for webhooks/XML
+app.use(express.text({ 
+  limit: '100kb',
+  type: ['text/plain', 'application/xml', 'text/xml']
+}));
+
+// Raw binary limit for specific routes (if needed)
+app.use(express.raw({ 
+  limit: '5mb',                // 5MB for file uploads/binary
+  type: 'application/octet-stream'
+}));
 app.use(cookieParser());
-app.use(compression()); 
+// 3. Response Compression - Optimized for API responses
+app.use(compression({
+  level: 6,                    // Balanced compression (1-9)
+  filter: (req, res) => {
+    // Skip compression for small responses (< 1KB)
+    if (req.headers['x-no-compression']) return false;
+    
+    // Skip compression for already compressed formats
+    const noCompress = /\.(jpg|jpeg|png|gif|webp|mp4|mp3|pdf|zip|gz)$/i;
+    if (noCompress.test(req.path)) return false;
+    
+    // Compress JSON, HTML, CSS, JS, Text
+    return compression.filter(req, res);
+  },
+  threshold: 1024,             // Only compress responses > 1KB
+  memLevel: 8,                 // Memory usage (1-9)
+})); 
 app.use(responseTime()); 
 
 // Global Identifiers & Context

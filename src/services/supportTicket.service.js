@@ -1,5 +1,5 @@
 import SupportTicketRepository from '../repositories/supportTicket.repository.js';
-import EmailService from './email.service.js';
+import { emailQueue } from '../config/queue.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import Cache from '../utils/cache.js';
 import AppError from '../utils/AppError.js';
@@ -93,22 +93,23 @@ class SupportTicketService {
       throw new AppError('Ticket not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    // Send email to customer
+    // Queue email to customer (Async - no API blocking)
     try {
-      await EmailService.sendEmailTemplate(
-        ticket.customer.email,
-        'Support Ticket Reply',
-        {
+      await emailQueue.add('send-custom', {
+        type: 'send-custom',
+        to: ticket.customer.email,
+        template: 'Support Ticket Reply',
+        data: {
           username: ticket.customer.name,
           ticketId: ticket.ticketId,
           subject: ticket.subject,
           reply: adminReply,
         },
-        'customer'
-      );
-      Logger.info(`Support ticket reply email sent to: ${ticket.customer.email}`);
+        role: 'customer'
+      });
+      Logger.info(`📧 Support ticket reply email queued: ${ticket.ticketId} to ${ticket.customer.email}`);
     } catch (error) {
-      Logger.error(`Failed to send support ticket reply email`, { ticketId, error: error.message });
+      Logger.error(`Failed to queue support ticket reply email`, { ticketId, error: error.message });
     }
 
     // Invalidate Caches

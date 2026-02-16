@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import AuditLogger from '../utils/audit.js';
 import env from '../config/env.js';
 import Logger from '../utils/logger.js';
-import EmailService from './email.service.js';
+import { emailQueue } from '../config/queue.js';
 import crypto from 'crypto';
 import Cache from '../utils/cache.js';
 
@@ -266,11 +266,21 @@ class AdminService {
       resetPasswordLockout: undefined,
     });
 
+    // Queue OTP email (Async - no API blocking)
     try {
-      await EmailService.sendOtpEmail(admin.email, otp);
+      await emailQueue.add('send-custom', {
+        type: 'send-custom',
+        to: admin.email,
+        template: 'Password Reset',
+        data: { 
+          username: admin.name,
+          resetCode: otp
+        },
+        role: 'admin'
+      });
       AuditLogger.log('OTP_SENT', 'ADMIN', { adminId: admin._id });
     } catch (err) {
-      // Rollback changes if email fails
+      // Rollback changes if email queue fails
       await AdminRepository.updateById(admin._id, {
         resetPasswordOtp: undefined,
         resetPasswordExpires: undefined,

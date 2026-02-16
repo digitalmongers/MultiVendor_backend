@@ -1,6 +1,5 @@
 import CustomerRepository from '../repositories/customer.repository.js';
 import Customer from '../models/customer.model.js';
-import EmailService from './email.service.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS, ERROR_MESSAGES } from '../constants.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
@@ -10,6 +9,7 @@ import TransactionManager from '../utils/transaction.js';
 import Logger from '../utils/logger.js';
 import LoginSettingRepository from '../repositories/loginSetting.repository.js';
 import CartService from './cart.service.js';
+import { emailQueue } from '../config/queue.js';
 
 class CustomerService {
   /**
@@ -42,15 +42,23 @@ class CustomerService {
 
       Logger.info(`Customer account created (unverified) in DB: ${customer._id}`);
 
-      // 4. Send verification email
+      // 4. Queue verification email (Async - no API blocking)
       try {
-        await EmailService.sendVerificationEmail(email, verificationCode, 'customer');
-        Logger.info(`Signup verification email sent to: ${email}`);
+        await emailQueue.add('send-custom', {
+          type: 'send-custom',
+          to: email,
+          template: 'Account Verification',
+          data: { 
+            username: customerData.name || email,
+            verificationCode: verificationCode
+          },
+          role: 'customer'
+        });
+        Logger.info(`📧 Signup verification email queued: ${email}`);
       } catch (error) {
-        Logger.error('Signup Verification Email Delivery Failed', {
+        Logger.error('Signup Verification Email Queue Failed', {
           email,
-          error: error.message,
-          stack: error.stack
+          error: error.message
         });
       }
 
@@ -160,7 +168,17 @@ class CustomerService {
       }
     );
 
-    await EmailService.sendVerificationEmail(email, verificationCode, 'customer');
+    // Queue verification email (Async)
+    await emailQueue.add('send-custom', {
+      type: 'send-custom',
+      to: email,
+      template: 'Account Verification',
+      data: { 
+        username: customer.name || email,
+        verificationCode: verificationCode
+      },
+      role: 'customer'
+    });
 
     return {
       message: 'Verification code resent successfully.'
@@ -315,7 +333,17 @@ class CustomerService {
       }
     );
 
-    await EmailService.sendPasswordResetOtpEmail(email, resetCode, 'customer');
+    // Queue password reset email (Async)
+    await emailQueue.add('send-custom', {
+      type: 'send-custom',
+      to: email,
+      template: 'Password Reset',
+      data: { 
+        username: customer.name || email,
+        resetCode: resetCode
+      },
+      role: 'customer'
+    });
 
     AuditLogger.log('CUSTOMER_FORGOT_PASSWORD_REQUESTED', 'CUSTOMER', { customerId: customer._id });
 
@@ -468,12 +496,18 @@ class CustomerService {
       throw new AppError('Customer not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    // Trigger Dynamic Emails
+    // Trigger Dynamic Emails - ASYNC via Queue
     try {
       const event = isActive ? 'Account Unblocked' : 'Account Blocked';
-      await EmailService.sendEmailTemplate(customer.email, event, { username: customer.name }, 'customer');
+      await emailQueue.add('send-custom', {
+        type: 'send-custom',
+        to: customer.email,
+        template: event,
+        data: { username: customer.name },
+        role: 'customer'
+      });
     } catch (error) {
-      Logger.error(`Failed to send customer status update email`, { customerId, isActive, error: error.message });
+      Logger.error(`Failed to queue customer status update email`, { customerId, isActive, error: error.message });
     }
 
     AuditLogger.log(`CUSTOMER_ACCOUNT_${isActive ? 'UNBLOCKED' : 'BLOCKED'}`, 'ADMIN', { customerId });
