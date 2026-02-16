@@ -201,14 +201,39 @@ class CartService {
 
     /**
      * Enrich cart items with active deals and calculate final prices
+     * OPTIMIZED: Batch processing to prevent N+1 queries
      */
     async enrichCartItems(items) {
-        const enrichedItems = [];
+        if (!items || items.length === 0) return [];
 
-        for (const item of items) {
+        // Extract all products at once
+        const products = items.map(item => item.product);
+
+        // Batch enrich all products in parallel (4 queries total instead of 4*N)
+        const [
+            withSales,
+            withFlash,
+            withFeatured,
+            withDaily
+        ] = await Promise.all([
+            ClearanceSaleService.enrichProductsWithSales([...products]),
+            FlashDealService.enrichProductsWithFlashDeals([...products]),
+            FeaturedDealService.enrichProductsWithFeaturedDeals([...products]),
+            DealOfTheDayService.enrichProductsWithDailyDeals([...products])
+        ]);
+
+        // Create lookup maps for O(1) access
+        const salesMap = new Map(withSales.map((p, i) => [products[i]._id.toString(), p]));
+        const flashMap = new Map(withFlash.map((p, i) => [products[i]._id.toString(), p]));
+        const featuredMap = new Map(withFeatured.map((p, i) => [products[i]._id.toString(), p]));
+        const dailyMap = new Map(withDaily.map((p, i) => [products[i]._id.toString(), p]));
+
+        // Build enriched items
+        return items.map((item, index) => {
             const product = item.product;
+            const productId = product._id.toString();
 
-            // Calculate base price (with product discount if any)
+            // Calculate base price
             let basePrice = product.price;
             if (product.discount > 0) {
                 if (product.discountType === 'flat') {
@@ -218,32 +243,31 @@ class CartService {
                 }
             }
 
-            // Check for active deals (clearance, flash, featured, daily)
+            // Get enriched product data from maps
+            const withSaleProduct = salesMap.get(productId);
+            const withFlashProduct = flashMap.get(productId);
+            const withFeaturedProduct = featuredMap.get(productId);
+            const withDailyProduct = dailyMap.get(productId);
+
+            // Determine final price and active deal
             let finalPrice = basePrice;
             let activeDeal = null;
 
-            // Enrich with deals (same logic as product enrichment)
-            const enrichedProduct = await ClearanceSaleService.enrichProductsWithSales(product);
-            const withFlash = await FlashDealService.enrichProductsWithFlashDeals(enrichedProduct);
-            const withFeatured = await FeaturedDealService.enrichProductsWithFeaturedDeals(withFlash);
-            const withDaily = await DealOfTheDayService.enrichProductsWithDailyDeals(withFeatured);
-
-            // Determine final price from deals
-            if (withDaily.dailyDeal) {
-                finalPrice = withDaily.dailyDealPrice;
-                activeDeal = { type: 'daily', ...withDaily.dailyDeal };
-            } else if (withFeatured.featuredDeal) {
-                finalPrice = withFeatured.featuredPrice;
-                activeDeal = { type: 'featured', ...withFeatured.featuredDeal };
-            } else if (withFlash.flashDeal) {
-                finalPrice = withFlash.flashPrice;
-                activeDeal = { type: 'flash', ...withFlash.flashDeal };
-            } else if (enrichedProduct.salePrice) {
-                finalPrice = enrichedProduct.salePrice;
-                activeDeal = { type: 'clearance' };
+            if (withDailyProduct?.dealOfTheDay) {
+                finalPrice = withDailyProduct.dealPrice;
+                activeDeal = { type: 'daily', ...withDailyProduct.dealOfTheDay };
+            } else if (withFeaturedProduct?.featuredDeal) {
+                finalPrice = withFeaturedProduct.featuredPrice;
+                activeDeal = { type: 'featured', ...withFeaturedProduct.featuredDeal };
+            } else if (withFlashProduct?.flashDeal) {
+                finalPrice = withFlashProduct.flashPrice;
+                activeDeal = { type: 'flash', ...withFlashProduct.flashDeal };
+            } else if (withSaleProduct?.salePrice) {
+                finalPrice = withSaleProduct.salePrice;
+                activeDeal = { type: 'clearance', ...withSaleProduct.clearanceSale };
             }
 
-            enrichedItems.push({
+            return {
                 _id: item._id,
                 product: {
                     _id: product._id,
@@ -261,10 +285,8 @@ class CartService {
                 activeDeal,
                 subtotal: parseFloat((finalPrice * item.quantity).toFixed(2)),
                 addedAt: item.addedAt
-            });
-        }
-
-        return enrichedItems;
+            };
+        });
     }
 }
 
