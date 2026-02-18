@@ -1,0 +1,809 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+node.exe : FAIL 
+tests/unit/admin.service.test.js (9.781 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit...st.js (9.781 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  AdminService
+    login
+      ├ù should successfully login with 
+valid credentials (3 ms)
+      ├ù should throw error for invalid 
+credentials
+      ├ù should throw error for non-existent 
+admin
+      ├ù should lock account after 5 failed 
+attempts
+      ├ù should handle remember me option 
+correctly
+    refreshToken
+      ├ù should refresh tokens with valid 
+refresh token
+      ├ù should throw error for invalid 
+refresh token
+      ├ù should throw error for expired 
+refresh token
+      ├ù should throw error for token 
+version mismatch (1 ms)
+      ├ù should throw error for locked 
+account
+      ├ù should increment token version on 
+refresh
+    updateProfile
+      ├ù should update admin profile 
+successfully (1 ms)
+      ├ù should throw error for duplicate 
+email
+      ├ù should allow same email for same 
+admin
+    forgotPassword
+      ├ù should generate and send OTP for 
+valid admin
+      ├ù should throw error for non-existent 
+admin
+      ├ù should handle locked account
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+successfully login with valid credentials
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for invalid credentials
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for non-existent admin
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should lock 
+account after 5 failed attempts
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+handle remember me option correctly
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should refresh tokens with valid refresh 
+token
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for invalid refresh token
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for expired refresh token
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for token version mismatch
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for locked account
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should increment token version on refresh
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should update admin profile successfully
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should throw error for duplicate email
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should allow same email for same admin
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should generate and send OTP for valid admin
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should throw error for non-existent admin
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should handle locked account
+
+    ReferenceError: Cannot access 
+'_filename' before initialization
+
+    [0m [90m  7 |[39m [36mimport[39m 
+[33mRequestContext[39m [36mfrom[39m 
+[32m'./context.js'[39m[33m;[39m
+     [90m  8 |[39m
+    [31m[1m>[22m[39m[90m  9 |[39m 
+[36mconst[39m __filename [33m=[39m fileUR
+LToPath([36mimport[39m[33m.[39mmeta[33m.
+[39murl)[33m;[39m
+     [90m    |[39m                         
+        [31m[1m^[22m[39m
+     [90m 10 |[39m [36mconst[39m 
+__dirname [33m=[39m 
+path[33m.[39mdirname(__filename)[33m;[39m
+     [90m 11 |[39m
+     [90m 12 |[39m [36mconst[39m { 
+combine[33m,[39m timestamp[33m,[39m 
+errors[33m,[39m printf[33m,[39m 
+colorize[33m,[39m json[33m,[39m metadata 
+} [33m=[39m 
+winston[33m.[39mformat[33m;[39m[0m
+
+      at Object._filename 
+(src/utils/logger.js:9:33)
+      at Object.require 
+(src/utils/security.js:2:1)
+      at Object.require 
+(src/models/admin.model.js:2:1)
+      at Object.require 
+(src/repositories/admin.repository.js:1:1)
+      at Object.require 
+(src/services/admin.service.js:1:1)
+      at require 
+(tests/unit/admin.service.test.js:33:25)
+      at getMocks 
+(tests/unit/admin.service.test.js:33:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:44:19)
+
+Test Suites: 1 failed, 1 total
+Tests:       17 failed, 17 total
+Snapshots:   0 total
+Time:        10.071 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.

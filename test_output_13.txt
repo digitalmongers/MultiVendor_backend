@@ -1,0 +1,28 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+node.exe : ΓùÅ Multiple configurations found:
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (ΓùÅ Multiple configurations found::Stri  
+  ng) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+
+    * 
+E:/MultiVendor/multivendor/jest.config.js
+    * 
+E:/MultiVendor/multivendor/jest.config.cjs
+
+  Implicit config resolution does not allow 
+multiple configuration files.
+  Either remove unused config files or 
+select one explicitly with `--config`.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configuration
+

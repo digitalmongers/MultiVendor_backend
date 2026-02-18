@@ -14,6 +14,7 @@ import ProductService from './product.service.js';
 import Coupon from '../models/coupon.model.js';
 import ClearanceSale from '../models/clearanceSale.model.js';
 import { emailQueue } from '../config/queue.js';
+import env from '../config/env.js';
 
 class VendorService {
   /**

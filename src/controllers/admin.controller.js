@@ -65,27 +65,16 @@ class AdminController {
       sameSite: 'strict',
     });
 
-    return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Token Refreshed'));
-  };
-
-  /**
-   * @desc    Refresh Access Token
-   * @route   POST /api/v1/admin/auth/refresh-token
-   * @access  Public (Cookie/Body)
-   */
-  refreshToken = async (req, res) => {
-    // Get Refresh Token from Cookie (Secure) or Body (Fallback)
-    const token = req.cookies?.adminRefreshToken || req.body.refreshToken;
-
-    const result = await AdminService.refreshToken(token);
-
-    // Set new Access Token Cookie
-    res.cookie('adminAccessToken', result.accessToken, {
-      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    });
+    // Set new Refresh Token Cookie (if rotation happened)
+    if (result.refreshToken) {
+      const refreshExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      res.cookie('adminRefreshToken', result.refreshToken, {
+        expires: refreshExpires,
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'strict',
+      });
+    }
 
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, 'Token Refreshed'));
   };

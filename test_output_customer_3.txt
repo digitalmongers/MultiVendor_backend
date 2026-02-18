@@ -1,0 +1,290 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/customer.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Monica.Wehner@gmail.com[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mCustomer account created (unverified) in DB: 699554f0ab9bef1b30e11922[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32m≡ƒôº Signup verification email queued: Monica.Wehner@gmail.com[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Janessa21@yahoo.com[32m[39m
+2026-02-18 11:28:08 [[33m[33mwarn[33m[39m] : [33m[33mSignup failed: Email already exists - Janessa21@yahoo.com[33m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Rashawn86@hotmail.com[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mCustomer account created (unverified) in DB: 699554f0ab9bef1b30e11924[32m[39m
+2026-02-18 11:28:08 [[31m[31merror[31m[39m] : [31m[31mSignup Verification Email Queue Failed[31m[39m
+{
+  "service": "multi-vendor-api",
+  "email": "Rashawn86@hotmail.com",
+  "error": "Email service down"
+}
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mEmail verified successfully for customer: 699554f0ab9bef1b30e11925[32m[39m
+2026-02-18 11:28:08 [[33m[33mwarn[33m[39m] : [33m[33mLogin failed: Invalid password for account Michelle_Ward94@hotmail.com[33m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mGuest cart merged on login[32m[39m
+{
+  "service": "multi-vendor-api",
+  "customerId": {
+    "buffer": "[BUFFER]"
+  },
+  "guestId": "guest-123"
+}
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mFetching profile for customer: 699554f0ab9bef1b30e11934[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mFetching profile for customer: 699554f0ab9bef1b30e11935[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 699554f0ab9bef1b30e11936[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Updated Name",
+    "phoneNumber": "1234567890"
+  }
+}
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 699554f0ab9bef1b30e11937[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Updated Name",
+    "password": "[REDACTED]",
+    "role": "admin"
+  }
+}
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 699554f0ab9bef1b30e11938[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Test"
+  }
+}
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mUpdating status for customer: 699554f0ab9bef1b30e11939 to Blocked[32m[39m
+2026-02-18 11:28:08 [[32m[32minfo[32m[39m] : [32m[32mUpdating status for customer: 699554f0ab9bef1b30e1193a to Blocked[32m[39m
+node.exe : FAIL 
+tests/unit/customer.service.test.js (5.985 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit...st.js (5.985 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  CustomerService
+    signup
+      ├ù should successfully signup a new 
+customer (20 ms)
+      ├ù should throw error for duplicate 
+email during signup (3 ms)
+      ΓêÜ should handle email queue failure 
+gracefully (7 ms)
+    verifyOtp
+      ΓêÜ should verify OTP successfully (3 
+ms)
+      ΓêÜ should throw error for invalid OTP 
+(2 ms)
+      ΓêÜ should lock account after max OTP 
+attempts (1 ms)
+      ΓêÜ should throw error for already 
+verified customer (1 ms)
+    resendOtp
+      ΓêÜ should resend OTP successfully (1 
+ms)
+      ΓêÜ should enforce resend cooldown (1 
+ms)
+      ΓêÜ should throw error for already 
+verified customer (1 ms)
+    login
+      ΓêÜ should login successfully with 
+valid credentials (12 ms)
+      ΓêÜ should throw error for unverified 
+customer (1 ms)
+      ΓêÜ should throw error for blocked 
+customer (1 ms)
+      ΓêÜ should lock account after max 
+failed login attempts (1 ms)
+      ΓêÜ should merge guest cart on 
+successful login (3 ms)
+    forgotPassword
+      ΓêÜ should send OTP for password reset 
+(1 ms)
+      ΓêÜ should enforce resend cooldown for 
+password reset (1 ms)
+      ΓêÜ should throw error for 
+non-existent customer
+    verifyResetOtp
+      ΓêÜ should verify reset OTP 
+successfully (1 ms)
+      ΓêÜ should throw error for invalid 
+reset OTP (1 ms)
+    resetPassword
+      ├ù should reset password successfully 
+(2 ms)
+      ΓêÜ should throw error for invalid 
+reset code
+    getProfile
+      ΓêÜ should get customer profile 
+successfully (1 ms)
+      ΓêÜ should throw error for 
+non-existent customer (1 ms)
+    updateProfile
+      ΓêÜ should update customer profile 
+successfully (2 ms)
+      ΓêÜ should filter sensitive fields 
+during profile update (1 ms)
+      ΓêÜ should throw error for 
+non-existent customer during update (2 ms)
+    updateStatus
+      ΓêÜ should update customer status 
+successfully (1 ms)
+      ΓêÜ should queue status change email 
+(1 ms)
+    updateImage
+      ΓêÜ should update customer image 
+successfully
+      ΓêÜ should delete old image before 
+uploading new one
+    getAllCustomers
+      ΓêÜ should get all customers with 
+pagination (1 ms)
+      ΓêÜ should search customers by name, 
+email, and phone (1 ms)
+      ΓêÜ should filter customers by status 
+(1 ms)
+    invalidateAllSessions
+      ΓêÜ should invalidate all customer 
+sessions (1 ms)
+    generateTokens
+      ΓêÜ should generate access and refresh 
+tokens (3 ms)
+
+  ΓùÅ CustomerService ΓÇ║ signup ΓÇ║ should 
+successfully signup a new customer
+
+    expect(jest.fn()).toHaveBeenCalledWith(..
+.expected)
+
+    - Expected
+    + Received
+
+      {"email": "Monica.Wehner@gmail.com", 
+"isActive": true, "isVerified": false, 
+"name": "Miss Suzanne McDermott", 
+"password": "TestPassword123!", 
+"phoneNumber": "1-967-337-5551", 
+"tokenVersion": 0, "verificationCode": 
+"314752", "verificationCodeExpires": 
+2026-02-18T06:08:08.377Z},
+      Object {
+    +   "session": Object {
+          "session": "mock-session",
+    +   },
+      },
+
+    Number of calls: 1
+
+    [0m [90m 116 |[39m       [90m// 
+Assert[39m
+     [90m 117 |[39m       expect([33mCusto
+merRepository[39m[33m.[39mfindByEmail)[33
+m.[39mtoHaveBeenCalledWith(customerData[33m
+.[39memail[33m,[39m 
+[32m''[39m[33m,[39m 
+[36mtrue[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 118 |[39m     
+  expect([33mCustomerRepository[39m[33m.[
+39mcreate)[33m.[39mtoHaveBeenCalledWith(
+     [90m     |[39m                        
+                 [31m[1m^[22m[39m
+     [90m 119 |[39m         
+expect[33m.[39mobjectContaining({
+     [90m 120 |[39m           
+[33m...[39mcustomerData[33m,[39m
+     [90m 121 |[39m           
+isVerified[33m:[39m 
+[36mfalse[39m[33m,[39m[0m
+
+      at Object.toHaveBeenCalledWith 
+(tests/unit/customer.service.test.js:118:41)
+
+  ΓùÅ CustomerService ΓÇ║ signup ΓÇ║ should 
+throw error for duplicate email during signup
+
+    Expected error to contain 
+"DUPLICATE_RESOURCE" but got code 
+"INTERNAL_ERROR" and message "This resource 
+already exists in our system."
+
+    [0m [90m 284 |[39m
+     [90m 285 |[39m         [36mif[39m 
+([33m![39misCodeMatch [33m&&[39m 
+[33m![39misMessageMatch) {
+    [31m[1m>[22m[39m[90m 286 |[39m     
+      [36mthrow[39m [36mnew[39m 
+[33mError[39m([32m`Expected error to 
+contain "${expectedMessage}" but got code 
+"${error.code}" and message 
+"${error.message}"`[39m)[33m;[39m
+     [90m     |[39m                 
+[31m[1m^[22m[39m
+     [90m 287 |[39m         }
+     [90m 288 |[39m       }
+     [90m 289 |[39m     }[0m
+
+      at Function.expectAsyncError 
+(tests/setup/test-setup.js:286:17)
+      at Object.<anonymous> 
+(tests/unit/customer.service.test.js:138:7)
+
+  ΓùÅ CustomerService ΓÇ║ resetPassword ΓÇ║ 
+should reset password successfully
+
+    expect(jest.fn()).toHaveBeenCalledWith(..
+.expected)
+
+    - Expected
+    + Received
+
+      {"email": "Amalia71@yahoo.com", 
+"verificationCode": "123456", 
+"verificationCodeExpires": {"$gt": 
+1771394288451}},
+      {"$inc": {"tokenVersion": 1}, "$set": 
+{"lastPasswordReset": 
+2026-02-18T05:58:08.451Z, "password": 
+"NewPassword123!"}, "$unset": 
+{"verificationCode": 1, 
+"verificationCodeExpires": 1}},
+      Object {
+        "new": true,
+    +   "session": Object {
+          "session": "mock-session",
+    +   },
+      },
+
+    Number of calls: 1
+
+    [0m [90m 606 |[39m
+     [90m 607 |[39m       [90m// 
+Assert[39m
+    [31m[1m>[22m[39m[90m 608 |[39m     
+  expect([33mCustomer[39m[33m.[39mfindOne
+AndUpdate)[33m.[39mtoHaveBeenCalledWith(
+     [90m     |[39m                        
+                 [31m[1m^[22m[39m
+     [90m 609 |[39m         {
+     [90m 610 |[39m           
+email[33m:[39m 
+customerData[33m.[39memail[33m,[39m
+     [90m 611 |[39m           
+verificationCode[33m:[39m 
+[32m'123456'[39m[33m,[39m[0m
+
+      at Object.toHaveBeenCalledWith 
+(tests/unit/customer.service.test.js:608:41)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 33 passed, 36 total
+Snapshots:   0 total
+Time:        6.134 s, estimated 9 s
+Ran all test suites matching 
+/tests\\unit\\customer.service.test.js/i.

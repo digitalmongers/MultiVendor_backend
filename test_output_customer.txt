@@ -1,0 +1,944 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/customer.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+node.exe : FAIL 
+tests/unit/customer.service.test.js (6.879 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit...st.js (6.879 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  CustomerService
+    signup
+      ├ù should successfully signup a new 
+customer (5 ms)
+      ├ù should throw error for duplicate 
+email during signup (1 ms)
+      ├ù should handle email queue failure 
+gracefully (1 ms)
+    verifyOtp
+      ├ù should verify OTP successfully
+      ├ù should throw error for invalid OTP 
+(1 ms)
+      ├ù should lock account after max OTP 
+attempts (1 ms)
+      ├ù should throw error for already 
+verified customer (1 ms)
+    resendOtp
+      ├ù should resend OTP successfully
+      ├ù should enforce resend cooldown
+      ├ù should throw error for already 
+verified customer
+    login
+      ├ù should login successfully with 
+valid credentials
+      ├ù should throw error for unverified 
+customer
+      ├ù should throw error for blocked 
+customer
+      ├ù should lock account after max 
+failed login attempts
+      ├ù should merge guest cart on 
+successful login (1 ms)
+    forgotPassword
+      ├ù should send OTP for password reset
+      ├ù should enforce resend cooldown for 
+password reset
+      ├ù should throw error for non-existent 
+customer (1 ms)
+    verifyResetOtp
+      ├ù should verify reset OTP successfully
+      ├ù should throw error for invalid 
+reset OTP (1 ms)
+    resetPassword
+      ├ù should reset password successfully 
+(1 ms)
+      ├ù should throw error for invalid 
+reset code
+    getProfile
+      ├ù should get customer profile 
+successfully (1 ms)
+      ├ù should throw error for non-existent 
+customer
+    updateProfile
+      ├ù should update customer profile 
+successfully
+      ├ù should filter sensitive fields 
+during profile update (1 ms)
+      ├ù should throw error for non-existent 
+customer during update
+    updateStatus
+      ├ù should update customer status 
+successfully (1 ms)
+      ├ù should queue status change email
+    updateImage
+      ├ù should update customer image 
+successfully
+      ├ù should delete old image before 
+uploading new one
+    getAllCustomers
+      ├ù should get all customers with 
+pagination
+      ├ù should search customers by name, 
+email, and phone
+      ├ù should filter customers by status 
+(1 ms)
+    invalidateAllSessions
+      ├ù should invalidate all customer 
+sessions
+    generateTokens
+      ├ù should generate access and refresh 
+tokens
+
+  ΓùÅ CustomerService ΓÇ║ signup ΓÇ║ should 
+successfully signup a new customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ signup ΓÇ║ should 
+throw error for duplicate email during signup
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ signup ΓÇ║ should 
+handle email queue failure gracefully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyOtp ΓÇ║ 
+should verify OTP successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyOtp ΓÇ║ 
+should throw error for invalid OTP
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyOtp ΓÇ║ 
+should lock account after max OTP attempts
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyOtp ΓÇ║ 
+should throw error for already verified 
+customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ resendOtp ΓÇ║ 
+should resend OTP successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ resendOtp ΓÇ║ 
+should enforce resend cooldown
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ resendOtp ΓÇ║ 
+should throw error for already verified 
+customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ login ΓÇ║ should 
+login successfully with valid credentials
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ login ΓÇ║ should 
+throw error for unverified customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ login ΓÇ║ should 
+throw error for blocked customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ login ΓÇ║ should 
+lock account after max failed login attempts
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ login ΓÇ║ should 
+merge guest cart on successful login
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ forgotPassword ΓÇ║ 
+should send OTP for password reset
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ forgotPassword ΓÇ║ 
+should enforce resend cooldown for password 
+reset
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ forgotPassword ΓÇ║ 
+should throw error for non-existent customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyResetOtp ΓÇ║ 
+should verify reset OTP successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ verifyResetOtp ΓÇ║ 
+should throw error for invalid reset OTP
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ resetPassword ΓÇ║ 
+should reset password successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ resetPassword ΓÇ║ 
+should throw error for invalid reset code
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ getProfile ΓÇ║ 
+should get customer profile successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ getProfile ΓÇ║ 
+should throw error for non-existent customer
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateProfile ΓÇ║ 
+should update customer profile successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateProfile ΓÇ║ 
+should filter sensitive fields during 
+profile update
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateProfile ΓÇ║ 
+should throw error for non-existent customer 
+during update
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateStatus ΓÇ║ 
+should update customer status successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateStatus ΓÇ║ 
+should queue status change email
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateImage ΓÇ║ 
+should update customer image successfully
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ updateImage ΓÇ║ 
+should delete old image before uploading new 
+one
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ getAllCustomers 
+ΓÇ║ should get all customers with pagination
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ getAllCustomers 
+ΓÇ║ should search customers by name, email, 
+and phone
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ getAllCustomers 
+ΓÇ║ should filter customers by status
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ 
+invalidateAllSessions ΓÇ║ should invalidate 
+all customer sessions
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+  ΓùÅ CustomerService ΓÇ║ generateTokens ΓÇ║ 
+should generate access and refresh tokens
+
+    TypeError: LoginSettingRepository.getSett
+ings.mockResolvedValue is not a function
+
+    [0m [90m  96 |[39m     }[33m;[39m
+     [90m  97 |[39m     
+    [31m[1m>[22m[39m[90m  98 |[39m     
+[33mLoginSettingRepository[39m[33m.[39mge
+tSettings[33m.[39mmockResolvedValue(mockLog
+inSettings)[33m;[39m
+     [90m     |[39m                        
+                [31m[1m^[22m[39m
+     [90m  99 |[39m   })[33m;[39m
+     [90m 100 |[39m
+     [90m 101 |[39m   
+describe([32m'signup'[39m[33m,[39m () 
+[33m=>[39m {[0m
+
+      at Object.mockResolvedValue 
+(tests/unit/customer.service.test.js:98:40)
+
+Test Suites: 1 failed, 1 total
+Tests:       36 failed, 36 total
+Snapshots:   0 total
+Time:        7.112 s
+Ran all test suites matching 
+/tests\\unit\\customer.service.test.js/i.

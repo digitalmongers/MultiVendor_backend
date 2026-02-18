@@ -1,0 +1,65 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+node.exe : PASS 
+tests/unit/admin.service.test.js
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (PASS tests/unit/admin.service.test.js:S  
+  tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  AdminService
+    login
+      ΓêÜ should successfully login with 
+valid credentials (24 ms)
+      ΓêÜ should throw error for invalid 
+credentials (2 ms)
+      ΓêÜ should throw error for 
+non-existent admin (2 ms)
+      ΓêÜ should lock account after 5 failed 
+attempts (2 ms)
+      ΓêÜ should handle remember me option 
+correctly (4 ms)
+    refreshToken
+      ΓêÜ should refresh tokens with valid 
+refresh token (6 ms)
+      ΓêÜ should throw error for invalid 
+refresh token (2 ms)
+      ΓêÜ should throw error for expired 
+refresh token (2 ms)
+      ΓêÜ should throw error for token 
+version mismatch (2 ms)
+      ΓêÜ should throw error for locked 
+account (2 ms)
+      ΓêÜ should increment token version on 
+refresh (3 ms)
+    updateProfile
+      ΓêÜ should update admin profile 
+successfully (1 ms)
+      ΓêÜ should throw error for duplicate 
+email (1 ms)
+      ΓêÜ should allow same email for same 
+admin (1 ms)
+    forgotPassword
+      ΓêÜ should generate and send OTP for 
+valid admin (2 ms)
+      ΓêÜ should throw error for 
+non-existent admin (1 ms)
+      ΓêÜ should handle locked account (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        5.082 s, estimated 8 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.

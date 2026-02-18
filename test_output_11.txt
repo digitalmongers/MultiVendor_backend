@@ -1,0 +1,63 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+node.exe : FAIL 
+tests/unit/admin.service.test.js
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit/admin.service.test.js:S  
+  tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  ΓùÅ Test suite failed to run
+
+    Configuration error:
+
+    Could not locate module 
+../../src/utils/email.service.js mapped as:
+    $1.
+
+    Please check your configuration for 
+these entries:
+    {
+      "moduleNameMapper": {
+        "/^(\.{1,2}\/.*)\.js$/": "$1"
+      },
+      "resolver": undefined
+    }
+
+    [0m [90m 36 |[39m }))[33m;[39m
+     [90m 37 |[39m
+    [31m[1m>[22m[39m[90m 38 |[39m jest
+[33m.[39munstable_mockModule([32m'../../src
+/utils/email.service.js'[39m[33m,[39m () 
+[33m=>[39m ({
+     [90m    |[39m      
+[31m[1m^[22m[39m
+     [90m 39 |[39m   sendEmail[33m:[39m 
+jest[33m.[39mfn()[33m,[39m
+     [90m 40 |[39m   __esModule[33m:[39m 
+[36mtrue[39m[33m,[39m
+     [90m 41 |[39m }))[33m;[39m[0m
+
+      at createNoMappedModuleFoundError (node
+_modules/jest-resolve/build/resolver.js:759:1
+7)
+      at 
+tests/unit/admin.service.test.js:38:6
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.817 s, estimated 7 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.
+(node:25696) ExperimentalWarning: VM Modules 
+is an experimental feature and might change 
+at any time
+(Use `node --trace-warnings ...` to show 
+where the warning was created)

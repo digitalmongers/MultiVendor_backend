@@ -1,0 +1,72 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/vendor.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32mStarting Vendor signup Step 1 for: vendor@test.com[32m[39m
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32mStarting Vendor signup Step 1 for: vendor@test.com[32m[39m
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32mVendor signup Step 2 complete for: vendor@test.com[32m[39m
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32m≡ƒôº Vendor signup emails queued successfully[32m[39m
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32mStarting cascade delete for vendor: 69955699c170cc3444595648[32m[39m
+2026-02-18 11:35:13 [[32m[32minfo[32m[39m] : [32m[32mSuccessfully performed cascade delete for vendor: 69955699c170cc3444595648[32m[39m
+node.exe : PASS 
+tests/unit/vendor.service.test.js (6.471 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (PASS tests/unit...st.js (6.471 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  VendorService
+    signupStep1
+      ΓêÜ should successfully complete 
+signup step 1 (20 ms)
+      ΓêÜ should throw conflict error if 
+email exists (4 ms)
+    signupStep2
+      ΓêÜ should successfully complete 
+signup step 2 (5 ms)
+      ΓêÜ should throw error if vendor not 
+found for step 2 (1 ms)
+    login
+      ΓêÜ should login successfully (2 ms)
+      ΓêÜ should throw error for invalid 
+credentials (1 ms)
+      ΓêÜ should throw error for pending 
+account (1 ms)
+    updateProfile
+      ΓêÜ should update profile successfully 
+and invalidate cache (1 ms)
+    updateImage
+      ΓêÜ should update image successfully 
+(1 ms)
+    adminCreateVendor
+      ΓêÜ should create vendor account by 
+admin (2 ms)
+    updateStatus
+      ΓêÜ should update vendor status (1 ms)
+    deleteVendor
+      ΓêÜ should perform cascade delete (3 
+ms)
+    getVendorById
+      ΓêÜ should get vendor from cache if 
+available (1 ms)
+      ΓêÜ should fetch from repository on 
+cache miss
+    getAllVendors
+      ΓêÜ should return paginated vendor 
+list (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       15 passed, 15 total
+Snapshots:   0 total
+Time:        6.623 s, estimated 7 s
+Ran all test suites matching 
+/tests\\unit\\vendor.service.test.js/i.

@@ -1,0 +1,677 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+node.exe : (node:4416) ExperimentalWarning: 
+VM Modules is an experimental feature and 
+might change at any time
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   ((node:4416) Exp...nge at any time:Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+(Use `node --trace-warnings ...` to show 
+where the warning was created)
+FAIL tests/unit/admin.service.test.js
+  AdminService
+    login
+      ├ù should successfully login with 
+valid credentials (1 ms)
+      ├ù should throw error for invalid 
+credentials
+      ├ù should throw error for non-existent 
+admin
+      ├ù should lock account after 5 failed 
+attempts
+      ├ù should handle remember me option 
+correctly
+    refreshToken
+      ├ù should refresh tokens with valid 
+refresh token (1 ms)
+      ├ù should throw error for invalid 
+refresh token
+      ├ù should throw error for expired 
+refresh token
+      ├ù should throw error for token 
+version mismatch
+      ├ù should throw error for locked 
+account
+      ├ù should increment token version on 
+refresh
+    updateProfile
+      ├ù should update admin profile 
+successfully
+      ├ù should throw error for duplicate 
+email
+      ├ù should allow same email for same 
+admin
+    forgotPassword
+      ├ù should generate and send OTP for 
+valid admin
+      ├ù should throw error for non-existent 
+admin
+      ├ù should handle locked account
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+successfully login with valid credentials
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for invalid credentials
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for non-existent admin
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should lock 
+account after 5 failed attempts
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+handle remember me option correctly
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should refresh tokens with valid refresh 
+token
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for invalid refresh token
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for expired refresh token
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for token version mismatch
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for locked account
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should increment token version on refresh
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should update admin profile successfully
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should throw error for duplicate email
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should allow same email for same admin
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should generate and send OTP for valid admin
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should throw error for non-existent admin
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should handle locked account
+
+    SyntaxError: The requested module 
+'../utils/logger.js' does not provide an 
+export named 'default'
+
+    [0m [90m 55 |[39m [90m// Helper to 
+get mocked modules[39m
+     [90m 56 |[39m [36mconst[39m 
+getMocks [33m=[39m [36masync[39m () 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 57 |[39m   
+[36mconst[39m [33mAdminService[39m 
+[33m=[39m ([36mawait[39m [36mimport[39m
+([32m'../../src/services/admin.service.js'[
+39m))[33m.[39m[36mdefault[39m[33m;[39m
+     [90m    |[39m                         
+[31m[1m^[22m[39m
+     [90m 58 |[39m   [36mconst[39m 
+[33mAdminRepository[39m [33m=[39m 
+([36mawait[39m [36mimport[39m([32m'../..
+/src/repositories/admin.repository.js'[39m))
+[33m.[39m[36mdefault[39m[33m;[39m
+     [90m 59 |[39m   [36mreturn[39m { 
+[33mAdminService[39m[33m,[39m 
+[33mAdminRepository[39m }[33m;[39m
+     [90m 60 |[39m }[33m;[39m[0m
+
+      at Runtime.linkAndEvaluateModule (node_
+modules/jest-runtime/build/index.js:708:5)
+      at getMocks 
+(tests/unit/admin.service.test.js:57:25)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:68:19)
+
+Test Suites: 1 failed, 1 total
+Tests:       17 failed, 17 total
+Snapshots:   0 total
+Time:        2.951 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.

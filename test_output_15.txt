@@ -1,0 +1,46 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+node.exe : (node:18796) ExperimentalWarning: 
+VM Modules is an experimental feature and 
+might change at any time
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   ((node:18796) Ex...nge at any time:Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+(Use `node --trace-warnings ...` to show 
+where the warning was created)
+FAIL tests/unit/admin.service.test.js
+  ΓùÅ Test suite failed to run
+
+    ReferenceError: require is not defined
+
+    [0m [90m 27 |[39m }))[33m;[39m
+     [90m 28 |[39m
+    [31m[1m>[22m[39m[90m 29 |[39m 
+[90m/**[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 30 |[39m [90m * Test Database 
+Setup[39m
+     [90m 31 |[39m [90m * Creates 
+isolated in-memory database for each test 
+suite[39m
+     [90m 32 |[39m [90m */[39m[0m
+
+      at require 
+(tests/setup/test-setup.js:29:1)
+      at _getJestObj 
+(tests/setup/test-setup.js:8:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        4.337 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.

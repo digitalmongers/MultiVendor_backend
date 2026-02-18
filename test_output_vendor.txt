@@ -1,0 +1,109 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/vendor.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+2026-02-18 11:34:12 [[32m[32minfo[32m[39m] : [32m[32mStarting Vendor signup Step 1 for: vendor@test.com[32m[39m
+2026-02-18 11:34:12 [[32m[32minfo[32m[39m] : [32m[32mStarting Vendor signup Step 1 for: vendor@test.com[32m[39m
+2026-02-18 11:34:12 [[32m[32minfo[32m[39m] : [32m[32mVendor signup Step 2 complete for: vendor@test.com[32m[39m
+2026-02-18 11:34:12 [[31m[31merror[31m[39m] : [31m[31mFailed to queue vendor signup emails[31m[39m
+{
+  "service": "multi-vendor-api",
+  "error": "env is not defined"
+}
+2026-02-18 11:34:12 [[32m[32minfo[32m[39m] : [32m[32mStarting cascade delete for vendor: 6995565cc90a9013782f3a0c[32m[39m
+2026-02-18 11:34:12 [[32m[32minfo[32m[39m] : [32m[32mSuccessfully performed cascade delete for vendor: 6995565cc90a9013782f3a0c[32m[39m
+node.exe : FAIL 
+tests/unit/vendor.service.test.js (7.416 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit...st.js (7.416 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  VendorService
+    signupStep1
+      ΓêÜ should successfully complete 
+signup step 1 (13 ms)
+      ΓêÜ should throw conflict error if 
+email exists (2 ms)
+    signupStep2
+      ΓêÜ should successfully complete 
+signup step 2 (6 ms)
+      ΓêÜ should throw error if vendor not 
+found for step 2 (2 ms)
+    login
+      ├ù should login successfully (2 ms)
+      ΓêÜ should throw error for invalid 
+credentials
+      ΓêÜ should throw error for pending 
+account
+    updateProfile
+      ΓêÜ should update profile successfully 
+and invalidate cache (1 ms)
+    updateImage
+      ΓêÜ should update image successfully 
+(1 ms)
+    adminCreateVendor
+      ΓêÜ should create vendor account by 
+admin (1 ms)
+    updateStatus
+      ΓêÜ should update vendor status (1 ms)
+    deleteVendor
+      ΓêÜ should perform cascade delete (3 
+ms)
+    getVendorById
+      ΓêÜ should get vendor from cache if 
+available (1 ms)
+      ΓêÜ should fetch from repository on 
+cache miss (1 ms)
+    getAllVendors
+      ΓêÜ should return paginated vendor 
+list (3 ms)
+
+  ΓùÅ VendorService ΓÇ║ login ΓÇ║ should 
+login successfully
+
+    TypeError: _jsonwebtoken.default.sign is 
+not a function
+
+    [0m [90m 3 |[39m
+     [90m 4 |[39m [36mexport[39m 
+[36mconst[39m generateToken [33m=[39m 
+(userId[33m,[39m extras [33m=[39m {}) 
+[33m=>[39m {
+    [31m[1m>[22m[39m[90m 5 |[39m   
+[36mreturn[39m 
+jsonwebtoken[33m.[39msign({ id[33m:[39m 
+userId[33m,[39m [33m...[39mextras 
+}[33m,[39m env[33m.[39m[33mJWT_SECRET[3
+9m[33m,[39m {
+     [90m   |[39m                       
+[31m[1m^[22m[39m
+     [90m 6 |[39m     expiresIn[33m:[39m 
+env[33m.[39m[33mJWT_EXPIRE[39m[33m,[39m
+     [90m 7 |[39m   })[33m;[39m
+     [90m 8 |[39m }[33m;[39m[0m
+
+      at sign (src/utils/jwt.js:5:23)
+      at VendorService.generateTokens 
+(src/services/vendor.service.js:774:33)
+      at VendorService.generateTokens [as 
+login] 
+(src/services/vendor.service.js:181:15)
+      at Object.<anonymous> 
+(tests/unit/vendor.service.test.js:234:28)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 14 passed, 15 total
+Snapshots:   0 total
+Time:        7.793 s
+Ran all test suites matching 
+/tests\\unit\\vendor.service.test.js/i.

@@ -1,0 +1,165 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/customer.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+2026-02-18 11:29:39 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Florida.Goyette99@yahoo.com[32m[39m
+2026-02-18 11:29:39 [[32m[32minfo[32m[39m] : [32m[32mCustomer account created (unverified) in DB: 6995554b1d7c6aa668633251[32m[39m
+2026-02-18 11:29:39 [[32m[32minfo[32m[39m] : [32m[32m≡ƒôº Signup verification email queued: Florida.Goyette99@yahoo.com[32m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Evan.Mante@hotmail.com[32m[39m
+2026-02-18 11:29:40 [[33m[33mwarn[33m[39m] : [33m[33mSignup failed: Email already exists - Evan.Mante@hotmail.com[33m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mStarting customer signup process for: Elenora.Dach6@gmail.com[32m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mCustomer account created (unverified) in DB: 6995554c1d7c6aa668633253[32m[39m
+2026-02-18 11:29:40 [[31m[31merror[31m[39m] : [31m[31mSignup Verification Email Queue Failed[31m[39m
+{
+  "service": "multi-vendor-api",
+  "email": "Elenora.Dach6@gmail.com",
+  "error": "Email service down"
+}
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mEmail verified successfully for customer: 6995554c1d7c6aa668633254[32m[39m
+2026-02-18 11:29:40 [[33m[33mwarn[33m[39m] : [33m[33mLogin failed: Invalid password for account Mckayla79@yahoo.com[33m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mGuest cart merged on login[32m[39m
+{
+  "service": "multi-vendor-api",
+  "customerId": {
+    "buffer": "[BUFFER]"
+  },
+  "guestId": "guest-123"
+}
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mFetching profile for customer: 6995554c1d7c6aa668633263[32m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mFetching profile for customer: 6995554c1d7c6aa668633264[32m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 6995554c1d7c6aa668633265[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Updated Name",
+    "phoneNumber": "1234567890"
+  }
+}
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 6995554c1d7c6aa668633266[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Updated Name",
+    "password": "[REDACTED]",
+    "role": "admin"
+  }
+}
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mUpdating profile for customer: 6995554c1d7c6aa668633267[32m[39m
+{
+  "service": "multi-vendor-api",
+  "updateData": {
+    "name": "Test"
+  }
+}
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mUpdating status for customer: 6995554c1d7c6aa668633268 to Blocked[32m[39m
+2026-02-18 11:29:40 [[32m[32minfo[32m[39m] : [32m[32mUpdating status for customer: 6995554c1d7c6aa668633269 to Blocked[32m[39m
+node.exe : PASS 
+tests/unit/customer.service.test.js (6.763 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (PASS tests/unit...st.js (6.763 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  CustomerService
+    signup
+      ΓêÜ should successfully signup a new 
+customer (31 ms)
+      ΓêÜ should throw error for duplicate 
+email during signup (9 ms)
+      ΓêÜ should handle email queue failure 
+gracefully (14 ms)
+    verifyOtp
+      ΓêÜ should verify OTP successfully (7 
+ms)
+      ΓêÜ should throw error for invalid OTP 
+(3 ms)
+      ΓêÜ should lock account after max OTP 
+attempts (3 ms)
+      ΓêÜ should throw error for already 
+verified customer (2 ms)
+    resendOtp
+      ΓêÜ should resend OTP successfully (2 
+ms)
+      ΓêÜ should enforce resend cooldown (2 
+ms)
+      ΓêÜ should throw error for already 
+verified customer (2 ms)
+    login
+      ΓêÜ should login successfully with 
+valid credentials (19 ms)
+      ΓêÜ should throw error for unverified 
+customer (2 ms)
+      ΓêÜ should throw error for blocked 
+customer (2 ms)
+      ΓêÜ should lock account after max 
+failed login attempts (3 ms)
+      ΓêÜ should merge guest cart on 
+successful login (7 ms)
+    forgotPassword
+      ΓêÜ should send OTP for password reset 
+(3 ms)
+      ΓêÜ should enforce resend cooldown for 
+password reset (2 ms)
+      ΓêÜ should throw error for 
+non-existent customer (2 ms)
+    verifyResetOtp
+      ΓêÜ should verify reset OTP 
+successfully (2 ms)
+      ΓêÜ should throw error for invalid 
+reset OTP (2 ms)
+    resetPassword
+      ΓêÜ should reset password successfully 
+(3 ms)
+      ΓêÜ should throw error for invalid 
+reset code (2 ms)
+    getProfile
+      ΓêÜ should get customer profile 
+successfully (3 ms)
+      ΓêÜ should throw error for 
+non-existent customer (2 ms)
+    updateProfile
+      ΓêÜ should update customer profile 
+successfully (4 ms)
+      ΓêÜ should filter sensitive fields 
+during profile update (3 ms)
+      ΓêÜ should throw error for 
+non-existent customer during update (2 ms)
+    updateStatus
+      ΓêÜ should update customer status 
+successfully (3 ms)
+      ΓêÜ should queue status change email 
+(7 ms)
+    updateImage
+      ΓêÜ should update customer image 
+successfully (3 ms)
+      ΓêÜ should delete old image before 
+uploading new one (1 ms)
+    getAllCustomers
+      ΓêÜ should get all customers with 
+pagination (2 ms)
+      ΓêÜ should search customers by name, 
+email, and phone (2 ms)
+      ΓêÜ should filter customers by status 
+(2 ms)
+    invalidateAllSessions
+      ΓêÜ should invalidate all customer 
+sessions (2 ms)
+    generateTokens
+      ΓêÜ should generate access and refresh 
+tokens (6 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       36 passed, 36 total
+Snapshots:   0 total
+Time:        7.065 s
+Ran all test suites matching 
+/tests\\unit\\customer.service.test.js/i.

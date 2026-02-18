@@ -6,8 +6,7 @@ import * as Sentry from '@sentry/node';
 import { sanitize } from './safeLogger.js';
 import RequestContext from './context.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const logDir = path.join(process.cwd(), 'logs');
 
 const { combine, timestamp, errors, printf, colorize, json, metadata } = winston.format;
 
@@ -43,7 +42,7 @@ const transports = [
 if (process.env.NODE_ENV !== 'production' || process.env.PERSISTENT_LOGS === 'true') {
   transports.push(
     new DailyRotateFile({
-      filename: path.join(__dirname, '../../logs/%DATE%-combined.log'),
+      filename: path.join(logDir, '%DATE%-combined.log'),
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: '20m',
@@ -51,7 +50,7 @@ if (process.env.NODE_ENV !== 'production' || process.env.PERSISTENT_LOGS === 'tr
       format: prodLogFormat,
     }),
     new DailyRotateFile({
-      filename: path.join(__dirname, '../../logs/%DATE%-error.log'),
+      filename: path.join(logDir, '%DATE%-error.log'),
       level: 'error',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
@@ -70,14 +69,14 @@ const logger = winston.createLogger({
 });
 
 class Logger {
-  static info(message, meta = {}) { 
-    logger.info(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  static info(message, meta = {}) {
+    logger.info(message, sanitize({ ...RequestContext.getAll(), ...meta }));
   }
-  
-  static error(message, meta = {}) { 
+
+  static error(message, meta = {}) {
     const contextMeta = { ...RequestContext.getAll(), ...meta };
-    logger.error(message, sanitize(contextMeta)); 
-    
+    logger.error(message, sanitize(contextMeta));
+
     // Enterprise: Report to Sentry
     if (meta.error instanceof Error) {
       Sentry.captureException(meta.error, { extra: sanitize(contextMeta) });
@@ -86,16 +85,16 @@ class Logger {
     }
   }
 
-  static warn(message, meta = {}) { 
-    logger.warn(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  static warn(message, meta = {}) {
+    logger.warn(message, sanitize({ ...RequestContext.getAll(), ...meta }));
   }
 
-  static debug(message, meta = {}) { 
-    logger.debug(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  static debug(message, meta = {}) {
+    logger.debug(message, sanitize({ ...RequestContext.getAll(), ...meta }));
   }
 
-  static http(message, meta = {}) { 
-    logger.http(message, sanitize({ ...RequestContext.getAll(), ...meta })); 
+  static http(message, meta = {}) {
+    logger.http(message, sanitize({ ...RequestContext.getAll(), ...meta }));
   }
 
   static logRequest(req) {

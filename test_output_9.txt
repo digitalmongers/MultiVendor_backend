@@ -1,0 +1,489 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/unit/admin.service.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+2026-02-18 11:05:33 [[32m[32minfo[32m[39m] : [32m[32mAUDIT: ADMIN_LOGIN_SUCCESS[32m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_LOGIN_SUCCESS",
+  "target": "ADMIN",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  },
+  "rememberMe": false
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_LOGIN_FAILED[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_LOGIN_FAILED",
+  "target": "SECURITY",
+  "email": "Damion_Wintheiser67@gmail.com",
+  "attempts": 1
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_ACCOUNT_LOCKED[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_ACCOUNT_LOCKED",
+  "target": "SECURITY",
+  "email": "Hilda_Carroll-Kemmer7@gmail.com"
+}
+2026-02-18 11:05:33 [[32m[32minfo[32m[39m] : [32m[32mAUDIT: ADMIN_LOGIN_SUCCESS[32m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_LOGIN_SUCCESS",
+  "target": "ADMIN",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  },
+  "rememberMe": true
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_TOKEN_ROTATED[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_TOKEN_ROTATED",
+  "target": "SECURITY",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  },
+  "oldVersion": 1,
+  "newVersion": 2
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_INVALID_REFRESH_TOKEN[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_INVALID_REFRESH_TOKEN",
+  "target": "SECURITY",
+  "error": "invalid signature"
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_REFRESH_TOKEN_EXPIRED[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_REFRESH_TOKEN_EXPIRED",
+  "target": "SECURITY",
+  "error": "Token expired"
+}
+2026-02-18 11:05:33 [[33m[33mwarn[33m[39m] : [33m[33mAUDIT: ADMIN_TOKEN_ROTATED[33m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_TOKEN_ROTATED",
+  "target": "SECURITY",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  },
+  "oldVersion": 1,
+  "newVersion": 2
+}
+2026-02-18 11:05:33 [[32m[32minfo[32m[39m] : [32m[32mAUDIT: ADMIN_PROFILE_UPDATED[32m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_PROFILE_UPDATED",
+  "target": "ADMIN",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  },
+  "updatedFields": [
+    "name"
+  ]
+}
+2026-02-18 11:05:33 [[31m[31merror[31m[39m] : [31m[31mCache Delete Error: admin:profile:69954fa5ebe8b199264bba1a[31m[39m
+{
+  "service": "multi-vendor-api",
+  "error": "_redis.default.del is not a function"
+}
+2026-02-18 11:05:33 [[31m[31merror[31m[39m] : [31m[31mCache Pattern Delete Error: response:admin:69954fa5ebe8b199264bba1a:*[31m[39m
+{
+  "service": "multi-vendor-api",
+  "error": "_redis.default.scan is not a function"
+}
+2026-02-18 11:05:33 [[34m[34mdebug[34m[39m] : [34m[34mAdmin Cache Invalidated: 69954fa5ebe8b199264bba1a[34m[39m
+2026-02-18 11:05:33 [[32m[32minfo[32m[39m] : [32m[32mAUDIT: ADMIN_PROFILE_UPDATED[32m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "ADMIN_PROFILE_UPDATED",
+  "target": "ADMIN",
+  "adminId": "69954fa5ebe8b199264bba1d",
+  "updatedFields": [
+    "email"
+  ]
+}
+2026-02-18 11:05:33 [[31m[31merror[31m[39m] : [31m[31mCache Delete Error: admin:profile:69954fa5ebe8b199264bba1d[31m[39m
+{
+  "service": "multi-vendor-api",
+  "error": "_redis.default.del is not a function"
+}
+2026-02-18 11:05:33 [[31m[31merror[31m[39m] : [31m[31mCache Pattern Delete Error: response:admin:69954fa5ebe8b199264bba1d:*[31m[39m
+{
+  "service": "multi-vendor-api",
+  "error": "_redis.default.scan is not a function"
+}
+2026-02-18 11:05:33 [[34m[34mdebug[34m[39m] : [34m[34mAdmin Cache Invalidated: 69954fa5ebe8b199264bba1d[34m[39m
+2026-02-18 11:05:33 [[32m[32minfo[32m[39m] : [32m[32mAUDIT: OTP_SENT[32m[39m
+{
+  "service": "multi-vendor-api",
+  "action": "OTP_SENT",
+  "target": "ADMIN",
+  "adminId": {
+    "buffer": "[BUFFER]"
+  }
+}
+node.exe : FAIL 
+tests/unit/admin.service.test.js (6.705 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/unit...st.js (6.705 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  AdminService
+    login
+      ΓêÜ should successfully login with 
+valid credentials (33 ms)
+      ├ù should throw error for invalid 
+credentials (7 ms)
+      ├ù should throw error for non-existent 
+admin (2 ms)
+      ├ù should lock account after 5 failed 
+attempts (4 ms)
+      ΓêÜ should handle remember me option 
+correctly (7 ms)
+    refreshToken
+      ΓêÜ should refresh tokens with valid 
+refresh token (8 ms)
+      ├ù should throw error for invalid 
+refresh token (5 ms)
+      ├ù should throw error for expired 
+refresh token (5 ms)
+      ├ù should throw error for token 
+version mismatch (4 ms)
+      ├ù should throw error for locked 
+account (4 ms)
+      ΓêÜ should increment token version on 
+refresh (7 ms)
+    updateProfile
+      ΓêÜ should update admin profile 
+successfully (10 ms)
+      ├ù should throw error for duplicate 
+email (1 ms)
+      ΓêÜ should allow same email for same 
+admin (5 ms)
+    forgotPassword
+      ΓêÜ should generate and send OTP for 
+valid admin (4 ms)
+      ├ù should throw error for non-existent 
+admin (1 ms)
+      ├ù should handle locked account (2 ms)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for invalid credentials
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "INVALID_ADMIN_AUTH"
+    Received string:    "The email or 
+password provided is incorrect."
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:86:7)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should 
+throw error for non-existent admin
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "INVALID_ADMIN_AUTH"
+    Received string:    "The email or 
+password provided is incorrect."
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:98:7)
+
+  ΓùÅ AdminService ΓÇ║ login ΓÇ║ should lock 
+account after 5 failed attempts
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "ACCOUNT_LOCKED"
+    Received string:    "Too many failed 
+attempts. Account locked for 15 minutes."
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:117:7)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for invalid refresh token
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "INVALID_TOKEN"
+    Received string:    "Invalid refresh 
+token"
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:192:7)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for expired refresh token
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "TOKEN_EXPIRED"
+    Received string:    "Refresh token 
+expired. Please login again."
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:208:7)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for token version mismatch
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: 
+"TOKEN_VERSION_MISMATCH"
+    Received string:    "Invalid refresh 
+token version"
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:224:7)
+
+  ΓùÅ AdminService ΓÇ║ refreshToken ΓÇ║ 
+should throw error for locked account
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "ACCOUNT_LOCKED"
+    Received string:    "Account is locked"
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:246:7)
+
+  ΓùÅ AdminService ΓÇ║ updateProfile ΓÇ║ 
+should throw error for duplicate email
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "EMAIL_EXISTS"
+    Received string:    "Email already in 
+use by another admin"
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:298:7)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should throw error for non-existent admin
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "ADMIN_NOT_FOUND"
+    Received string:    "Admin with this 
+email not found"
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:347:7)
+
+  ΓùÅ AdminService ΓÇ║ forgotPassword ΓÇ║ 
+should handle locked account
+
+    expect(received).toContain(expected) // 
+indexOf
+
+    Expected substring: "ACCOUNT_LOCKED"
+    Received string:    "Account is 
+temporarily locked. Please try again later."
+
+    [0m [90m 279 |[39m       expect(error)
+[33m.[39mtoBeInstanceOf(expectedErrorClass)
+[33m;[39m
+     [90m 280 |[39m       [36mif[39m 
+(expectedMessage) {
+    [31m[1m>[22m[39m[90m 281 |[39m     
+    expect(error[33m.[39mmessage)[33m.[39
+mtoContain(expectedMessage)[33m;[39m
+     [90m     |[39m                        
+       [31m[1m^[22m[39m
+     [90m 282 |[39m       }
+     [90m 283 |[39m     }
+     [90m 284 |[39m   }[0m
+
+      at Function.toContain [as 
+expectAsyncError] 
+(tests/setup/test-setup.js:281:31)
+      at Object.<anonymous> 
+(tests/unit/admin.service.test.js:364:7)
+
+Test Suites: 1 failed, 1 total
+Tests:       10 failed, 7 passed, 17 total
+Snapshots:   0 total
+Time:        6.887 s
+Ran all test suites matching 
+/tests\\unit\\admin.service.test.js/i.

@@ -19,7 +19,6 @@ class PublicBlogController {
       new ApiResponse(HTTP_STATUS.OK, blog, SUCCESS_MESSAGES.FETCHED)
     );
   };
-
   getSettings = async (req, res) => {
     const settings = await BlogService.getSettings();
     return res.status(HTTP_STATUS.OK).json(

@@ -14,7 +14,7 @@ class Cache {
       await redisClient.set(key, stringValue, 'EX', ttl);
       Logger.debug(`Cache Set: ${key}`);
     } catch (error) {
-      Logger.error(`Cache Set Error: ${key}`, { error: error.message });
+      Logger.error(`Cache Set Error: ${key}`, { error: error?.message || error });
     }
   }
 
@@ -33,7 +33,7 @@ class Cache {
       Logger.debug(`Cache Miss: ${key}`);
       return null;
     } catch (error) {
-      Logger.error(`Cache Get Error: ${key}`, { error: error.message });
+      Logger.error(`Cache Get Error: ${key}`, { error: error?.message || error });
       return null;
     }
   }
@@ -47,7 +47,7 @@ class Cache {
       await redisClient.del(key);
       Logger.info(`Cache Invalidated: ${key}`);
     } catch (error) {
-      Logger.error(`Cache Delete Error: ${key}`, { error: error.message });
+      Logger.error(`Cache Delete Error: ${key}`, { error: error?.message || error });
     }
   }
 
@@ -74,7 +74,7 @@ class Cache {
         Logger.info(`Cache Pattern Invalidated: ${pattern} (${keysDeleted} keys deleted)`);
       }
     } catch (error) {
-      Logger.error(`Cache Pattern Delete Error: ${pattern}`, { error: error.message });
+      Logger.error(`Cache Pattern Delete Error: ${pattern}`, { error: error?.message || error });
     }
   }
 }
