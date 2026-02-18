@@ -2,9 +2,7 @@ import TopbarRepository from '../repositories/topbar.repository.js';
 import Cache from '../utils/cache.js';
 
 class TopbarService {
-  /**
-   * Helper to invalidate public topbar cache
-   */
+
   async invalidateCache() {
     await Cache.delByPattern('response:/api/v1/topbar/public*');
   }
