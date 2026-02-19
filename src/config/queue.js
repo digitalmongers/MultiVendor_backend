@@ -1,5 +1,5 @@
 import { Queue, Worker } from 'bullmq';
-import redisClient from './redis.js';
+import redisClient, { getRedisConnection } from './redis.js';
 import Logger from '../utils/logger.js';
 
 /**
@@ -7,17 +7,8 @@ import Logger from '../utils/logger.js';
  * Enterprise-grade background job processing
  */
 
-// Redis connection for BullMQ
-const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-
-const connection = {
-  // Parsing the Redis URL is handled by BullMQ, but we can also pass host/port
-};
-
-// Use the URL directly if available, otherwise fallback to components
-const connectionOptions = redisUrl.startsWith('rediss://')
-  ? { url: redisUrl, tls: { rejectUnauthorized: false } }
-  : redisUrl;
+// Use the getRedisConnection helper to ensure queues connect to the same Redis instance
+const connectionOptions = getRedisConnection();
 
 // Queue Names
 export const QUEUE_NAMES = {

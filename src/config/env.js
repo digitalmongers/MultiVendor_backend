@@ -12,13 +12,13 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().default('5000').transform(Number),
   MONGODB_URI: z.string().url('MONGODB_URI must be a valid connection string'),
-  
+
   // JWT
   JWT_SECRET: z.string().min(32, 'JWT_SECRET should be at least 32 characters'),
   JWT_EXPIRE: z.string().default('7d'),
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_REFRESH_EXPIRE: z.string().default('30d'),
-  
+
   // Cloudinary
   CLOUD_NAME: z.string().min(1, 'CLOUD_NAME is required'),
   CLOUDINARY_API_KEY: z.string().min(1, 'CLOUDINARY_API_KEY is required'),
@@ -45,9 +45,14 @@ const envSchema = z.object({
   MAILCHIMP_SERVER_PREFIX: z.string().optional(),
   MAILCHIMP_AUDIENCE_ID: z.string().optional(),
 
-  // Optional but recommended
+  // Logger
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
+
+  // Redis
   REDIS_URL: z.string().url().optional(),
+  REDIS_HOST: z.string().default('127.0.0.1'),
+  REDIS_PORT: z.string().default('6379').transform(Number),
+  REDIS_PASSWORD: z.string().optional(),
 });
 
 let env;
