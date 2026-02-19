@@ -8,11 +8,16 @@ import Logger from '../utils/logger.js';
  */
 
 // Redis connection for BullMQ
+const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+
 const connection = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
+  // Parsing the Redis URL is handled by BullMQ, but we can also pass host/port
 };
+
+// Use the URL directly if available, otherwise fallback to components
+const connectionOptions = redisUrl.startsWith('rediss://')
+  ? { url: redisUrl, tls: { rejectUnauthorized: false } }
+  : redisUrl;
 
 // Queue Names
 export const QUEUE_NAMES = {
@@ -40,7 +45,7 @@ const defaultJobOptions = {
  * Create Queue Instances
  */
 export const emailQueue = new Queue(QUEUE_NAMES.EMAIL, {
-  connection,
+  connection: connectionOptions,
   defaultJobOptions: {
     ...defaultJobOptions,
     priority: 1, // High priority for emails
@@ -48,7 +53,7 @@ export const emailQueue = new Queue(QUEUE_NAMES.EMAIL, {
 });
 
 export const bulkImportQueue = new Queue(QUEUE_NAMES.BULK_IMPORT, {
-  connection,
+  connection: connectionOptions,
   defaultJobOptions: {
     ...defaultJobOptions,
     attempts: 2,
@@ -56,7 +61,7 @@ export const bulkImportQueue = new Queue(QUEUE_NAMES.BULK_IMPORT, {
 });
 
 export const exportQueue = new Queue(QUEUE_NAMES.EXPORT, {
-  connection,
+  connection: connectionOptions,
   defaultJobOptions: {
     ...defaultJobOptions,
     attempts: 2,

@@ -13,11 +13,11 @@ import Logger from '../utils/logger.js';
  * - send-custom: Custom template emails
  */
 
-const connection = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
-};
+const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+
+const connection = redisUrl.startsWith('rediss://')
+  ? { url: redisUrl, tls: { rejectUnauthorized: false } }
+  : redisUrl;
 
 const emailWorker = new Worker(
   'email',
