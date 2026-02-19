@@ -1,23 +1,13 @@
 import { Worker } from 'bullmq';
 import EmailService from '../services/email.service.js';
 import Logger from '../utils/logger.js';
+import { getRedisConnection } from '../config/redis.js';
 
 /**
  * Email Queue Worker
- * Processes email sending jobs in background
- * 
- * Jobs:
- * - send-welcome: Welcome emails for new users
- * - send-order-confirmation: Order confirmation emails
- * - send-password-reset: Password reset emails
- * - send-custom: Custom template emails
  */
 
-const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-
-const connection = redisUrl.startsWith('rediss://')
-  ? { url: redisUrl, tls: { rejectUnauthorized: false } }
-  : redisUrl;
+const connectionOptions = getRedisConnection();
 
 const emailWorker = new Worker(
   'email',
@@ -89,7 +79,7 @@ const emailWorker = new Worker(
     }
   },
   {
-    connection,
+    connection: connectionOptions,
     concurrency: 5, // Process 5 emails concurrently
     limiter: {
       max: 10, // Max 10 jobs per second (rate limiting)

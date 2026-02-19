@@ -2,8 +2,6 @@ import Redis from 'ioredis';
 import env from './env.js';
 import Logger from '../utils/logger.js';
 
-const redisUrl = env.REDIS_URL || 'redis://127.0.0.1:6379';
-
 // Base config for Redis operations (Enterprise standard)
 const redisConfig = {
   retryStrategy(times) {
@@ -25,24 +23,46 @@ const redisConfig = {
   },
 };
 
-// Add TLS configuration for Redis Cloud (rediss:// protocol)
-if (redisUrl.startsWith('rediss://')) {
-  redisConfig.tls = {
-    rejectUnauthorized: false, // Often needed for cloud providers, set to true if you have custom certs
-  };
-  Logger.info('Redis Cloud TLS connection enabled');
-}
+/**
+ * Get Redis Connection Options
+ * Enterprise Pattern: Centralized connection logic
+ */
+export const getRedisConnection = () => {
+  const isTls = env.REDIS_URL?.startsWith('rediss://');
 
-const redisClient = new Redis(redisUrl, redisConfig);
+  const options = env.REDIS_URL
+    ? {
+      host: new URL(env.REDIS_URL).hostname,
+      port: parseInt(new URL(env.REDIS_URL).port) || 6379,
+      password: new URL(env.REDIS_URL).password || undefined,
+      tls: isTls ? { rejectUnauthorized: false } : undefined
+    }
+    : {
+      host: env.REDIS_HOST,
+      port: env.REDIS_PORT,
+      password: env.REDIS_PASSWORD
+    };
+
+  // Log connection target (sanitized)
+  const target = env.REDIS_URL
+    ? env.REDIS_URL.replace(/:[^:]*@/, ':***@')
+    : `${env.REDIS_HOST}:${env.REDIS_PORT}`;
+
+  Logger.info(`Redis connection target: ${target}`);
+
+  return options;
+};
+
+const connectionOptions = getRedisConnection();
+
+const redisClient = new Redis({ ...redisConfig, ...connectionOptions });
 
 redisClient.on('error', (err) => {
   Logger.error('REDIS_ERROR', { error: err.message, stack: err.stack });
 });
 
 redisClient.on('connect', () => {
-  // Hide password in logs for security
-  const sanitizedUrl = redisUrl.replace(/:[^:]*@/, ':***@');
-  Logger.info('REDIS_CONNECTED', { url: sanitizedUrl });
+  Logger.info('REDIS_CONNECTED');
 });
 
 redisClient.on('ready', () => {
