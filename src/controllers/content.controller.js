@@ -11,7 +11,7 @@ class ContentController {
     const content = await ContentService.updateContent({ aboutUs });
     return ApiResponse.success(res, HTTP_STATUS.OK, 'About Us content updated successfully', content);
   };
- 
+
   /**
    * @desc    Update Terms & Conditions
    */
@@ -20,19 +20,17 @@ class ContentController {
     const content = await ContentService.updateContent({ termsAndConditions });
     return ApiResponse.success(res, HTTP_STATUS.OK, 'Terms & Conditions updated successfully', content);
   };
- 
+
   /**
    * @desc    Update Privacy Policy
    */
   updatePrivacyPolicy = async (req, res) => {
-    const { privacyPolicy } = req.body; 
+    const { privacyPolicy } = req.body;
     const content = await ContentService.updateContent({ privacyPolicy });
     return ApiResponse.success(res, HTTP_STATUS.OK, 'Privacy Policy updated successfully', content);
   };
- 
-  /**
-   * @desc    Update Refund Policy
-   */
+
+
   updateRefundPolicy = async (req, res) => {
     const { refundPolicy } = req.body;
     const content = await ContentService.updateContent({ refundPolicy });
