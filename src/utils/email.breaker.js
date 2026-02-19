@@ -32,10 +32,10 @@ const emailBreaker = new CircuitBreaker(sendEmailAction, breakerOptions);
 // Fallback function when circuit is open
 emailBreaker.fallback((msg) => {
   Logger.warn(`📧 Email fallback triggered for ${msg.to}`);
-  return { 
-    success: false, 
+  return {
+    success: false,
     message: 'Email service temporarily unavailable',
-    fallback: true 
+    fallback: true
   };
 });
 
@@ -62,7 +62,11 @@ emailBreaker.on('success', () => {
 });
 
 emailBreaker.on('failure', (error) => {
-  Logger.error('❌ Email sending failed', { error: error.message });
+  Logger.error('❌ Email sending failed', {
+    error: error.message,
+    response: error.response?.body, // Capture SendGrid specific error details
+    code: error.code
+  });
 });
 
 export default emailBreaker;

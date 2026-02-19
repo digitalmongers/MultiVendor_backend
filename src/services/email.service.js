@@ -30,15 +30,22 @@ class EmailService {
 
     try {
       // Use circuit breaker for SendGrid call
-      await emailBreaker.fire(msg);
+      const result = await emailBreaker.fire(msg);
+
+      // If breaker returned fallback result, it means email wasn't sent
+      if (result && result.fallback) {
+        throw new AppError(result.message || 'Email service is currently unavailable (Fallback)', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      }
+
       Logger.info(`📧 Email sent to ${to}`);
     } catch (error) {
-      Logger.error('❌ SendGrid Error (Circuit Breaker):', {
+      Logger.error('❌ Email Service Error:', {
         message: error.message,
         response: error.response?.body,
         stack: error.stack
       });
-      // Circuit breaker handles fallback - we don't throw to prevent breaking caller flow
+      // Rethrow to allow workers to handle failure/retry
+      throw error;
     }
   }
 
