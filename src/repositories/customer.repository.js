@@ -32,7 +32,7 @@ class CustomerRepository {
     return await query;
   }
 
-  async updateById(id, updateData, options = { new: true }) {
+  async updateById(id, updateData, options = { returnDocument: 'after' }) {
     Logger.debug(`DB: Updating customer by ID: ${id}`, { updateData });
     return await Customer.findByIdAndUpdate(id, updateData, options);
   }

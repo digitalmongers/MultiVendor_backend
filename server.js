@@ -55,6 +55,9 @@ await import('./src/workers/index.js');
 
 const app = express();
 
+// Trust proxy for rate limiting on Render/Cloud
+app.set('trust proxy', 1);
+
 
 
 /**
@@ -62,36 +65,36 @@ const app = express();
  */
 // 1. Request Size Limits - Security & Performance
 // JSON API limit - sufficient for most requests, prevents DoS
-app.use(express.json({ 
+app.use(express.json({
   limit: '100kb',              // 100KB for JSON (bulk operations support)
   strict: true,                // Only arrays/objects, no primitives
   verify: (req, res, buf) => {
     // Log large requests for monitoring
     if (buf.length > 50000) {
-      Logger.warn('Large JSON request detected', { 
-        size: buf.length, 
+      Logger.warn('Large JSON request detected', {
+        size: buf.length,
         path: req.path,
-        ip: req.ip 
+        ip: req.ip
       });
     }
   }
 }));
 
 // URL-encoded form data limit
-app.use(express.urlencoded({ 
+app.use(express.urlencoded({
   extended: true,              // Allow rich objects/arrays
   limit: '50kb',              // 50KB for form data
   parameterLimit: 1000        // Max 1000 parameters (prevent hash collision attacks)
 }));
 
 // Text body limit for webhooks/XML
-app.use(express.text({ 
+app.use(express.text({
   limit: '100kb',
   type: ['text/plain', 'application/xml', 'text/xml']
 }));
 
 // Raw binary limit for specific routes (if needed)
-app.use(express.raw({ 
+app.use(express.raw({
   limit: '5mb',                // 5MB for file uploads/binary
   type: 'application/octet-stream'
 }));
@@ -102,18 +105,18 @@ app.use(compression({
   filter: (req, res) => {
     // Skip compression for small responses (< 1KB)
     if (req.headers['x-no-compression']) return false;
-    
+
     // Skip compression for already compressed formats
     const noCompress = /\.(jpg|jpeg|png|gif|webp|mp4|mp3|pdf|zip|gz)$/i;
     if (noCompress.test(req.path)) return false;
-    
+
     // Compress JSON, HTML, CSS, JS, Text
     return compression.filter(req, res);
   },
   threshold: 1024,             // Only compress responses > 1KB
   memLevel: 8,                 // Memory usage (1-9)
-})); 
-app.use(responseTime()); 
+}));
+app.use(responseTime());
 
 // Global Identifiers & Context
 app.use(requestIdMiddleware);
@@ -174,17 +177,17 @@ server.headersTimeout = 66000;    // 66 seconds (must be > keepAliveTimeout)
  */
 const gracefulShutdown = (signal) => {
   Logger.warn(`RECEIVED ${signal}. Shutting down gracefully...`);
-  
+
   server.close(async () => {
     Logger.info('HTTP server closed.');
     try {
       const mongoose = (await import('mongoose')).default;
       await mongoose.connection.close();
       Logger.info('Database connection closed.');
-      
+
       await closeRedis();
       Logger.info('Redis connection closed.');
-      
+
       process.exit(0);
     } catch (err) {
       Logger.error('Error during shutdown', { error: err.message });

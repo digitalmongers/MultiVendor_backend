@@ -33,7 +33,11 @@ class EmailService {
       await emailBreaker.fire(msg);
       Logger.info(`📧 Email sent to ${to}`);
     } catch (error) {
-      Logger.error('❌ SendGrid Error (Circuit Breaker):', error);
+      Logger.error('❌ SendGrid Error (Circuit Breaker):', {
+        message: error.message,
+        response: error.response?.body,
+        stack: error.stack
+      });
       // Circuit breaker handles fallback - we don't throw to prevent breaking caller flow
     }
   }

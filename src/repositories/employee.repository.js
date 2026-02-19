@@ -27,7 +27,7 @@ class EmployeeRepository {
   }
 
   async updateById(id, updateData) {
-    return await Employee.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).populate('role');
+    return await Employee.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true }).populate('role');
   }
 
   async deleteById(id) {

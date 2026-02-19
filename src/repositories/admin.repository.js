@@ -46,7 +46,7 @@ class AdminRepository {
   }
 
   async updateById(id, updateData) {
-    return await Admin.findByIdAndUpdate(id, updateData, { new: true });
+    return await Admin.findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: true });
   }
 
   async count() {

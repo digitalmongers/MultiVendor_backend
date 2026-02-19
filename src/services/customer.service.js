@@ -48,7 +48,7 @@ class CustomerService {
           type: 'send-custom',
           to: email,
           template: 'Account Verification',
-          data: { 
+          data: {
             username: customerData.name || email,
             verificationCode: verificationCode
           },
@@ -173,7 +173,7 @@ class CustomerService {
       type: 'send-custom',
       to: email,
       template: 'Account Verification',
-      data: { 
+      data: {
         username: customer.name || email,
         verificationCode: verificationCode
       },
@@ -338,7 +338,7 @@ class CustomerService {
       type: 'send-custom',
       to: email,
       template: 'Password Reset',
-      data: { 
+      data: {
         username: customer.name || email,
         resetCode: resetCode
       },
@@ -432,7 +432,7 @@ class CustomerService {
             lastPasswordReset: new Date()
           }
         },
-        { new: true, session }
+        { returnDocument: 'after', session }
       );
 
       if (!customer) {

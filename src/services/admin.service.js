@@ -581,45 +581,25 @@ class AdminService {
 
 
     // Queue OTP email (Async - no API blocking)
-
     try {
-
       await emailQueue.add('send-custom', {
-
         type: 'send-custom',
-
         to: admin.email,
-
         template: 'Password Reset',
-
         data: {
-
           username: admin.name,
-
-          resetCode: otp
-
+          otp: otp
         },
-
         role: 'admin'
-
       });
-
       AuditLogger.log('OTP_SENT', 'ADMIN', { adminId: admin._id });
-
     } catch (err) {
-
       // Rollback changes if email queue fails
-
       await AdminRepository.updateById(admin._id, {
-
         resetPasswordOtp: undefined,
-
         resetPasswordExpires: undefined,
-
       });
-
       throw err;
-
     }
 
 

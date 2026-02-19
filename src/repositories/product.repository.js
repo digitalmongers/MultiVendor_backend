@@ -10,11 +10,11 @@ class ProductRepository {
    */
   async findAll(filter = {}, sort = { createdAt: -1 }, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
-    
+
     // Support Text Search if 'search' is in filter
     if (filter.search) {
-        filter.$text = { $search: filter.search };
-        delete filter.search;
+      filter.$text = { $search: filter.search };
+      delete filter.search;
     }
 
     const [products, total] = await Promise.all([
@@ -55,8 +55,8 @@ class ProductRepository {
   async findAllCursor(filter = {}, cursor = null, limit = 20, sortDirection = 'desc') {
     // Support Text Search if 'search' is in filter
     if (filter.search) {
-        filter.$text = { $search: filter.search };
-        delete filter.search;
+      filter.$text = { $search: filter.search };
+      delete filter.search;
     }
 
     // Build query with cursor
@@ -90,8 +90,8 @@ class ProductRepository {
     });
 
     // Get next cursor from last item
-    const nextCursor = filteredItems.length > 0 && hasNextPage 
-      ? filteredItems[filteredItems.length - 1]._id 
+    const nextCursor = filteredItems.length > 0 && hasNextPage
+      ? filteredItems[filteredItems.length - 1]._id
       : null;
 
     return {
@@ -115,12 +115,12 @@ class ProductRepository {
   }
 
   async findOne(filter) {
-      return await Product.findOne(filter).lean();
+    return await Product.findOne(filter).lean();
   }
 
   async update(id, data) {
     return await Product.findByIdAndUpdate(id, data, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
     }).lean();
   }
@@ -134,7 +134,7 @@ class ProductRepository {
   }
 
   async updateStatus(id, status) {
-    return await Product.findByIdAndUpdate(id, { status }, { new: true }).lean();
+    return await Product.findByIdAndUpdate(id, { status }, { returnDocument: 'after' }).lean();
   }
 }
 

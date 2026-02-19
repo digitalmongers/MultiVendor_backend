@@ -32,7 +32,7 @@ class VendorRepository {
     return await query;
   }
 
-  async updateById(id, updateData, options = { new: true }) {
+  async updateById(id, updateData, options = { returnDocument: 'after' }) {
     Logger.debug(`DB: Updating vendor by ID: ${id}`, { updateData });
     return await Vendor.findByIdAndUpdate(id, updateData, options);
   }
