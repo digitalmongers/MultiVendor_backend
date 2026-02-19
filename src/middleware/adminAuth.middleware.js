@@ -3,12 +3,13 @@ import AdminRepository from '../repositories/admin.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS, ERROR_MESSAGES } from '../constants.js';
 import env from '../config/env.js';
+import catchAsync from '../utils/catchAsync.js';
 
 /**
  * Middleware to protect admin routes.
  * Ensures the requester is authenticated as an Admin.
  */
-export const adminProtect = async (req, res, next) => {
+export const adminProtect = catchAsync(async (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -43,4 +44,4 @@ export const adminProtect = async (req, res, next) => {
     }
     throw new AppError('Invalid admin token', HTTP_STATUS.UNAUTHORIZED, 'ADMIN_INVALID_TOKEN');
   }
-};
+});

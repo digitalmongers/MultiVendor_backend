@@ -99,7 +99,7 @@ class DealOfTheDayService {
      */
     async getActiveDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
         const cacheKey = `deals:cursor:${cursor}:${limit}:${sortDirection}`;
-        
+
         return await MultiLayerCache.get(cacheKey, async () => {
             const filter = { isPublished: true };
 
@@ -159,9 +159,7 @@ class DealOfTheDayService {
                 const pid = dp.product.toString();
                 if (productIds.includes(pid) && dp.isActive !== false) {
                     productDealMap[pid] = {
-                        dealTitle: deal.title,
-                        discount: dp.discount,
-                        discountType: dp.discountType
+                        dealTitle: deal.title
                     };
                 }
             });
@@ -171,11 +169,6 @@ class DealOfTheDayService {
             const deal = productDealMap[p._id.toString()];
             if (deal) {
                 p.dealOfTheDay = deal;
-                if (deal.discountType === 'flat') {
-                    p.dealPrice = Math.max(0, p.price - deal.discount);
-                } else {
-                    p.dealPrice = Math.max(0, p.price - (p.price * (deal.discount / 100)));
-                }
             }
         });
 

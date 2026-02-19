@@ -37,7 +37,7 @@ class SupplierEmailTemplateService {
 
     // Upload new logo
     const result = await uploadToCloudinary(file, 'email-templates/logos');
-    
+
     return await SupplierEmailTemplateRepository.updateByEvent(event, {
       logo: {
         url: result.secure_url,
@@ -59,7 +59,7 @@ class SupplierEmailTemplateService {
 
     // Upload new icon
     const result = await uploadToCloudinary(file, 'email-templates/icons');
-    
+
     return await SupplierEmailTemplateRepository.updateByEvent(event, {
       mainIcon: {
         url: result.secure_url,
@@ -87,6 +87,7 @@ class SupplierEmailTemplateService {
       'Account Suspended',
       'Account Activation',
       'Order Received',
+      'Password Reset',
     ];
 
     for (const event of events) {

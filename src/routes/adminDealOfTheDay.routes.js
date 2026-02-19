@@ -23,9 +23,7 @@ const publishSchema = z.object({
 const addProductsSchema = z.object({
     body: z.object({
         products: z.array(z.object({
-            product: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Product ID"),
-            discount: z.number().min(0),
-            discountType: z.enum(['flat', 'percent'])
+            product: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Product ID")
         })).min(1)
     })
 });

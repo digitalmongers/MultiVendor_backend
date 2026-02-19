@@ -44,7 +44,7 @@ class EmailService {
    */
   async compileTemplate(event, placeholders = {}, role = 'supplier') {
     let template;
-    
+
     if (role === 'customer') {
       template = await CustomerEmailTemplateRepository.findByEvent(event);
     } else if (role === 'admin') {
@@ -52,7 +52,7 @@ class EmailService {
     } else {
       template = await SupplierEmailTemplateRepository.findByEvent(event);
     }
-    
+
     // Check if template exists and is enabled
     if (!template || !template.isEnabled) {
       Logger.debug(`Email skipped: ${role} Template ${event} is disabled or missing.`);
@@ -185,8 +185,9 @@ class EmailService {
   }
 
   async sendPasswordResetOtpEmail(to, otp, role = 'supplier') {
-    const event = role === 'customer' ? 'Verify Email' : 'Registration';
-    const result = await this.compileTemplate(event, { otp }, role);
+    const event = 'Password Reset';
+    const placeholders = role === 'customer' ? { username: to, resetCode: otp } : { otp };
+    const result = await this.compileTemplate(event, placeholders, role);
     if (result) await this.sendEmail(to, result.subject, result.html);
   }
 

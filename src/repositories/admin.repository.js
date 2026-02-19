@@ -21,12 +21,14 @@ class AdminRepository {
     return await query;
   }
 
-  async findById(id, lean = false) {
+  async findById(id, lean = false, useCache = true) {
     const cacheKey = `${ADMIN_CACHE_PREFIX}${id}`;
-    
+
     // 1. Try cache
-    const cachedAdmin = await Cache.get(cacheKey);
-    if (cachedAdmin) return cachedAdmin;
+    if (useCache) {
+      const cachedAdmin = await Cache.get(cacheKey);
+      if (cachedAdmin) return cachedAdmin;
+    }
 
     // 2. Fetch from DB
     const query = Admin.findById(id);
@@ -34,12 +36,12 @@ class AdminRepository {
       query.lean();
     }
     const admin = await query;
-    
+
     // 3. Store in cache (expire in 1 hour)
-    if (admin) {
+    if (admin && useCache) {
       await Cache.set(cacheKey, admin, 3600);
     }
-    
+
     return admin;
   }
 

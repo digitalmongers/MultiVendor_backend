@@ -37,7 +37,16 @@ class TestDatabase {
   }
 
   async connect() {
-    this.mongoServer = await MongoMemoryServer.create();
+    this.mongoServer = await MongoMemoryServer.create({
+      instance: {
+        dbName: 'test',
+        storageEngine: 'ephemeralForTest', // Use ephemeral storage if possible
+      },
+      binary: {
+        version: '6.0.4',
+        downloadDir: './.mongodb-binaries', // Force download to local project dir (on Drive E)
+      }
+    });
     const uri = this.mongoServer.getUri();
 
     await mongoose.connect(uri);
@@ -76,7 +85,7 @@ class TestDataFactory {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: 'TestPassword123!',
-      phoneNumber: faker.phone.number('91##########').toString(),
+      phoneNumber: '9' + faker.string.numeric(9),
       role: 'admin',
       isActive: true,
       tokenVersion: 0,
@@ -89,7 +98,7 @@ class TestDataFactory {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: 'TestPassword123!',
-      phoneNumber: faker.phone.number('91##########').toString(),
+      phoneNumber: '9' + faker.string.numeric(9),
       isVerified: true,
       isActive: true,
       tokenVersion: 0,
@@ -102,7 +111,7 @@ class TestDataFactory {
       name: faker.company.name(),
       email: faker.internet.email(),
       password: 'TestPassword123!',
-      phoneNumber: faker.phone.number('91##########').toString(),
+      phoneNumber: '9' + faker.string.numeric(9),
       businessName: faker.company.name(),
       businessType: faker.helpers.arrayElement(['retail', 'wholesale', 'manufacturer']),
       isActive: true,

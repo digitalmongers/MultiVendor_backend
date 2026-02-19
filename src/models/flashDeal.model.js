@@ -42,15 +42,6 @@ const flashDealSchema = new mongoose.Schema({
             ref: 'Product',
             required: true
         },
-        discount: {
-            type: Number,
-            default: 0
-        },
-        discountType: {
-            type: String,
-            enum: ['flat', 'percent'],
-            default: 'percent'
-        },
         isActive: {
             type: Boolean,
             default: true

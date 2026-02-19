@@ -127,7 +127,7 @@ class FeaturedDealService {
     }
 
     async addProductsToDeal(dealId, products) {
-        // products: [{ product: id, discount: X, discountType: Y }]
+        // products: [{ product: id }]
         const productIds = products.map(p => p.product);
         const count = await ProductRepository.countDocuments({ _id: { $in: productIds } });
 
@@ -165,7 +165,7 @@ class FeaturedDealService {
      */
     async getActiveFeaturedDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
         const cacheKey = `featured-deals:cursor:${cursor}:${limit}:${sortDirection}`;
-        
+
         return await MultiLayerCache.get(cacheKey, async () => {
             const now = new Date();
             const filter = {
@@ -237,8 +237,6 @@ class FeaturedDealService {
                 if (productIds.includes(pid) && dp.isActive !== false) {
                     productFeaturedMap[pid] = {
                         dealTitle: deal.title,
-                        discount: dp.discount,
-                        discountType: dp.discountType,
                         endDate: deal.endDate
                     };
                 }
@@ -249,12 +247,6 @@ class FeaturedDealService {
             const featured = productFeaturedMap[p._id.toString()];
             if (featured) {
                 p.featuredDeal = featured;
-                // Calculate featured price
-                if (featured.discountType === 'flat') {
-                    p.featuredPrice = Math.max(0, p.price - featured.discount);
-                } else {
-                    p.featuredPrice = Math.max(0, p.price - (p.price * (featured.discount / 100)));
-                }
             }
         });
 

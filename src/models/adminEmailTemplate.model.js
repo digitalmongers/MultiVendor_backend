@@ -8,6 +8,7 @@ const adminEmailTemplateSchema = new mongoose.Schema(
       unique: true,
       enum: [
         'Vendor Request',
+        'Password Reset',
       ],
     },
     isEnabled: {

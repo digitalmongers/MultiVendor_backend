@@ -1,0 +1,264 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/integration/admin.service.integration.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    ≡ƒº¬ Test DB Disconnected
+
+      at TestDatabase.log [as disconnect] (tests/setup/test-setup.js:57:13)
+
+node.exe : FAIL tests/integration/admin.servi
+ce.integration.test.js (13.996 s)
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (FAIL tests/inte...t.js (13.996 s):Strin  
+  g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+  AdminService Integration Tests
+    login
+      ├ù should successfully login an 
+existing admin (4 ms)
+      ├ù should lock out admin after 5 
+failed attempts
+    refreshToken
+      ├ù should rotate tokens and update 
+token version
+    updateProfile
+      ├ù should update admin profile and 
+invalidate cache
+    Password Reset Workflow
+      ├ù should complete full password reset 
+flow
+      ├ù should throw error for invalid OTP 
+(1 ms)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+login ΓÇ║ should successfully login an 
+existing admin
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+login ΓÇ║ should lock out admin after 5 
+failed attempts
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+refreshToken ΓÇ║ should rotate tokens and 
+update token version
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+updateProfile ΓÇ║ should update admin 
+profile and invalidate cache
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+Password Reset Workflow ΓÇ║ should complete 
+full password reset flow
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+Password Reset Workflow ΓÇ║ should throw 
+error for invalid OTP
+
+    thrown: "Exceeded timeout of 5000 ms for 
+a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/docs
+/api#testname-fn-timeout."
+
+    [0m [90m 35 |[39m     [36mlet[39m 
+adminData[33m;[39m
+     [90m 36 |[39m
+    [31m[1m>[22m[39m[90m 37 |[39m     
+beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 38 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 39 |[39m         [36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 40 |[39m     })[33m;[39m[0m
+
+      at tests/integration/admin.service.inte
+gration.test.js:37:14
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:33:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 6 total
+Snapshots:   0 total
+Time:        14.25 s
+Ran all test suites matching /tests\\integrat
+ion\\admin.service.integration.test.js/i.
+Jest did not exit one second after the test 
+run has completed.
+
+'This usually means that there are 
+asynchronous operations that weren't stopped 
+in your tests. Consider running Jest with 
+`--detectOpenHandles` to troubleshoot this 
+issue.
+
+  ΓùÅ  Cannot log after tests are done. Did 
+you forget to wait for something async in 
+your test?
+    Attempted to log "≡ƒº¬ Test DB 
+Connected: mongodb://127.0.0.1:58056/".
+
+    [0m [90m 42 |[39m
+     [90m 43 |[39m     [36mawait[39m 
+mongoose[33m.[39mconnect(uri)[33m;[39m
+    [31m[1m>[22m[39m[90m 44 |[39m     
+console[33m.[39mlog([32m`≡ƒº¬ Test DB 
+Connected: ${uri}`[39m)[33m;[39m
+     [90m    |[39m             
+[31m[1m^[22m[39m
+     [90m 45 |[39m   }
+     [90m 46 |[39m
+     [90m 47 |[39m   [36masync[39m 
+disconnect() {[0m
+
+      at console.log (node_modules/@jest/cons
+ole/build/CustomConsole.js:141:10)
+      at TestDatabase.log [as connect] 
+(tests/setup/test-setup.js:44:13)
+      at Object.<anonymous> (tests/integratio
+n/admin.service.integration.test.js:39:9)
+

@@ -53,7 +53,7 @@ class FlashDealService {
      */
     async getActiveFlashDealsCursor(cursor = null, limit = 10, sortDirection = 'desc') {
         const cacheKey = `flash-deals:cursor:${cursor}:${limit}:${sortDirection}`;
-        
+
         return await MultiLayerCache.get(cacheKey, async () => {
             const now = new Date();
             const filter = {
@@ -156,7 +156,7 @@ class FlashDealService {
     }
 
     async addProductsToDeal(dealId, products) {
-        // products: [{ product: id, discount: X, discountType: Y }]
+        // products: [{ product: id }]
         const productIds = products.map(p => p.product);
         const count = await ProductRepository.countDocuments({ _id: { $in: productIds } });
 
@@ -246,8 +246,6 @@ class FlashDealService {
                 if (productIds.includes(pid) && dp.isActive !== false) {
                     productFlashMap[pid] = {
                         dealTitle: deal.title,
-                        discount: dp.discount,
-                        discountType: dp.discountType,
                         endDate: deal.endDate
                     };
                 }
@@ -258,12 +256,6 @@ class FlashDealService {
             const flash = productFlashMap[p._id.toString()];
             if (flash) {
                 p.flashDeal = flash;
-                // Calculate flash price
-                if (flash.discountType === 'flat') {
-                    p.flashPrice = Math.max(0, p.price - flash.discount);
-                } else {
-                    p.flashPrice = Math.max(0, p.price - (p.price * (flash.discount / 100)));
-                }
             }
         });
 

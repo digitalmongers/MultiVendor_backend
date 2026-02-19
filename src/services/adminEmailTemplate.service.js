@@ -35,7 +35,7 @@ class AdminEmailTemplateService {
     }
 
     const result = await uploadToCloudinary(file, 'admin-email-templates/logos');
-    
+
     return await AdminEmailTemplateRepository.updateByEvent(event, {
       logo: {
         url: result.secure_url,
@@ -55,7 +55,7 @@ class AdminEmailTemplateService {
     }
 
     const result = await uploadToCloudinary(file, 'admin-email-templates/icons');
-    
+
     return await AdminEmailTemplateRepository.updateByEvent(event, {
       mainIcon: {
         url: result.secure_url,
@@ -77,25 +77,41 @@ class AdminEmailTemplateService {
 
   async bootstrapTemplates() {
     const events = [
-      'Vendor Request',
+      {
+        event: 'Vendor Request',
+        templateTitle: 'New Vendor Registration Request',
+        emailContent: `
+          <p>Hello Admin,</p>
+          <p>A new vendor has registered and is awaiting your approval.</p>
+          <ul>
+            <li><strong>Business Name:</strong> {businessName}</li>
+            <li><strong>Vendor Name:</strong> {firstName} {lastName}</li>
+            <li><strong>Email:</strong> {email}</li>
+            <li><strong>Phone:</strong> {phoneNumber}</li>
+          </ul>
+        `
+      },
+      {
+        event: 'Password Reset',
+        templateTitle: 'Admin Password Reset OTP',
+        emailContent: `
+          <p>Hello,</p>
+          <p>You are receiving this email because you (or someone else) have requested the reset of the password for your admin account.</p>
+          <p>Your OTP for password reset is: <strong>{otp}</strong></p>
+          <p>This OTP will expire in 1 minute.</p>
+          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+        `
+      }
     ];
 
-    for (const event of events) {
+    for (const item of events) {
+      const { event, templateTitle, emailContent } = item;
       const exists = await AdminEmailTemplate.findOne({ event }).lean();
       if (!exists) {
         await AdminEmailTemplate.create({
           event,
-          templateTitle: 'New Vendor Registration Request',
-          emailContent: `
-            <p>Hello Admin,</p>
-            <p>A new vendor has registered and is awaiting your approval.</p>
-            <ul>
-              <li><strong>Business Name:</strong> {businessName}</li>
-              <li><strong>Vendor Name:</strong> {firstName} {lastName}</li>
-              <li><strong>Email:</strong> {email}</li>
-              <li><strong>Phone:</strong> {phoneNumber}</li>
-            </ul>
-          `,
+          templateTitle,
+          emailContent,
           isEnabled: true,
           includedLinks: { privacyPolicy: false, contactUs: false },
           socialMediaLinks: { facebook: false, instagram: false, twitter: false },
