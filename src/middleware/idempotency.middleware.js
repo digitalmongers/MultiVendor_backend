@@ -6,36 +6,41 @@ import Logger from '../utils/logger.js';
 
 /**
  * Idempotency Middleware (Double Hit Prevention)
- * Locks a specific request for a user for a short duration.
- * @param {number} ttl - Lock duration in seconds (default 5s)
+ * Locks a specific request based on user, path, and body hash.
+ * @param {string|number} actionOrTtl - Custom action string or TTL in seconds
+ * @param {number} ttlSeconds - TTL in seconds (if first param is action string)
  */
-const lockRequest = (ttl = 5) => {
+const lockRequest = (actionOrTtl = 5, ttlSeconds = 5) => {
   return async (req, res, next) => {
     // Only apply to state-changing methods (POST, PATCH, PUT, DELETE)
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
       return next();
     }
 
+    // Determine TTL and Action Name
+    const ttl = typeof actionOrTtl === 'number' ? actionOrTtl : ttlSeconds;
+    const actionName = typeof actionOrTtl === 'string' ? actionOrTtl : 'default';
+
     // 1. Generate a unique key for the request
-    // Strategy: userId + path + hash(body)
+    // Strategy: userId + actionName + path + hash(body)
     const userId = req.user?._id || req.admin?._id || 'guest';
     const bodyHash = crypto
       .createHash('md5')
       .update(JSON.stringify(req.body || {}))
       .digest('hex');
-    
-    const lockKey = `lock:${userId}:${req.originalUrl}:${bodyHash}`;
+
+    const lockKey = `lock:${userId}:${actionName}:${req.originalUrl}:${bodyHash}`;
 
     try {
       // 2. Check if lock exists in Redis
       const isLocked = await Cache.get(lockKey);
-      
+
       if (isLocked) {
         Logger.warn(`Double-hit prevented: ${lockKey}`);
         return res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json(
           new ApiResponse(
-            HTTP_STATUS.TOO_MANY_REQUESTS, 
-            null, 
+            HTTP_STATUS.TOO_MANY_REQUESTS,
+            null,
             'Request is already being processed. Please wait a moment.'
           )
         );
@@ -44,7 +49,7 @@ const lockRequest = (ttl = 5) => {
       // 3. Set lock for TTL (seconds)
       // Implementation: We use a simple value '1' to indicate locked
       await Cache.set(lockKey, 'locked', ttl);
-      
+
       // 4. Proceed to next
       next();
     } catch (error) {

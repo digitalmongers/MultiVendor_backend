@@ -35,7 +35,7 @@ class CustomerEmailTemplateService {
     }
 
     const result = await uploadToCloudinary(file, 'customer-email-templates/logos');
-    
+
     return await CustomerEmailTemplateRepository.updateByEvent(event, {
       logo: {
         url: result.secure_url,
@@ -55,7 +55,7 @@ class CustomerEmailTemplateService {
     }
 
     const result = await uploadToCloudinary(file, 'customer-email-templates/icons');
-    
+
     return await CustomerEmailTemplateRepository.updateByEvent(event, {
       mainIcon: {
         url: result.secure_url,
@@ -82,6 +82,7 @@ class CustomerEmailTemplateService {
       'Account Blocked',
       'Account Unblocked',
       'Support Ticket Reply',
+      'Password Reset',
     ];
 
     for (const event of events) {
@@ -97,6 +98,14 @@ class CustomerEmailTemplateService {
               {reply}
             </div>
             <p>If you have further questions, please let us know.</p>
+          `;
+        } else if (event === 'Password Reset') {
+          emailContent = `
+            <p>Hello {username},</p>
+            <p>You requested a password reset. Use the following code to reset your password:</p>
+            <h2 style="background: #f4f7f9; padding: 10px; text-align: center; letter-spacing: 5px;">{resetCode}</h2>
+            <p>This code is valid for 10 minutes.</p>
+            <p>If you didn't request this, please ignore this email.</p>
           `;
         }
         await CustomerEmailTemplate.create({

@@ -56,8 +56,8 @@ class DealOfTheDayRepository extends BaseRepository {
         const items = hasNextPage ? deals.slice(0, limit) : deals;
 
         // Get next cursor from last item
-        const nextCursor = items.length > 0 && hasNextPage 
-            ? items[items.length - 1]._id 
+        const nextCursor = items.length > 0 && hasNextPage
+            ? items[items.length - 1]._id
             : null;
 
         return {
@@ -76,6 +76,7 @@ class DealOfTheDayRepository extends BaseRepository {
     }
 
     async addProducts(dealId, productData) {
+        // productData is array of { product: id }
         const deal = await this.model.findById(dealId);
         if (!deal) return null;
 

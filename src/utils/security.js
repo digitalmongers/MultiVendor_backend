@@ -7,10 +7,11 @@ import Logger from './logger.js';
  */
 export const hashPassword = async (password) => {
   try {
+    const isTest = process.env.NODE_ENV === 'test';
     return await argon2.hash(password, {
       type: argon2.argon2id, // Strongest variant
-      memoryCost: 2 ** 16, // 64MB
-      timeCost: 3,
+      memoryCost: isTest ? 2 ** 10 : 2 ** 16, // 1MB for tests vs 64MB for prod
+      timeCost: isTest ? 1 : 3, // 1 iteration for tests vs 3 for prod
       parallelism: 1,
     });
   } catch (error) {

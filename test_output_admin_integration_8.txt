@@ -1,0 +1,1080 @@
+﻿
+> task-manager-backend@1.0.0 test
+> jest tests/integration/admin.service.integration.test.js
+
+  console.log
+    [dotenv@17.2.3] injecting env (22) from .env -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    Downloading MongoDB "6.0.4": 0% (0mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 1.4% (6.9mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 3.2% (16mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 5.1% (25.4mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 6.9% (34.5mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 8.8% (44mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 10.6% (53.4mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 12.5% (62.6mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 14.4% (72mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 16.2% (81.1mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 18.1% (90.5mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 19.9% (99.7mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 21.7% (109mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 23.6% (118.4mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    Downloading MongoDB "6.0.4": 25.4% (127.2mb / 501.3mb)[0G
+
+      at MongoBinaryDownload.printDownloadProgress (node_modules/mongodb-memory-server-core/src/util/MongoBinaryDownload.ts:664:15)
+
+  console.log
+    ≡ƒº¬ Test DB Disconnected
+
+      at TestDatabase.log [as disconnect] (tests/setup/test-setup.js:66:13)
+
+node.exe : FAIL tests/integration/admin.se
+rvice.integration.test.js (45.459 s)
+At C:\Program Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecifie 
+   d: (FAIL tests/inte...t.js (45.459 s)  
+  :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeComma 
+   ndError
+ 
+  AdminService Integration Tests
+    login
+      ├ù should successfully login an 
+existing admin (7 ms)
+      ├ù should lock out admin after 5 
+failed attempts (1 ms)
+    refreshToken
+      ├ù should rotate tokens and update 
+token version
+    updateProfile
+      ├ù should update admin profile and 
+invalidate cache
+    Password Reset Workflow
+      ├ù should complete full password 
+reset flow (1 ms)
+      ├ù should throw error for invalid 
+OTP
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+login ΓÇ║ should successfully login an 
+existing admin
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+login ΓÇ║ should lock out admin after 5 
+failed attempts
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+refreshToken ΓÇ║ should rotate tokens and 
+update token version
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+updateProfile ΓÇ║ should update admin 
+profile and invalidate cache
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+Password Reset Workflow ΓÇ║ should 
+complete full password reset flow
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+  ΓùÅ AdminService Integration Tests ΓÇ║ 
+Password Reset Workflow ΓÇ║ should throw 
+error for invalid OTP
+
+    thrown: "Exceeded timeout of 30000 ms 
+for a hook.
+    Add a timeout value to this test to 
+increase the timeout, if this is a 
+long-running test. See https://jestjs.io/d
+ocs/api#testname-fn-timeout."
+
+    [0m [90m 37 |[39m     
+[36mlet[39m adminData[33m;[39m
+     [90m 38 |[39m
+    [31m[1m>[22m[39m[90m 39 |[39m   
+  beforeAll([36masync[39m () 
+[33m=>[39m {
+     [90m    |[39m              
+[31m[1m^[22m[39m
+     [90m 40 |[39m         testDB 
+[33m=[39m [36mnew[39m 
+[33mTestDatabase[39m()[33m;[39m
+     [90m 41 |[39m         
+[36mawait[39m 
+testDB[33m.[39mconnect()[33m;[39m
+     [90m 42 |[39m     }[33m,[39m 
+[35m30000[39m)[33m;[39m[0m
+
+      at tests/integration/admin.service.i
+ntegration.test.js:39:14
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:35:
+9)
+
+Test Suites: 1 failed, 1 total
+Tests:       6 failed, 6 total
+Snapshots:   0 total
+Time:        45.7 s
+Ran all test suites matching /tests\\integ
+ration\\admin.service.integration.test.js/
+i.
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 27.3% (136.7mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+Jest did not exit one second after the 
+test run has completed.
+
+'This usually means that there are 
+asynchronous operations that weren't 
+stopped in your tests. Consider running 
+Jest with `--detectOpenHandles` to 
+troubleshoot this issue.
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 29.2% (146.3mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 31% (155.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 32.9% (164.8mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 34.7% (174mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 36.6% (183.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 38.4% (192.7mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 40.3% (201.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 42.2% (211.3mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 44% (220.5mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 45.9% (229.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 47.7% (238.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 49.6% (248.5mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 51.4% (257.7mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 53.3% (267.1mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 55.1% (276.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 57% (285.8mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 58.8% (294.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 60.7% (304.2mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 62.6% (313.7mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 64.4% (323mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 66.3% (332.1mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 68.1% (341.5mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 69.9% (350.6mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 71.8% (360.1mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 73.7% (369.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 75.5% (378.5mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 77.4% (388mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 79.2% (397.2mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 81.1% (406.5mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 83% (415.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 84.8% (425mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 86.7% (434.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 88.4% (443.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 90.4% (453mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 92.2% (462.3mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 94.1% (471.7mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 95.9% (480.9mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 97.8% (490.1mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 99.6% (499.4mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at IncomingMessage.<anonymous> (node
+_modules/mongodb-memory-server-core/src/ut
+il/MongoBinaryDownload.ts:610:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 100% (501.3mb / 501.3mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at WriteStream.<anonymous> (node_mod
+ules/mongodb-memory-server-core/src/util/M
+ongoBinaryDownload.ts:600:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "Downloading MongoDB 
+"6.0.4": 100% (0mb / 0mb)[0G".
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at 
+MongoBinaryDownload.printDownloadProgress 
+(node_modules/mongodb-memory-server-core/s
+rc/util/MongoBinaryDownload.ts:664:15)
+      at WriteStream.<anonymous> (node_mod
+ules/mongodb-memory-server-core/src/util/M
+ongoBinaryDownload.ts:600:16)
+
+
+  ΓùÅ  Cannot log after tests are done. 
+Did you forget to wait for something 
+async in your test?
+    Attempted to log "≡ƒº¬ Test DB 
+Connected: mongodb://127.0.0.1:57751/".
+
+    [0m [90m 51 |[39m
+     [90m 52 |[39m     [36mawait[39m 
+mongoose[33m.[39mconnect(uri)[33m;[39m
+    [31m[1m>[22m[39m[90m 53 |[39m   
+  console[33m.[39mlog([32m`≡ƒº¬ Test 
+DB Connected: ${uri}`[39m)[33m;[39m
+     [90m    |[39m             
+[31m[1m^[22m[39m
+     [90m 54 |[39m   }
+     [90m 55 |[39m
+     [90m 56 |[39m   [36masync[39m 
+disconnect() {[0m
+
+      at console.log (node_modules/@jest/c
+onsole/build/CustomConsole.js:141:10)
+      at TestDatabase.log [as connect] 
+(tests/setup/test-setup.js:53:13)
+      at Object.<anonymous> (tests/integra
+tion/admin.service.integration.test.js:41:
+9)
+

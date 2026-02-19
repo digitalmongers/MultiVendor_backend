@@ -13,6 +13,7 @@ const supplierEmailTemplateSchema = new mongoose.Schema(
         'Account Suspended',
         'Account Activation',
         'Order Received',
+        'Password Reset',
       ],
     },
     isEnabled: {

@@ -14,18 +14,40 @@ const validate = (schema) => (req, res, next) => {
     });
 
     // Replace req data with validated and parsed data (important for type coercion)
+    // We use a safe assignment to avoid "getter only" errors on req.query/req.params
     req.body = validData.body;
-    req.query = validData.query;
-    req.params = validData.params;
+
+    if (validData.query) {
+      try {
+        req.query = validData.query;
+      } catch (e) {
+        // Fallback: update properties if object is frozen/getter-only
+        Object.assign(req.query, validData.query);
+      }
+    }
+
+    if (validData.params) {
+      try {
+        req.params = validData.params;
+      } catch (e) {
+        // Fallback: update properties if object is frozen/getter-only
+        Object.assign(req.params, validData.params);
+      }
+    }
 
     next();
   } catch (error) {
-    const errors = error.errors.map((err) => ({
-      path: err.path.join('.'),
-      message: err.message,
-    }));
+    // Handle Zod validation errors
+    if (error.errors && Array.isArray(error.errors)) {
+      const errors = error.errors.map((err) => ({
+        path: err.path.join('.'),
+        message: err.message,
+      }));
+      return next(new AppError('Validation failed', HTTP_STATUS.BAD_REQUEST, 'VALIDATION_ERROR', errors));
+    }
 
-    next(new AppError('Validation failed', HTTP_STATUS.BAD_REQUEST, 'VALIDATION_ERROR', errors));
+    // Pass unexpected errors to global error handler
+    next(error);
   }
 };
 

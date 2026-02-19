@@ -60,7 +60,7 @@ class AdminService {
 
     const admin = await AdminRepository.findByEmail(email, true);
 
-    
+
 
     if (!admin) {
 
@@ -100,7 +100,7 @@ class AdminService {
 
         updateData.loginAttempts = 0; // Optional: Reset or keep to show history. Let's reset after lockout ends, but for now just set timeout.
 
-        
+
 
         await AdminRepository.updateById(admin._id, updateData);
 
@@ -148,7 +148,7 @@ class AdminService {
 
     AuditLogger.log('ADMIN_LOGIN_SUCCESS', 'ADMIN', { adminId: admin._id, rememberMe });
 
-    
+
 
     return {
 
@@ -202,7 +202,7 @@ class AdminService {
 
       const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
 
-      
+
 
       const admin = await AdminRepository.findById(decoded.id, true);
 
@@ -248,17 +248,17 @@ class AdminService {
 
       const newRefreshToken = generateRefreshToken(admin._id, { version: newTokenVersion }, refreshTokenExpire);
 
-      
+
 
       // Generate new access token
 
       const accessToken = generateToken(admin._id, { version: newTokenVersion });
 
-      
 
-      AuditLogger.security('ADMIN_TOKEN_ROTATED', { 
 
-        adminId: admin._id, 
+      AuditLogger.security('ADMIN_TOKEN_ROTATED', {
+
+        adminId: admin._id,
 
         oldVersion: admin.tokenVersion,
 
@@ -266,9 +266,9 @@ class AdminService {
 
       });
 
-      
 
-      return { 
+
+      return {
 
         accessToken,
 
@@ -302,7 +302,7 @@ class AdminService {
 
   }
 
-     
+
 
   /**
 
@@ -400,7 +400,7 @@ class AdminService {
 
     const result = await uploadToCloudinary(file, 'admins/profiles');
 
-    
+
 
     const photoData = {
 
@@ -416,7 +416,7 @@ class AdminService {
 
     AuditLogger.log('ADMIN_PHOTO_UPDATED', 'ADMIN', { adminId });
 
-    
+
 
     await this.invalidateAdminCache(adminId);
 
@@ -454,9 +454,9 @@ class AdminService {
 
 
 
-    await AdminRepository.updateById(adminId, { 
+    await AdminRepository.updateById(adminId, {
 
-      photo: { url: null, publicId: null } 
+      photo: { url: null, publicId: null }
 
     });
 
@@ -480,7 +480,7 @@ class AdminService {
 
   async updatePassword(adminId, newPassword) {
 
-    const admin = await AdminRepository.findById(adminId);
+    const admin = await AdminRepository.findById(adminId, false, false);
 
     if (!admin) {
 
@@ -592,7 +592,7 @@ class AdminService {
 
         template: 'Password Reset',
 
-        data: { 
+        data: {
 
           username: admin.name,
 
@@ -652,7 +652,7 @@ class AdminService {
 
     const admin = await AdminRepository.findByEmail(email, false, true); // We need to find by email to verify
 
-    
+
 
     if (!admin) {
 
@@ -666,7 +666,7 @@ class AdminService {
 
     if (admin.resetPasswordLockout && admin.resetPasswordLockout > Date.now()) {
 
-       throw new AppError('Account is temporarily locked. Please try again later.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
+      throw new AppError('Account is temporarily locked. Please try again later.', HTTP_STATUS.TOO_MANY_REQUESTS, 'ACCOUNT_LOCKED');
 
     }
 
@@ -676,7 +676,7 @@ class AdminService {
 
     if (!admin.resetPasswordOtp || !admin.resetPasswordExpires || Date.now() > admin.resetPasswordExpires) {
 
-       throw new AppError('OTP has expired or is invalid', HTTP_STATUS.BAD_REQUEST, 'OTP_EXPIRED');
+      throw new AppError('OTP has expired or is invalid', HTTP_STATUS.BAD_REQUEST, 'OTP_EXPIRED');
 
     }
 
@@ -690,11 +690,11 @@ class AdminService {
 
       const attempts = (admin.resetPasswordOtpAttempts || 0) + 1;
 
-      
+
 
       const updateData = { resetPasswordOtpAttempts: attempts };
 
-      
+
 
       // Lock if 3 attempts reached
 
@@ -708,7 +708,7 @@ class AdminService {
 
         updateData.resetPasswordExpires = undefined;
 
-        
+
 
         await AdminRepository.updateById(admin._id, updateData);
 
@@ -736,7 +736,7 @@ class AdminService {
 
     // Let's return a temporary token to authorize the reset password call.
 
-    
+
 
     // Clear OTP fields immediately to prevent reuse (though token is now key)
 
@@ -746,13 +746,13 @@ class AdminService {
 
       resetPasswordLockout: undefined,
 
-      resetPasswordOtp: undefined, 
+      resetPasswordOtp: undefined,
 
       resetPasswordExpires: undefined
 
     });
 
-    
+
 
     // Using a JWT signed with a special secret or just short expiration
 
@@ -760,7 +760,7 @@ class AdminService {
 
     const resetToken = jwt.sign({ id: admin._id }, env.JWT_SECRET, { expiresIn: '15m' });
 
-    
+
 
     AuditLogger.log('OTP_VERIFIED', 'ADMIN', { adminId: admin._id });
 
@@ -784,7 +784,7 @@ class AdminService {
 
     // We can reuse the same token verification logic or just verify here.
 
-    
+
 
     let decoded;
 
@@ -824,11 +824,11 @@ class AdminService {
 
     admin.resetPasswordLockout = undefined;
 
-    
+
 
     await admin.save();
 
-    
+
 
     AuditLogger.log('PASSWORD_RESET_SUCCESS', 'ADMIN', { adminId: admin._id });
 
