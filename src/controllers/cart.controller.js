@@ -13,7 +13,7 @@ class CartController {
             return { customer: req.customer._id };
         }
 
-        // Extract guestId from header or query
+
         const guestId = req.headers['x-guest-id'] || req.query.guestId;
 
         if (!guestId) {
