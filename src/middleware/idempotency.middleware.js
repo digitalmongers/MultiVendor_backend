@@ -23,7 +23,21 @@ const lockRequest = (actionOrTtl = 5, ttlSeconds = 5) => {
 
     // 1. Generate a unique key for the request
     // Strategy: userId + actionName + path + hash(body)
-    const userId = req.user?._id || req.admin?._id || 'guest';
+    let userId = 'guest';
+
+    if (req.user?._id) {
+      userId = req.user._id.toString();
+    } else if (req.customer?._id) {
+      userId = req.customer._id.toString(); // For authenticated customers
+    } else if (req.headers['x-guest-id']) {
+      userId = req.headers['x-guest-id'];
+    } else if (req.query.guestId) {
+      userId = req.query.guestId;
+    } else {
+      // Fallback to IP if no ID is present (last resort to prevent global blocking)
+      userId = req.ip || 'unknown_user';
+    }
+
     const bodyHash = crypto
       .createHash('md5')
       .update(JSON.stringify(req.body || {}))
