@@ -48,6 +48,38 @@ const cartSchema = new mongoose.Schema({
     expiresAt: {
         type: Date,
         default: null
+    },
+    appliedCoupon: {
+        code: {
+            type: String,
+            trim: true,
+            uppercase: true,
+            default: null
+        },
+        discountAmount: {
+            type: Number,
+            default: 0
+        },
+        discountType: {
+            type: String,
+            enum: ['amount', 'percent'],
+            default: 'amount'
+        },
+        minPurchase: {
+            type: Number,
+            default: 0
+        },
+        type: {
+            type: String,
+            // 'discount_on_purchase', 'free_delivery', etc.
+            default: null
+        },
+        startDate: Date,
+        expireDate: Date,
+        isActive: {
+            type: Boolean,
+            default: true
+        }
     }
 }, {
     timestamps: true,
