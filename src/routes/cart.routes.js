@@ -13,6 +13,9 @@ const router = express.Router();
 // Get cart
 router.get('/', optionalAuth, CartController.getCart.bind(CartController));
 
+// Get cart summary only
+router.get('/summary', optionalAuth, CartController.getCartSummary.bind(CartController));
+
 // Add item to cart - Locked to prevent double-add
 router.post('/', optionalAuth, lockRequest('add_to_cart'), CartController.addToCart.bind(CartController));
 
@@ -24,5 +27,11 @@ router.delete('/:itemId', optionalAuth, lockRequest('remove_cart_item'), CartCon
 
 // Clear entire cart - Locked
 router.delete('/', optionalAuth, lockRequest('clear_cart'), CartController.clearCart.bind(CartController));
+
+// Apply Coupon - Locked
+router.post('/coupon', optionalAuth, lockRequest('apply_coupon'), CartController.applyCoupon.bind(CartController));
+
+// Remove Coupon - Locked
+router.delete('/coupon', optionalAuth, lockRequest('remove_coupon'), CartController.removeCoupon.bind(CartController));
 
 export default router;

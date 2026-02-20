@@ -147,6 +147,66 @@ class CartController {
             next(error);
         }
     }
+
+    /**
+     * POST /api/v1/cart/coupon - Apply Coupon
+     */
+    async applyCoupon(req, res, next) {
+        try {
+            const identifier = this._getIdentifier(req);
+            const { code } = req.body;
+
+            if (!code) {
+                throw new AppError('Coupon code is required', HTTP_STATUS.BAD_REQUEST);
+            }
+
+            const cart = await CartService.applyCoupon(identifier, code);
+
+            res.status(HTTP_STATUS.OK).json({
+                success: true,
+                message: 'Coupon applied successfully',
+                data: cart
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * DELETE /api/v1/cart/coupon - Remove Coupon
+     */
+    async removeCoupon(req, res, next) {
+        try {
+            const identifier = this._getIdentifier(req);
+
+            const cart = await CartService.removeCoupon(identifier);
+
+            res.status(HTTP_STATUS.OK).json({
+                success: true,
+                message: 'Coupon removed successfully',
+                data: cart
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * GET /api/v1/cart/summary - Get cart summary only
+     */
+    async getCartSummary(req, res, next) {
+        try {
+            const identifier = this._getIdentifier(req);
+            const summary = await CartService.getCartSummary(identifier);
+
+            res.status(HTTP_STATUS.OK).json({
+                success: true,
+                data: summary
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new CartController();

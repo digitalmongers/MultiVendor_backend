@@ -1,5 +1,6 @@
 import CartRepository from '../repositories/cart.repository.js';
 import ProductRepository from '../repositories/product.repository.js';
+import CouponRepository from '../repositories/coupon.repository.js';
 import AppError from '../utils/AppError.js';
 import { HTTP_STATUS } from '../constants.js';
 import Logger from '../utils/logger.js';
@@ -11,6 +12,9 @@ import DealOfTheDayService from './dealOfTheDay.service.js';
 class CartService {
     /**
      * Get cart for customer or guest
+     */
+    /**
+     * Get cart for customer or guest with full summary
      */
     async getCart(identifier) {
         let cart;
@@ -28,6 +32,11 @@ class CartService {
                 items: [],
                 totalItems: 0,
                 subtotal: 0,
+                tax: 0,
+                shipping: 0,
+                discountTotal: 0,
+                couponDiscount: 0,
+                total: 0,
                 message: 'Cart is empty'
             };
         }
@@ -39,21 +48,17 @@ class CartService {
             item.product.status === 'approved'
         );
 
-        // Enrich products with active deals
-        const enrichedItems = await this.enrichCartItems(cart.items);
-
-        // Calculate totals
-        const subtotal = enrichedItems.reduce((sum, item) => {
-            const price = item.finalPrice || item.product.price;
-            return sum + (price * item.quantity);
-        }, 0);
-
-        const totalItems = enrichedItems.reduce((sum, item) => sum + item.quantity, 0);
+        // Enrich products and calculate totals
+        const { items: enrichedItems, summary } = await this.enrichCartItems(cart.items, cart.appliedCoupon);
 
         return {
             items: enrichedItems,
-            totalItems,
-            subtotal: parseFloat(subtotal.toFixed(2))
+            ...summary,
+            appliedCoupon: cart.appliedCoupon ? {
+                code: cart.appliedCoupon.code,
+                discountAmount: cart.appliedCoupon.discountAmount,
+                discountType: cart.appliedCoupon.discountType
+            } : null
         };
     }
 
@@ -92,7 +97,7 @@ class CartService {
         }
 
         // 4. Add to cart
-        const cart = await CartRepository.addOrUpdateItem(identifier, productId, quantity, variation);
+        await CartRepository.addOrUpdateItem(identifier, productId, quantity, variation);
 
         Logger.info('Item added to cart', {
             identifier,
@@ -184,6 +189,11 @@ class CartService {
             items: [],
             totalItems: 0,
             subtotal: 0,
+            tax: 0,
+            shipping: 0,
+            discountTotal: 0,
+            couponDiscount: 0,
+            total: 0,
             message: 'Cart cleared successfully'
         };
     }
@@ -200,16 +210,119 @@ class CartService {
     }
 
     /**
-     * Enrich cart items with active deals and calculate final prices
-     * OPTIMIZED: Batch processing to prevent N+1 queries
+     * Apply Coupon
      */
-    async enrichCartItems(items) {
-        if (!items || items.length === 0) return [];
+    async applyCoupon(identifier, couponCode) {
+        if (!couponCode) {
+            throw new AppError('Coupon code is required', HTTP_STATUS.BAD_REQUEST);
+        }
+
+        // 1. Fetch Coupon
+        const coupon = await CouponRepository.findByCode(couponCode);
+        if (!coupon) {
+            throw new AppError('Invalid coupon code', HTTP_STATUS.NOT_FOUND);
+        }
+
+        // 2. Validate Coupon
+        const now = new Date();
+        if (!coupon.isActive) {
+            throw new AppError('Coupon is inactive', HTTP_STATUS.BAD_REQUEST);
+        }
+        if (now < new Date(coupon.startDate)) {
+            throw new AppError('Coupon is not yet active', HTTP_STATUS.BAD_REQUEST);
+        }
+        if (now > new Date(coupon.expireDate)) {
+            throw new AppError('Coupon has expired', HTTP_STATUS.BAD_REQUEST);
+        }
+
+        // 3. Get Cart to validate constraints
+        const cart = identifier.customer
+            ? await CartRepository.findByCustomer(identifier.customer)
+            : await CartRepository.findByGuestId(identifier.guestId);
+
+        if (!cart || cart.items.length === 0) {
+            throw new AppError('Cart is empty', HTTP_STATUS.BAD_REQUEST);
+        }
+
+        // 4. Validate Coupon against Cart Items (Vendor Match)
+        const couponVendorId = coupon.vendor ? coupon.vendor.toString() : null;
+        let hasEligibleItem = false;
+
+        // Helper to get vendor ID safely
+        const getVendorId = (item) => {
+            if (item.product && item.product.vendor) {
+                return item.product.vendor._id ? item.product.vendor._id.toString() : item.product.vendor.toString();
+            }
+            return null;
+        };
+
+        for (const item of cart.items) {
+            const itemVendorId = getVendorId(item);
+            if (itemVendorId && couponVendorId && itemVendorId === couponVendorId) {
+                hasEligibleItem = true;
+                break;
+            }
+        }
+
+        if (!hasEligibleItem) {
+            throw new AppError('Coupon is not applicable to any items in your cart', HTTP_STATUS.BAD_REQUEST);
+        }
+
+        // 5. Update Cart with Coupon details
+        // Check if user has already used this coupon (if limit applies)
+        // Note: usage tracking is typically done at checkout, but we can check past orders here if needed.
+        // For now, we rely on checkout validation for strict usage limits.
+
+        // 4. Update Cart with Coupon details
+        // We actully store the coupon details in the cart to persist it
+        const couponData = {
+            code: coupon.code,
+            discountAmount: coupon.discountAmount,
+            discountType: coupon.discountType,
+            minPurchase: coupon.minPurchase,
+            type: coupon.type,
+            startDate: coupon.startDate,
+            expireDate: coupon.expireDate,
+            isActive: coupon.isActive
+        };
+
+        await CartRepository.applyCoupon(identifier, couponData);
+
+        return await this.getCart(identifier);
+    }
+
+    /**
+     * Remove Coupon
+     */
+    async removeCoupon(identifier) {
+        await CartRepository.removeCoupon(identifier);
+        return await this.getCart(identifier);
+    }
+
+
+    /**
+     * Enrich cart items and calculate totals
+     */
+    async enrichCartItems(items, appliedCoupon = null) {
+        if (!items || items.length === 0) {
+            return {
+                items: [],
+                summary: {
+                    totalItems: 0,
+                    subtotal: 0,
+                    tax: 0,
+                    shipping: 0,
+                    discountTotal: 0,
+                    couponDiscount: 0,
+                    total: 0
+                }
+            };
+        }
 
         // Extract all products at once
         const products = items.map(item => item.product);
 
-        // Batch enrich all products in parallel (4 queries total instead of 4*N)
+        // Batch enrich all products in parallel
         const [
             withSales,
             withFlash,
@@ -222,72 +335,235 @@ class CartService {
             DealOfTheDayService.enrichProductsWithDailyDeals([...products])
         ]);
 
-        // Create lookup maps for O(1) access
+        // Create lookup maps
         const salesMap = new Map(withSales.map((p, i) => [products[i]._id.toString(), p]));
         const flashMap = new Map(withFlash.map((p, i) => [products[i]._id.toString(), p]));
         const featuredMap = new Map(withFeatured.map((p, i) => [products[i]._id.toString(), p]));
         const dailyMap = new Map(withDaily.map((p, i) => [products[i]._id.toString(), p]));
 
-        // Build enriched items
-        return items.map((item, index) => {
+        let cartSubtotal = 0;
+        let cartTotalDiscount = 0; // Sum of base discounts
+        let cartTax = 0;
+        let cartShipping = 0;
+
+        const enrichedItemsResults = items.map((item, index) => {
             const product = item.product;
             const productId = product._id.toString();
 
-            // Calculate base price
-            let basePrice = product.price;
-            if (product.discount > 0) {
-                if (product.discountType === 'flat') {
-                    basePrice = product.price - product.discount;
-                } else if (product.discountType === 'percent') {
-                    basePrice = product.price - (product.price * product.discount / 100);
-                }
-            }
-
-            // Get enriched product data from maps
+            // Get enriched product data
             const withSaleProduct = salesMap.get(productId);
             const withFlashProduct = flashMap.get(productId);
             const withFeaturedProduct = featuredMap.get(productId);
             const withDailyProduct = dailyMap.get(productId);
 
-            // Determine final price and active deal
-            let finalPrice = basePrice;
-            let activeDeal = null;
+            // Calculate Best Discount (Product vs Deals)
+            const priceCalc = this.calculateItemPrice(
+                item,
+                product,
+                withSaleProduct,
+                withFlashProduct,
+                withFeaturedProduct,
+                withDailyProduct
+            );
 
-            if (withDailyProduct?.dealOfTheDay) {
-                finalPrice = withDailyProduct.dealPrice;
-                activeDeal = { type: 'daily', ...withDailyProduct.dealOfTheDay };
-            } else if (withFeaturedProduct?.featuredDeal) {
-                finalPrice = withFeaturedProduct.featuredPrice;
-                activeDeal = { type: 'featured', ...withFeaturedProduct.featuredDeal };
-            } else if (withFlashProduct?.flashDeal) {
-                finalPrice = withFlashProduct.flashPrice;
-                activeDeal = { type: 'flash', ...withFlashProduct.flashDeal };
-            } else if (withSaleProduct?.salePrice) {
-                finalPrice = withSaleProduct.salePrice;
-                activeDeal = { type: 'clearance', ...withSaleProduct.clearanceSale };
+            cartSubtotal += priceCalc.subtotal; // Base Price * Quantity
+            cartTotalDiscount += priceCalc.totalDiscount; // (Base Price - Final Price) * Quantity
+
+            // Tax Calculation
+            let itemTax = 0;
+            if (product.tax) {
+                if (product.taxType === 'flat') {
+                    itemTax = product.tax * item.quantity;
+                } else {
+                    // Tax on Final Price (after base discount)
+                    itemTax = (priceCalc.finalPrice * product.tax / 100) * item.quantity;
+                }
             }
+            cartTax += itemTax;
+
+            // Shipping Calculation
+            let itemShipping = 0;
+            if (product.shippingCost) {
+                if (product.multiplyShippingCost) {
+                    itemShipping = product.shippingCost * item.quantity;
+                } else {
+                    itemShipping = product.shippingCost;
+                }
+            }
+            cartShipping += itemShipping;
 
             return {
-                _id: item._id,
-                product: {
-                    _id: product._id,
-                    name: product.name,
-                    slug: product.slug,
-                    thumbnail: product.thumbnail,
-                    price: product.price,
-                    discount: product.discount,
-                    discountType: product.discountType
-                },
-                variation: item.variation,
-                quantity: item.quantity,
-                basePrice: parseFloat(basePrice.toFixed(2)),
-                finalPrice: parseFloat(finalPrice.toFixed(2)),
-                activeDeal,
-                subtotal: parseFloat((finalPrice * item.quantity).toFixed(2)),
-                addedAt: item.addedAt
+                ...priceCalc,
+                tax: itemTax,
+                shipping: itemShipping
             };
         });
+
+        // Coupon Logic (Stacked on Subtotal - Base Discount)
+        let couponDiscount = 0;
+        let isFreeDelivery = false;
+
+        if (appliedCoupon && appliedCoupon.isActive) {
+            // Calculate eligible total (items matching the coupon's vendor)
+            let eligibleTotal = 0;
+
+            // Helper to get vendor ID safely
+            const getVendorId = (item) => {
+                if (item.product && item.product.vendor) {
+                    return item.product.vendor._id ? item.product.vendor._id.toString() : item.product.vendor.toString();
+                }
+                return null; // Admin product or invalid
+            };
+
+            const couponVendorId = appliedCoupon.vendor ? appliedCoupon.vendor.toString() : null;
+
+            enrichedItemsResults.forEach(item => {
+                const itemVendorId = getVendorId(item);
+                if (itemVendorId && couponVendorId && itemVendorId === couponVendorId) {
+                    eligibleTotal += item.finalPrice * item.quantity;
+                }
+            });
+
+            // Validate Min Purchase against ELIGIBLE total, not cart total
+            if (eligibleTotal >= (appliedCoupon.minPurchase || 0)) {
+                if (appliedCoupon.type === 'free_delivery') {
+                    isFreeDelivery = true;
+                    // In a multi-vendor setup, free delivery might only apply to that vendor's shipping
+                    // However, we'll implement it as global shipping discount for this vendor's items or total cart depending on policy
+                    // Simplified: if coupon is valid, shipping for eligible items becomes 0 or we give discount equal to their shipping
+
+                    // For now, let's calculate the shipping cost for ELIGIBLE items specifically
+                    let eligibleShipping = 0;
+                    items.forEach((item, idx) => {
+                        const itemVendorId = getVendorId(item);
+                        if (itemVendorId && couponVendorId && itemVendorId === couponVendorId) {
+                            eligibleShipping += enrichedItemsResults[idx].shipping;
+                        }
+                    });
+                    couponDiscount = eligibleShipping;
+                } else if (appliedCoupon.discountType === 'flat' || appliedCoupon.discountType === 'amount') {
+                    couponDiscount = Math.min(appliedCoupon.discountAmount, eligibleTotal);
+                } else if (appliedCoupon.discountType === 'percent') {
+                    couponDiscount = (eligibleTotal * appliedCoupon.discountAmount) / 100;
+                }
+            }
+        }
+
+        // Final Total
+        // Total = (Subtotal - ItemDiscounts) - CouponDiscount + Tax + Shipping
+        const sellingPrice = cartSubtotal - cartTotalDiscount;
+
+        let total = sellingPrice - couponDiscount + cartTax + cartShipping;
+        total = Math.max(0, total);
+
+        return {
+            items: enrichedItemsResults,
+            summary: {
+                totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
+                subtotal: parseFloat(cartSubtotal.toFixed(2)),
+                tax: parseFloat(cartTax.toFixed(2)),
+                shipping: parseFloat(cartShipping.toFixed(2)),
+                productDiscount: parseFloat(cartTotalDiscount.toFixed(2)), // Renovated name for clarity
+                couponDiscount: parseFloat(couponDiscount.toFixed(2)),
+                total: parseFloat(total.toFixed(2)),
+                isFreeDelivery
+            }
+        };
     }
+
+    /**
+     * Get only the cart summary without full item details
+     */
+    async getCartSummary(identifier) {
+        const cart = await this.getCart(identifier);
+
+        // Return only the essential summary data for fast frontend updates
+        return {
+            summary: {
+                totalItems: cart.totalItems,
+                subtotal: cart.subtotal,
+                tax: cart.tax,
+                shipping: cart.shipping,
+                productDiscount: cart.productDiscount,
+                couponDiscount: cart.couponDiscount,
+                total: cart.total,
+                isFreeDelivery: cart.isFreeDelivery
+            },
+            appliedCoupon: cart.appliedCoupon
+        };
+    }
+
+    /**
+     * Calculate Item Price Logic (Best Discount Selection)
+     */
+    calculateItemPrice(item, product, withSale, withFlash, withFeatured, withDaily) {
+        const basePrice = product.price;
+        const quantity = item.quantity;
+
+        let bestPrice = basePrice;
+        let activeDeal = null;
+
+        // 1. Check Product Discount
+        if (product.discount > 0) {
+            let discounted = basePrice;
+            if (product.discountType === 'flat') {
+                discounted = basePrice - product.discount;
+            } else {
+                discounted = basePrice - (basePrice * product.discount / 100);
+            }
+            if (discounted < bestPrice) {
+                bestPrice = discounted;
+                activeDeal = { type: 'product', discount: product.discount };
+            }
+        }
+
+        // 2. Check Clearance Sale
+        if (withSale?.salePrice && withSale.salePrice < bestPrice) {
+            bestPrice = withSale.salePrice;
+            activeDeal = { type: 'clearance', ...withSale.clearanceSale };
+        }
+
+        // 3. Check Flash Deal
+        if (withFlash?.flashPrice && withFlash.flashPrice < bestPrice) {
+            bestPrice = withFlash.flashPrice;
+            activeDeal = { type: 'flash', ...withFlash.flashDeal };
+        }
+
+        // 4. Check Featured Deal
+        if (withFeatured?.featuredPrice && withFeatured.featuredPrice < bestPrice) {
+            bestPrice = withFeatured.featuredPrice;
+            activeDeal = { type: 'featured', ...withFeatured.featuredDeal };
+        }
+
+        // 5. Check Deal of the Day (Highest Priority if lowest price)
+        if (withDaily?.dealPrice && withDaily.dealPrice < bestPrice) {
+            bestPrice = withDaily.dealPrice;
+            activeDeal = { type: 'daily', ...withDaily.dealOfTheDay };
+        }
+
+        bestPrice = Math.max(0, bestPrice);
+
+        return {
+            _id: item._id,
+            product: {
+                _id: product._id,
+                name: product.name,
+                slug: product.slug,
+                thumbnail: product.thumbnail,
+                price: product.price,
+                // ... other fields
+            },
+            variation: item.variation,
+            quantity: quantity,
+            basePrice: parseFloat(basePrice.toFixed(2)),
+            finalPrice: parseFloat(bestPrice.toFixed(2)),
+            activeDeal,
+            subtotal: parseFloat((basePrice * quantity).toFixed(2)),
+            totalDiscount: parseFloat(((basePrice - bestPrice) * quantity).toFixed(2)),
+            addedAt: item.addedAt
+        };
+    }
+
 }
 
 export default new CartService();

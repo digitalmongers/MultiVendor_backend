@@ -213,6 +213,42 @@ class CartRepository {
     }
 
     /**
+     * Apply coupon to cart
+     */
+    async applyCoupon(identifier, couponData) {
+        const filter = identifier.customer
+            ? { customer: identifier.customer }
+            : { guestId: identifier.guestId };
+
+        return await Cart.findOneAndUpdate(
+            filter,
+            { $set: { appliedCoupon: couponData } },
+            { new: true }
+        ).populate({
+            path: 'items.product',
+            select: 'name slug price discount discountType thumbnail quantity isActive status'
+        }).exec();
+    }
+
+    /**
+     * Remove coupon from cart
+     */
+    async removeCoupon(identifier) {
+        const filter = identifier.customer
+            ? { customer: identifier.customer }
+            : { guestId: identifier.guestId };
+
+        return await Cart.findOneAndUpdate(
+            filter,
+            { $unset: { appliedCoupon: "" } },
+            { new: true }
+        ).populate({
+            path: 'items.product',
+            select: 'name slug price discount discountType thumbnail quantity isActive status'
+        }).exec();
+    }
+
+    /**
      * Delete cart
      */
     async deleteCart(identifier) {
