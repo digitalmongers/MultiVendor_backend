@@ -38,8 +38,9 @@ const validate = (schema) => (req, res, next) => {
     next();
   } catch (error) {
     // Handle Zod validation errors
-    if (error.errors && Array.isArray(error.errors)) {
-      const errors = error.errors.map((err) => ({
+    if (error.name === 'ZodError') {
+      const issues = error.issues || error.errors || [];
+      const errors = issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }));

@@ -86,9 +86,9 @@ export const ENV = {
 // Regex Patterns for strict validation
 export const REGEX = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  PHONE: /^[6-9]\d{9}$/,
+  PHONE: /^(?:\+?\d{1,3}[- ]?)?[6-9]\d{9}$/,
   // Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
-  PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,}$/,
   MONGODB_ID: /^[0-9a-fA-F]{24}$/,
 };
 

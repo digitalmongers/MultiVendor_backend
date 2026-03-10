@@ -28,7 +28,7 @@ class AdminController {
       expires: refreshExpires,
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: isProduction ? 'none' : 'lax',
     });
 
     // 4. Set Access Token Cookie (Short Lived)
@@ -36,7 +36,7 @@ class AdminController {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: isProduction ? 'none' : 'lax',
     });
 
     return res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, result, SUCCESS_MESSAGES.LOGIN_SUCCESS));
@@ -62,7 +62,7 @@ class AdminController {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'strict',
+      sameSite: isProduction ? 'none' : 'lax',
     });
 
     // Set new Refresh Token Cookie (if rotation happened)
@@ -72,7 +72,7 @@ class AdminController {
         expires: refreshExpires,
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'strict',
+        sameSite: isProduction ? 'none' : 'lax',
       });
     }
 
